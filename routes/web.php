@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\BankSoalController;
+use App\Http\Controllers\CreateTryoutController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,6 +16,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin routes with /admin/ prefix and admin middleware
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/create-bank-soal', [BankSoalController::class, 'createBankSoal'])->name('create-bank-soal');
+        Route::get('/create-tryout', [CreateTryoutController::class, 'createTryout'])->name('create-tryout');
     });
 });
 

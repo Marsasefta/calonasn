@@ -16,16 +16,16 @@
           aria-expanded="false"
           aria-controls="navDashboard">
           <i class="nav-icon fe fe-home me-2"></i>
-          Dashboard
+          Master Data
         </a>
         <div id="navDashboard" class="collapse @@if (context.page_group === 'dashboard') { show }" data-bs-parent="#sideNavbar">
           <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link @@if (context.page === 'overview') { active }" href="dashboard-admin-dashboard.php">Overview</a>
+              <a class="nav-link @@if (context.page === 'create-bank-soal') { active }" href="{{ route('admin.create-bank-soal') }}">Bank Soal</a>
             </li>
             <!-- Nav item -->
             <li class="nav-item">
-              <a class="nav-link @@if (context.page === 'analytics') { active }" href="dashboard-analytics.php">Analytics</a>
+              <a class="nav-link @@if (context.page === 'create-tryout') { active }" href="{{ route('admin.create-tryout') }}">Ujian Tryout</a>
             </li>
           </ul>
         </div>
