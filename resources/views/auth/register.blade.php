@@ -20,29 +20,48 @@
                     <h1 class="mb-0 fw-bold">Sign up</h1>
                     <span>
                       Already have an account?
-                      <a href="sign-in.php" class="ms-1">Sign in</a>
+                      <a href="{{ route('login') }}" class="ms-1">Sign in</a>
                     </span>
                   </div>
                 </div>
                 <!-- Form -->
-                <form class="needs-validation" novalidate>
+                <form method="POST" action="{{ route('register') }}" class="needs-validation" novalidate>
+                  @csrf
                   <!-- Username -->
                   <div class="mb-3">
-                    <label for="signUpName" class="form-label">User Name</label>
-                    <input type="text" id="signUpName" class="form-control" name="signUpName" placeholder="User Name" required />
-                    <div class="invalid-feedback">Please enter valid username.</div>
+                    <label for="name" class="form-label">User Name</label>
+                    <input type="text" id="name" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" placeholder="User Name" required />
+                    @if ($errors->has('name'))
+                      <div class="invalid-feedback">{{ $errors->first('name') }}</div>
+                    @else
+                      <div class="invalid-feedback">Please enter valid username.</div>
+                    @endif
                   </div>
                   <!-- Email -->
                   <div class="mb-3">
-                    <label for="signUpEmail" class="form-label">Email</label>
-                    <input type="email" id="signUpEmail" class="form-control" name="signUpEmail" placeholder="Email address here" required />
-                    <div class="invalid-feedback">Please enter valid Email.</div>
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" placeholder="Email address here" required />
+                    @if ($errors->has('email'))
+                      <div class="invalid-feedback">{{ $errors->first('email') }}</div>
+                    @else
+                      <div class="invalid-feedback">Please enter valid Email.</div>
+                    @endif
                   </div>
                   <!-- Password -->
                   <div class="mb-3">
-                    <label for="signUpPassword" class="form-label">Password</label>
-                    <input type="password" id="signUpPassword" class="form-control" name="signUpPassword" placeholder="**************" required />
-                    <div class="invalid-feedback">Please enter valid password.</div>
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="**************" required />
+                    @if ($errors->has('password'))
+                      <div class="invalid-feedback">{{ $errors->first('password') }}</div>
+                    @else
+                      <div class="invalid-feedback">Please enter valid password.</div>
+                    @endif
+                  </div>
+                  <!-- Confirm Password -->
+                  <div class="mb-3">
+                    <label for="password_confirmation" class="form-label">Confirm Password</label>
+                    <input type="password" id="password_confirmation" class="form-control" name="password_confirmation" placeholder="**************" required />
+                    <div class="invalid-feedback">Please confirm your password.</div>
                   </div>
                   <!-- Checkbox -->
                   <div class="mb-3">
@@ -51,9 +70,9 @@
                       <label class="form-check-label" for="agreeCheck">
                         <span>
                           I agree to the
-                          <a href="terms-condition-page.php">Terms of Service</a>
+                          <a href="#">Terms of Service</a>
                           and
-                          <a href="terms-condition-page.php">Privacy Policy.</a>
+                          <a href="#">Privacy Policy.</a>
                         </span>
                       </label>
                       <div class="invalid-feedback">You must agree before submitting.</div>

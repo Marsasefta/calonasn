@@ -82,7 +82,6 @@
                                                             <span class="ms-1">2:19 PM</span>
                                                         </span>
                                                     </div>
-                                                </div>
                                             </a>
                                         </div>
                                         <div class="col-auto text-center me-2">
@@ -112,7 +111,6 @@
                                                             <span class="ms-1">1:20 PM</span>
                                                         </span>
                                                     </div>
-                                                </div>
                                             </a>
                                         </div>
                                         <div class="col-auto text-center me-2">
@@ -137,7 +135,6 @@
                                                             <span class="ms-1">1:56 PM</span>
                                                         </span>
                                                     </div>
-                                                </div>
                                             </a>
                                         </div>
                                         <div class="col-auto text-center me-2">
@@ -162,7 +159,6 @@
                                                             <span class="ms-1">1:56 PM</span>
                                                         </span>
                                                     </div>
-                                                </div>
                                             </a>
                                         </div>
                                         <div class="col-auto text-center me-2">

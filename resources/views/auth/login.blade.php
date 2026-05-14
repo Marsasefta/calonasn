@@ -16,7 +16,7 @@
               <!-- Card body -->
               <div class="card-body p-6 d-flex flex-column gap-4">
                 <div>
-                  <!-- <img src="/build/assets/images/logoasn.png" class="mb-4 text-center mx-auto" alt="logo-icon" width="100" /> -->
+                  <!-- <img src="/build/assets/images/logoasn2.png" class="mb-4 text-center mx-auto" alt="logo-icon" width="100" /> -->
                   <div class="d-flex flex-column gap-1">
                     <h1 class="mb-0 fw-bold">Sign in</h1>
                     <span>
@@ -26,28 +26,36 @@
                   </div>
                 </div>
                 <!-- Form -->
-                <form class="needs-validation" novalidate>
-                  <!-- Username -->
+                <form method="POST" action="{{ route('login') }}" class="needs-validation" novalidate>
+                  @csrf
+                  <!-- Username or Email -->
                   <div class="mb-3">
-                    <label for="signInEmail" class="form-label">Username or email</label>
-                    <input type="email" id="signInEmail" class="form-control" name="signInEmail" placeholder="Email address here" required />
-                    <div class="invalid-feedback">Please enter valid username.</div>
+                    <label for="login" class="form-label">Username or email</label>
+                    <input type="text" id="login" class="form-control @error('login') is-invalid @enderror" name="login" value="{{ old('login') }}" placeholder="Username or email" required />
+                    @if ($errors->has('login'))
+                      <div class="invalid-feedback">{{ $errors->first('login') }}</div>
+                    @else
+                      <div class="invalid-feedback">Please enter valid username or email.</div>
+                    @endif
                   </div>
                   <!-- Password -->
                   <div class="mb-3">
-                    <label for="signInPassword" class="form-label">Password</label>
-                    <input type="password" id="signInPassword" class="form-control" name="signInPassword" placeholder="**************" required />
-                    <div class="invalid-feedback">Please enter valid password.</div>
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="**************" required />
+                    @if ($errors->has('password'))
+                      <div class="invalid-feedback">{{ $errors->first('password') }}</div>
+                    @else
+                      <div class="invalid-feedback">Please enter valid password.</div>
+                    @endif
                   </div>
                   <!-- Checkbox -->
                   <div class="d-lg-flex justify-content-between align-items-center mb-4">
                     <div class="form-check">
-                      <input type="checkbox" class="form-check-input" id="rememberme" required />
-                      <label class="form-check-label" for="rememberme">Remember me</label>
-                      <div class="invalid-feedback">You must agree before submitting.</div>
+                      <input type="checkbox" class="form-check-input" id="remember" name="remember" />
+                      <label class="form-check-label" for="remember">Remember me</label>
                     </div>
                     <div>
-                      <a href="forget-password.php">Forgot your password?</a>
+                      <a href="{{ route('password.request') }}">Forgot your password?</a>
                     </div>
                   </div>
                   <div>

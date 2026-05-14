@@ -21,7 +21,7 @@
             <div class="col-lg-12 col-md-12 col-12">
               <div class="border-bottom pb-3 mb-3 d-flex flex-column flex-lg-row gap-3 justify-content-between align-items-lg-center">
                 <div>
-                  <h1 class="mb-0 h2 fw-bold">Dashboard</h1>
+                  <h1 class="mb-0 h2 fw-bold">Dashboard admin</h1>
                 </div>
                 <div class="d-flex gap-3">
                   <div class="input-group">

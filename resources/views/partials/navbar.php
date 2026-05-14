@@ -236,13 +236,16 @@
             </ul>
             <div class="dropdown-divider"></div>
             <ul class="list-unstyled">
-              <li>
-                <a class="dropdown-item" href="index.php">
-                  <i class="fe fe-power me-2"></i>
-                  Sign Out
-                </a>
-              </li>
-            </ul>
+                  <li>
+                      <form method="POST" action="{{ route('logout') }}" class="w-100">
+                          @csrf
+                          <button type="submit" class="dropdown-item w-100 text-start">
+                              <i class="fe fe-power me-2"></i>
+                              Sign Out user
+                          </button>
+                      </form>
+                  </li>
+              </ul>
           </div>
         </li>
       </ul>
