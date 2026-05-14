@@ -15,12 +15,17 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    
+    // Transaksi dan pembayaran
     Route::get('/checkout', [TransactionController::class, 'checkout'])->name('checkout');
     Route::post('/checkout/process', [TransactionController::class, 'process'])->name('checkout.process');
     Route::get('/payment-pending', [TransactionController::class, 'pending'])->name('payment.pending');
     Route::get('/payment-success', [TransactionController::class, 'success'])->name('payment.success');
-    
+
+    // Riwayat transaksi dan invoice
+    Route::get('/riwayat', [TransactionController::class, 'history'])->name('riwayat');
+    Route::get('/invoice/{order_id}', [TransactionController::class, 'invoice'])->name('invoice');
+    Route::delete('/riwayat/{id}', [TransactionController::class, 'destroy'])->name('riwayat.destroy');
+
     // Admin routes with /admin/ prefix and admin middleware
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

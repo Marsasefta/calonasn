@@ -57,4 +57,38 @@ class TransactionController extends Controller
     {
         return view('user.payment.payment-pending');
     }
+
+    public function history()
+    {
+        // Mengambil semua transaksi milik user yang login, diurutkan dari yang terbaru
+        $transactions = Transaction::where('user_id', Auth::id())
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+
+        return view('user.riwayat.riwayat', compact('transactions'));
+    }
+
+    public function invoice($order_id)
+    {
+        // Cari transaksi berdasarkan order_id dan pastikan itu milik user yang sedang login
+        $transaction = Transaction::where('order_id', $order_id)
+                        ->where('user_id', Auth::id())
+                        ->firstOrFail();
+
+        return view('user.riwayat.invoice', compact('transaction'));
+    }
+
+    public function destroy($id)
+    {
+        // Cari transaksi berdasarkan ID dan pastikan milik user yang login
+        $transaction = Transaction::where('id', $id)
+                        ->where('user_id', Auth::id())
+                        ->firstOrFail();
+
+        // Hapus data
+        $transaction->delete();
+
+        // Balikkan ke halaman riwayat dengan pesan sukses
+        return redirect()->route('riwayat')->with('success', 'Pesanan berhasil dibatalkan.');
+    }
 }
