@@ -6,6 +6,8 @@ use App\Http\Controllers\BankSoalController;
 use App\Http\Controllers\CreateTryoutController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\RankingController;
+use App\Http\Controllers\DemoController;
+use App\Http\Controllers\UjianController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -29,7 +31,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Halaman ranking
     Route::get('/ranking', [RankingController::class, 'index'])->name('ranking');
 
-    
+    // Demo tryout
+    Route::get('/demo', [DemoController::class, 'index'])->name('demo.index');
+    Route::get('/demo/ujian', [DemoController::class, 'start'])->name('demo.ujian');
+    Route::post('/demo/selesai', [DemoController::class, 'finish'])->name('demo.selesai');
+
+    // Ujian tryout
+    Route::get('/ujian', [UjianController::class, 'mulai'])->name('ujian.mulai');
+    Route::post('/ujian/selesai', [UjianController::class, 'selesai'])->name('ujian.selesai');    
+    Route::get('/ujian/hasil', [UjianController::class, 'hasil'])->name('ujian.hasil');
+    Route::get('/ujian/pembahasan', [UjianController::class, 'pembahasan'])->name('ujian.pembahasan');
+
+    // Sertifikat
+    Route::get('/ujian/sertifikat', [UjianController::class, 'sertifikat'])->name('ujian.sertifikat');
+    Route::get('/riwayat-sertifikat', [UjianController::class, 'riwayatSertifikat'])->name('sertifikat.riwayat');
 
     // Admin routes with /admin/ prefix and admin middleware
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {

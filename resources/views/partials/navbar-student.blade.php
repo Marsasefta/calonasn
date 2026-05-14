@@ -14,82 +14,76 @@
         <!-- Collapse -->
         <div class="collapse navbar-collapse" id="sidenavNavbar">
             <div class="navbar-nav flex-column mt-4 mt-lg-0 d-flex flex-column gap-3">
+
                 <ul class="list-unstyled mb-0">
-                    <!-- Nav item -->
-
                     <li class="nav-item">
-                        <a class="nav-link" href="dashboard-student.php">
-                            <i class="fe fe-home nav-icon"></i>
-                            Dashboard
+                        <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                            href="{{ route('dashboard') }}">
+                            <i class="fe fe-home nav-icon"></i> Dashboard
                         </a>
                     </li>
-                    <!-- Nav item -->
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fe fe-unlock nav-icon"></i>
-                            Ujicoba (Demo)
+                        <a class="nav-link {{ request()->routeIs('demo.*') ? 'active' : '' }}"
+                            href="{{ route('demo.index') }}">
+                            <i class="fe fe-unlock nav-icon"></i> Ujicoba Gratis
                         </a>
                     </li>
-                    <!-- Nav item -->
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('checkout') ? 'active' : '' }}"
-                            href="{{ route('checkout') }}">
-                            <i class="fe fe-credit-card nav-icon"></i>
-                            Payment
+                        <a class="nav-link {{ request()->routeIs('ujian.*') ? 'active' : '' }}"
+                            href="{{ route('ujian.mulai') }}">
+                            <i class="fe fe-edit nav-icon"></i> Mulai Tryout
                         </a>
-                    </li>
-                    <!-- Nav item -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="project-blank.php">
-                            <i class="fe fe-edit nav-icon"></i>
-                            Soal ujian
-                        </a>
-                    </li>
-                    <!-- Nav item -->
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('ranking') ? 'active' : '' }}"
-                            href="{{ route('ranking') }}">
-                            <i class="fe fe-award nav-icon"></i>
-                            Rangking
-                        </a>
-                    </li>
-                    <!-- Nav item -->
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('riwayat') ? 'active' : '' }}"
-                            href="{{ route('riwayat') }}">
-                            <i class="fe fe-clock nav-icon"></i>
-                            Riwayat
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="project-blank.php">
-                            <i class="fe fe-award nav-icon"></i>
-                            Sertifikat
-                        </a>
-                    </li>
-
-                    {{-- <li class="nav-item">
-                        <a class="nav-link" href="project-blank.php">
-                            <i class="fe fe-user nav-icon"></i>
-                            Akun
-                        </a>
-                    </li>   --}}
+                    </li>                    
                 </ul>
-                <!-- Navbar header -->
-                <div class="d-flex flex-column gap-1">
-                    <span class="navbar-header">Account Settings</span>
+
+                <div class="d-flex flex-column gap-1 mt-2">
+                    <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Evaluasi</span>
                     <ul class="list-unstyled mb-0">
-                        <!-- Nav item -->
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}"
-                                href="{{ route('profile.edit') }}">
-                                <i class="fe fe-user nav-icon"></i>
-                                Edit Profil
+                            <a class="nav-link {{ request()->routeIs('ranking') ? 'active' : '' }}"
+                                href="{{ route('ranking') }}">
+                                <i class="fe fe-bar-chart-2 nav-icon"></i> Ranking Nasional
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('sertifikat.riwayat') ? 'active' : '' }}"
+                                href="{{ route('sertifikat.riwayat') }}">
+                                <i class="fe fe-award nav-icon"></i> Riwayat & Sertifikat
                             </a>
                         </li>
                     </ul>
                 </div>
+
+                <div class="d-flex flex-column gap-1 mt-2">
+                    <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Transaksi</span>
+                    <ul class="list-unstyled mb-0">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('checkout') ? 'active' : '' }}"
+                                href="{{ route('checkout') }}">
+                                <i class="fe fe-shopping-cart nav-icon"></i> Beli Paket Premium
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('riwayat') ? 'active' : '' }}"
+                                href="{{ route('riwayat') }}">
+                                <i class="fe fe-clock nav-icon"></i> Riwayat Transaksi
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="d-flex flex-column gap-1 mt-2">
+                    <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Pengaturan</span>
+                    <ul class="list-unstyled mb-0">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}"
+                                href="{{ route('profile.edit') }}">
+                                <i class="fe fe-user nav-icon"></i> Edit Profil
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
             </div>
         </div>
     </nav>
