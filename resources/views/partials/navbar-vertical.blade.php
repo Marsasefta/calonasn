@@ -23,6 +23,9 @@
             <li class="nav-item">
               <a class="nav-link @@if (context.page === 'create-bank-soal') { active }" href="{{ route('admin.create-bank-soal') }}">Bank Soal</a>
             </li>
+             <li class="nav-item">
+                <a class="nav-link @@if (context.page === 'categories.index') { active }" href="{{ route('admin.categories.index') }}">Kategori Soal</a>
+            </li>
             <!-- Nav item -->
             <li class="nav-item">
               <a class="nav-link @@if (context.page === 'create-tryout') { active }" href="{{ route('admin.create-tryout') }}">Ujian Tryout</a>

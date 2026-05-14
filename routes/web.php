@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BankSoalController;
 use App\Http\Controllers\CreateTryoutController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,7 +25,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/create-bank-soal', [BankSoalController::class, 'createBankSoal'])->name('create-bank-soal');
+        Route::post('/create-bank-soal', [BankSoalController::class, 'storeBankSoal'])->name('store-bank-soal');
         Route::get('/create-tryout', [CreateTryoutController::class, 'createTryout'])->name('create-tryout');
+        Route::post('/create-tryout', [CreateTryoutController::class, 'storeTryout'])->name('store-tryout');
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
     });
 });
 
