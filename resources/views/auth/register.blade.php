@@ -47,6 +47,15 @@
                       <div class="invalid-feedback">Please enter valid Email.</div>
                     @endif
                   </div>
+                  <div class="mb-3">
+                    <label for="phone" class="form-label">Nomor Telepon</label>
+                    <input type="tel" id="phone" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') }}" placeholder="Phone number here" required />
+                    @if ($errors->has('phone'))
+                      <div class="invalid-feedback">{{ $errors->first('phone') }}</div>
+                    @else
+                      <div class="invalid-feedback">Please enter valid phone number.</div>
+                    @endif
+                  </div>
                   <!-- Password -->
                   <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
