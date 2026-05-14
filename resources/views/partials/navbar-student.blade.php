@@ -47,11 +47,13 @@
                     </li>
                     <!-- Nav item -->
                     <li class="nav-item">
-                        <a class="nav-link" href="project-blank.php">
-                            <i class="fe fe-trending-up nav-icon"></i>
+                        <a class="nav-link {{ request()->routeIs('ranking') ? 'active' : '' }}"
+                            href="{{ route('ranking') }}">
+                            <i class="fe fe-award nav-icon"></i>
                             Rangking
                         </a>
                     </li>
+                    <!-- Nav item -->
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('riwayat') ? 'active' : '' }}"
                             href="{{ route('riwayat') }}">
@@ -80,7 +82,8 @@
                     <ul class="list-unstyled mb-0">
                         <!-- Nav item -->
                         <li class="nav-item">
-                            <a class="nav-link" href="profile-edit.php">
+                            <a class="nav-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}"
+                                href="{{ route('profile.edit') }}">
                                 <i class="fe fe-user nav-icon"></i>
                                 Edit Profil
                             </a>
