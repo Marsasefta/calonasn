@@ -53,7 +53,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="project-blank.php">
+                        <a class="nav-link {{ request()->routeIs('riwayat') ? 'active' : '' }}"
+                            href="{{ route('riwayat') }}">
                             <i class="fe fe-clock nav-icon"></i>
                             Riwayat
                         </a>
