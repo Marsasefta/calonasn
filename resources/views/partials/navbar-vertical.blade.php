@@ -28,6 +28,9 @@
         <div id="navDashboard" class="collapse @@if (context.page_group === 'dashboard') { show }" data-bs-parent="#sideNavbar">
           <ul class="nav flex-column">
             <li class="nav-item">
+              <a class="nav-link @@if (context.page === 'dashboard') { active }" href="{{ route('admin.dashboard') }}">Dashboard</a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link @@if (context.page === 'create-bank-soal') { active }" href="{{ route('admin.create-bank-soal') }}">Bank Soal</a>
             </li>
              <li class="nav-item">
@@ -36,6 +39,9 @@
             <!-- Nav item -->
             <li class="nav-item">
               <a class="nav-link @@if (context.page === 'create-tryout') { active }" href="{{ route('admin.create-tryout') }}">Ujian Tryout</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link @@if (context.page === 'user_type') { active }" href="{{ route('admin.user_type') }}">Pengguna</a>
             </li>
           </ul>
         </div>

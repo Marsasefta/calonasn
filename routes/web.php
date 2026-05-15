@@ -5,9 +5,11 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BankSoalController;
 use App\Http\Controllers\CreateTryoutController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\DemoController;
 use App\Http\Controllers\UjianController;
+use App\Http\Controllers\UserTypeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -51,6 +53,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/create-bank-soal', [BankSoalController::class, 'createBankSoal'])->name('create-bank-soal');
         Route::get('/create-tryout', [CreateTryoutController::class, 'createTryout'])->name('create-tryout');
+         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::post('/store-bank-soal', [BankSoalController::class, 'storeBankSoal'])->name('store-bank-soal');
+        Route::post('/store-tryout', [CreateTryoutController::class, 'storeTryout'])->name('store-tryout');
+        Route::get('/user_type', [UserTypeController::class, 'userType'])->name('user_type');
+        Route::post('/users/{id}/update-role', [UserTypeController::class, 'updateRole'])->name('users.update-role');
+        Route::post('/users/{id}/update-status', [UserTypeController::class, 'updateStatus'])->name('users.update-status');
     });
 });
 
