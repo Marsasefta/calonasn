@@ -29,28 +29,40 @@
 
             <div class="row">
                 <div class="col-12">
-                    @foreach ($questions as $q)
+                    @foreach ($questions as $index => $q)
                         @php
-                            $dijawab = $jawabanUser[$q['id']] ?? null;
-                            $isBenar = $dijawab == $q['kunci'];
+                            $nomor = $index + 1;
+                            $dijawab = $jawabanUser[$q->id] ?? null;
 
-                            // Khusus TKP, tidak ada salah mutlak, tapi kita buat simulasi sederhana
-                            if ($q['kategori'] == 'TKP' && $dijawab) {
-                                $isBenar = true;
+                            // Menentukan apakah soal ini kategori TKP
+                            $isTkp = str_contains(strtoupper($q->category->name), 'TKP');
+
+                            // Mencari Kunci Jawaban (Opsi dengan poin tertinggi, max 5)
+                            $kunci = $q->options->sortByDesc('point')->first();
+
+                            // Logika Benar/Salah untuk TWK & TIU
+                            $isBenar = $dijawab == $kunci->id;
+
+                            // Mencari poin yang didapat user (Khusus TKP)
+                            $poinUser = 0;
+                            if ($dijawab) {
+                                $poinUser = $q->options->where('id', $dijawab)->first()->point ?? 0;
                             }
                         @endphp
 
                         <div
-                            class="card shadow-sm mb-4 border-0 {{ $dijawab ? ($isBenar ? 'border-start border-success border-4' : 'border-start border-danger border-4') : 'border-start border-secondary border-4' }}">
+                            class="card shadow-sm mb-4 border-0 {{ $dijawab ? ($isTkp ? 'border-start border-primary border-4' : ($isBenar ? 'border-start border-success border-4' : 'border-start border-danger border-4')) : 'border-start border-secondary border-4' }}">
                             <div class="card-body p-4">
                                 <div class="d-flex justify-content-between mb-3">
                                     <div>
-                                        <span class="badge bg-primary me-2">{{ $q['kategori'] }}</span>
-                                        <span class="fw-bold">Soal Ke-{{ $q['id'] }}</span>
+                                        <span class="badge bg-primary me-2">{{ $q->category->name }}</span>
+                                        <span class="fw-bold">Soal Ke-{{ $nomor }}</span>
                                     </div>
                                     <div>
                                         @if (!$dijawab)
                                             <span class="badge bg-secondary">Tidak Dijawab</span>
+                                        @elseif($isTkp)
+                                            <span class="badge bg-primary">Skor: {{ $poinUser }} Poin</span>
                                         @elseif($isBenar)
                                             <span class="badge bg-success"><i class="fe fe-check"></i> Benar</span>
                                         @else
@@ -59,37 +71,56 @@
                                     </div>
                                 </div>
 
-                                <h5 class="lh-base mb-3">{{ $q['pertanyaan'] }}</h5>
+                                <h5 class="lh-base mb-3">{{ $q->question_text }}</h5>
 
                                 <div class="mb-4">
-                                    @foreach ($q['opsi'] as $opt)
+                                    @foreach ($q->options as $optIndex => $opt)
                                         @php
-                                            $bgColor = 'bg-white text-dark'; // Default: polos
+                                            $bgColor = 'bg-white text-dark';
                                             $icon = '';
+                                            $poinLabel = '';
 
-                                            // Cek DULU apakah user menjawab soal ini
-                                            if ($dijawab) {
-                                                if ($opt == $q['kunci']) {
-                                                    // Kunci Jawaban
+                                            if ($isTkp) {
+                                                // LOGIKA TAMPILAN TKP (Tampilkan semua poin)
+                                                $poinLabel =
+                                                    '<span class="badge bg-light text-dark border ms-2 float-end">Poin: ' .
+                                                    $opt->point .
+                                                    '</span>';
+
+                                                if ($opt->id == $dijawab) {
+                                                    $bgColor = 'bg-primary-soft text-primary fw-bold border-primary';
+                                                    $icon =
+                                                        '<i class="fe fe-check-circle float-end text-primary me-2 mt-1"></i>';
+                                                }
+                                            } else {
+                                                // LOGIKA TAMPILAN TWK & TIU
+                                                if ($opt->id == $kunci->id) {
+                                                    // Kunci Jawaban (Warna Hijau)
                                                     $bgColor = 'bg-success text-white fw-bold border-success';
-                                                    $icon = '<i class="fe fe-check-circle float-end text-white"></i>';
-                                                } elseif ($opt == $dijawab && !$isBenar) {
-                                                    // Jawaban User yang Salah
+                                                    $icon =
+                                                        '<i class="fe fe-check-circle float-end text-white mt-1"></i>';
+                                                } elseif ($opt->id == $dijawab && !$isBenar) {
+                                                    // Jawaban User yang Salah (Warna Merah Dicoret)
                                                     $bgColor =
                                                         'bg-danger text-white text-decoration-line-through border-danger';
-                                                    $icon = '<i class="fe fe-x-circle float-end text-white"></i>';
+                                                    $icon = '<i class="fe fe-x-circle float-end text-white mt-1"></i>';
                                                 }
                                             }
                                         @endphp
+
                                         <div class="p-2 border rounded mb-2 {{ $bgColor }}">
-                                            {{ $opt }} {!! $icon !!}
+                                            {{ chr(65 + $optIndex) }}. {{ $opt->option_text }}
+                                            {!! $poinLabel !!}
+                                            {!! $icon !!}
                                         </div>
                                     @endforeach
                                 </div>
 
                                 <div class="alert alert-info border-0 mb-0">
                                     <h6 class="alert-heading fw-bold"><i class="fe fe-info me-1"></i> Pembahasan:</h6>
-                                    <p class="mb-0 small">{{ $q['pembahasan'] }}</p>
+                                    <p class="mb-0 small">
+                                        {{ $q->discussion ?? 'Belum ada pembahasan untuk soal ini.' }}
+                                    </p>
                                 </div>
 
                             </div>

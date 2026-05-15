@@ -301,22 +301,29 @@ class UjianController extends Controller
         ]);
     }
 
-    public function pembahasan($id) // Tambahkan $id
+    public function pembahasan($id)
     {
-        $jawabanUser = session('jawabanUser', []);
-        $questions = [];
+        $userId = auth()->id();
 
-        for ($i = 1; $i <= 110; $i++) {
-            $kategori = $i <= 30 ? 'TWK' : ($i <= 65 ? 'TIU' : 'TKP');
-            $questions[] = [
-                'id' => $i,
-                'kategori' => $kategori,
-                'pertanyaan' => 'Soal ' . $kategori . ' Nomor ' . $i,
-                'opsi' => ['Pilihan A', 'Pilihan B', 'Pilihan C', 'Pilihan D', 'Pilihan E'],
-                'kunci' => 'Pilihan A',
-                'pembahasan' => 'Ini adalah pembahasan untuk paket tryout ID: ' . $id
-            ];
-        }
+        // 1. Ambil sesi ujian yang sudah SELESAI
+        $sessionDb = \App\Models\ExamSession::where('user_id', $userId)
+            ->where('tryout_id', $id)
+            ->whereNotNull('end_time')
+            ->latest()
+            ->firstOrFail();
+
+        // 2. Ambil riwayat jawaban user dari database
+        $examAnswers = \App\Models\ExamAnswer::where('exam_session_id', $sessionDb->id)->get();
+        
+        // Ubah menjadi array [ID_Soal => ID_Opsi_Yang_Dipilih] agar mudah dibaca di Blade
+        $jawabanUser = $examAnswers->pluck('option_id', 'question_id')->toArray();
+
+        // 3. Ambil detail Soal, Opsi, dan Kategorinya
+        // (Kita ambil soal-soal yang ada di riwayat jawaban user)
+        $questionIds = $examAnswers->pluck('question_id')->toArray();
+        $questions = \App\Models\Question::with(['options', 'category'])
+            ->whereIn('id', $questionIds)
+            ->get();
 
         return view('user.ujian.ujian_pembahasan', compact('questions', 'jawabanUser', 'id'));
     }
