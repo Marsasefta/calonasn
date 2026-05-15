@@ -7,6 +7,7 @@ use App\Models\Question;
 use App\Models\QuestionOption;
 use App\Models\Tryout;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BankSoalController extends Controller
 {
@@ -64,5 +65,222 @@ class BankSoalController extends Controller
         ]);
 
         return back()->with('success', 'Bank soal berhasil disimpan.');
+    }
+
+    public function listBankSoal()
+    {
+        $tryouts = Tryout::orderBy('title')->get();
+        $categories = Category::orderBy('name')->get();
+        
+        $questions = Question::with(['tryout', 'category', 'options'])
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+
+        return view('admin.list_bank_soal', compact('questions', 'tryouts', 'categories'));
+    }
+
+    public function editBankSoal($id)
+    {
+        $question = Question::with('options')->findOrFail($id);
+        $tryouts = Tryout::orderBy('title')->get();
+        $categories = Category::orderBy('name')->get();
+
+        return view('admin.edit_bank_soal', compact('question', 'tryouts', 'categories'));
+    }
+
+    public function updateBankSoal(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'tryout_id' => 'required|exists:tryouts,id',
+            'category_id' => 'required|exists:categories,id',
+            'question_text' => 'required|string',
+            'discussion' => 'nullable|string',
+            'option_a' => 'required|string',
+            'point_a' => 'required|integer|min:0|max:5',
+            'option_b' => 'required|string',
+            'point_b' => 'required|integer|min:0|max:5',
+            'option_c' => 'required|string',
+            'point_c' => 'required|integer|min:0|max:5',
+            'option_d' => 'required|string',
+            'point_d' => 'required|integer|min:0|max:5',
+        ]);
+
+        $question = Question::findOrFail($id);
+        
+        $question->update([
+            'tryout_id' => $validated['tryout_id'],
+            'category_id' => $validated['category_id'],
+            'question_text' => $validated['question_text'],
+            'discussion' => $validated['discussion'] ?? null,
+        ]);
+
+        $options = $question->options()->get();
+        $optionLetters = ['a', 'b', 'c', 'd'];
+        
+        foreach ($optionLetters as $index => $letter) {
+            if (isset($options[$index])) {
+                $options[$index]->update([
+                    'option_text' => $validated['option_' . $letter],
+                    'point' => $validated['point_' . $letter],
+                ]);
+            }
+        }
+
+        return redirect()->route('admin.list-bank-soal')->with('success', 'Bank soal berhasil diperbarui.');
+    }
+
+    public function destroyBankSoal($id)
+    {
+        $question = Question::findOrFail($id);
+        $question->options()->delete();
+        $question->delete();
+
+        return back()->with('success', 'Bank soal berhasil dihapus.');
+    }
+
+    public function importForm()
+    {
+        $tryouts = Tryout::orderBy('title')->get();
+        $categories = Category::orderBy('name')->get();
+
+        return view('admin.import_bank_soal', compact('tryouts', 'categories'));
+    }
+
+    public function importBankSoal(Request $request)
+    {
+        $validated = $request->validate([
+            'file' => 'required|file|mimes:csv,txt,xlsx,xls',
+            'tryout_id' => 'required|exists:tryouts,id',
+            'category_id' => 'required|exists:categories,id',
+        ]);
+
+        $file = $request->file('file');
+        $tryout_id = $validated['tryout_id'];
+        $category_id = $validated['category_id'];
+
+        try {
+            $imported = 0;
+            $errors = [];
+            
+            if ($file->getClientOriginalExtension() === 'xlsx' || $file->getClientOriginalExtension() === 'xls') {
+                $imported = $this->importFromExcel($file, $tryout_id, $category_id, $errors);
+            } else {
+                $imported = $this->importFromCsv($file, $tryout_id, $category_id, $errors);
+            }
+
+            if (count($errors) > 0) {
+                return back()->with('success', "$imported soal berhasil diimpor.")
+                             ->with('warnings', $errors);
+            }
+
+            return back()->with('success', "$imported soal berhasil diimpor.");
+        } catch (\Exception $e) {
+            return back()->withErrors(['file' => 'Gagal mengimpor file: ' . $e->getMessage()]);
+        }
+    }
+
+    private function importFromCsv($file, $tryout_id, $category_id, &$errors)
+    {
+        $imported = 0;
+        $handle = fopen($file->getRealPath(), 'r');
+        $header = fgetcsv($handle);
+        $row = 1;
+
+        while (($data = fgetcsv($handle)) !== false) {
+            $row++;
+            
+            if (count($data) < 9) {
+                $errors[] = "Baris $row: Kolom tidak lengkap (diperlukan minimal 9 kolom)";
+                continue;
+            }
+
+            try {
+                $question = Question::create([
+                    'tryout_id' => $tryout_id,
+                    'category_id' => $category_id,
+                    'question_text' => trim($data[0]),
+                    'discussion' => !empty($data[8]) ? trim($data[8]) : null,
+                ]);
+
+                for ($i = 0; $i < 4; $i++) {
+                    QuestionOption::create([
+                        'question_id' => $question->id,
+                        'option_text' => trim($data[$i + 1]),
+                        'point' => (int)($data[$i + 5] ?? 0),
+                    ]);
+                }
+
+                $imported++;
+            } catch (\Exception $e) {
+                $errors[] = "Baris $row: " . $e->getMessage();
+            }
+        }
+
+        fclose($handle);
+        return $imported;
+    }
+
+    private function importFromExcel($file, $tryout_id, $category_id, &$errors)
+    {
+        $imported = 0;
+        
+        try {
+            // Simple Excel reading using native PHP
+            require_once storage_path('app/vendor/autoload.php');
+            
+            // Alternative: read xlsx as zip and parse XML
+            $zip = new \ZipArchive();
+            if ($zip->open($file->getRealPath()) === true) {
+                $xml = $zip->getFromName('xl/worksheets/sheet1.xml');
+                $zip->close();
+                
+                // Parse XML and extract data
+                $xmlObject = simplexml_load_string($xml);
+                
+                $row = 0;
+                foreach ($xmlObject->sheetData->row as $rowElement) {
+                    $row++;
+                    
+                    if ($row === 1) continue; // Skip header
+                    
+                    $cells = [];
+                    foreach ($rowElement->c as $cell) {
+                        $value = (string)$cell->v;
+                        $cells[] = $value;
+                    }
+
+                    if (count($cells) < 9) {
+                        $errors[] = "Baris $row: Kolom tidak lengkap";
+                        continue;
+                    }
+
+                    try {
+                        $question = Question::create([
+                            'tryout_id' => $tryout_id,
+                            'category_id' => $category_id,
+                            'question_text' => trim($cells[0]),
+                            'discussion' => !empty($cells[8]) ? trim($cells[8]) : null,
+                        ]);
+
+                        for ($i = 0; $i < 4; $i++) {
+                            QuestionOption::create([
+                                'question_id' => $question->id,
+                                'option_text' => trim($cells[$i + 1]),
+                                'point' => (int)($cells[$i + 5] ?? 0),
+                            ]);
+                        }
+
+                        $imported++;
+                    } catch (\Exception $e) {
+                        $errors[] = "Baris $row: " . $e->getMessage();
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Fallback: treat as CSV
+            return $this->importFromCsv($file, $tryout_id, $category_id, $errors);
+        }
+
+        return $imported;
     }
 }

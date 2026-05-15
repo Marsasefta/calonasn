@@ -52,11 +52,32 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/create-bank-soal', [BankSoalController::class, 'createBankSoal'])->name('create-bank-soal');
+        Route::get('/list-bank-soal', [BankSoalController::class, 'listBankSoal'])->name('list-bank-soal');
+        Route::get('/edit-bank-soal/{id}', [BankSoalController::class, 'editBankSoal'])->name('edit-bank-soal');
+        Route::put('/update-bank-soal/{id}', [BankSoalController::class, 'updateBankSoal'])->name('update-bank-soal');
+        Route::delete('/delete-bank-soal/{id}', [BankSoalController::class, 'destroyBankSoal'])->name('delete-bank-soal');
+        Route::get('/import-bank-soal', [BankSoalController::class, 'importForm'])->name('import-bank-soal');
+        Route::post('/import-bank-soal-process', [BankSoalController::class, 'importBankSoal'])->name('import-bank-soal-process');
         Route::get('/create-tryout', [CreateTryoutController::class, 'createTryout'])->name('create-tryout');
-         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
         Route::post('/store-bank-soal', [BankSoalController::class, 'storeBankSoal'])->name('store-bank-soal');
         Route::post('/store-tryout', [CreateTryoutController::class, 'storeTryout'])->name('store-tryout');
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+
+        Route::get('/users', [UserTypeController::class, 'userType'])->name('users.index');
+        Route::post('/users', [UserTypeController::class, 'store'])->name('users.store');
+        Route::get('/users/{id}', [UserTypeController::class, 'show'])->name('users.show');
+        Route::put('/users/{id}', [UserTypeController::class, 'update'])->name('users.update');
+        Route::delete('/users/{id}', [UserTypeController::class, 'destroy'])->name('users.destroy');
+        Route::post('/users/{id}/toggle-premium', [UserTypeController::class, 'togglePremium'])->name('users.toggle-premium');
+        Route::post('/users/{id}/reset-password', [UserTypeController::class, 'resetPassword'])->name('users.reset-password');
+
+        Route::get('/transactions', [App\Http\Controllers\AdminTransactionController::class, 'index'])->name('transactions.index');
+        Route::post('/transactions/{id}/status', [App\Http\Controllers\AdminTransactionController::class, 'updateStatus'])->name('transactions.update-status');
+
+        Route::get('/reports', [App\Http\Controllers\AdminReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/export', [App\Http\Controllers\AdminReportController::class, 'export'])->name('reports.export');
+
         Route::get('/user_type', [UserTypeController::class, 'userType'])->name('user_type');
         Route::post('/users/{id}/update-role', [UserTypeController::class, 'updateRole'])->name('users.update-role');
         Route::post('/users/{id}/update-status', [UserTypeController::class, 'updateStatus'])->name('users.update-status');
