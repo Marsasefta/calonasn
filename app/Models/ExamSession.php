@@ -14,6 +14,9 @@ class ExamSession extends Model
         'tryout_id',
         'start_time',
         'end_time',
+        'score_twk', 
+        'score_tiu', 
+        'score_tkp', 
         'total_score',
     ];
 

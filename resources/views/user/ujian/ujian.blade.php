@@ -26,7 +26,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('ujian.selesai') }}" method="POST" id="formUjian">
+            <form action="{{ route('ujian.selesai', $tryout->id) }}" method="POST" id="formUjian">
                 @csrf
                 <div class="row">
                     <div class="col-md-8">
@@ -34,24 +34,28 @@
                             <div class="card-body p-4" style="min-height: 400px;">
 
                                 @foreach ($questions as $index => $q)
-                                    <div class="soal-container" id="soal-{{ $q['id'] }}"
+                                    @php $nomor = $index + 1; @endphp <div class="soal-container" id="soal-{{ $nomor }}"
                                         style="{{ $index == 0 ? 'display:block;' : 'display:none;' }}">
                                         <div class="d-flex justify-content-between mb-3">
-                                            <span class="badge bg-primary fs-6">{{ $q['kategori'] }}</span>
-                                            <span class="fw-bold">Soal Ke-{{ $q['id'] }}</span>
+                                            <span
+                                                class="badge bg-primary fs-6">{{ $q->category->name ?? 'Kategori' }}</span>
+                                            <span class="fw-bold">Soal Ke-{{ $nomor }}</span>
                                         </div>
-                                        <h5 class="mb-4 lh-base">{{ $q['pertanyaan'] }}</h5>
+
+                                        <h5 class="mb-4 lh-base">{{ $q->question_text }}</h5>
 
                                         <div class="options">
-                                            @foreach ($q['opsi'] as $optIndex => $opt)
+                                            @foreach ($q->options as $optIndex => $opt)
                                                 <div class="form-check mb-3">
                                                     <input class="form-check-input opsi-radio" type="radio"
-                                                        name="jawaban[{{ $q['id'] }}]" value="{{ $opt }}"
-                                                        id="opt-{{ $q['id'] }}-{{ $optIndex }}"
-                                                        data-soal-id="{{ $q['id'] }}">
+                                                        name="jawaban[{{ $q->id }}]" value="{{ $opt->id }}"
+                                                        id="opt-{{ $q->id }}-{{ $opt->id }}"
+                                                        data-ui-nomor="{{ $nomor }}"
+                                                        data-db-id="{{ $q->id }}" {{-- Tambahkan baris di bawah ini --}}
+                                                        {{ isset($tempAnswers[$q->id]) && $tempAnswers[$q->id] == $opt->id ? 'checked' : '' }}>
                                                     <label class="form-check-label w-100 p-2 border rounded"
-                                                        for="opt-{{ $q['id'] }}-{{ $optIndex }}">
-                                                        {{ chr(65 + $optIndex) }}. {{ $opt }}
+                                                        for="opt-{{ $q->id }}-{{ $opt->id }}">
+                                                        {{ chr(65 + $optIndex) }}. {{ $opt->option_text }}
                                                     </label>
                                                 </div>
                                             @endforeach
@@ -88,19 +92,41 @@
                             <div class="card-header bg-white py-3 d-flex justify-content-between">
                                 <h5 class="mb-0">Navigasi Soal</h5>
                             </div>
+
                             <div class="card-body p-2" style="max-height: 400px; overflow-y: auto;">
                                 <div class="d-flex flex-wrap gap-2 justify-content-center">
-                                    @foreach ($questions as $q)
+
+                                    @foreach ($questions as $index => $q)
+                                        @php
+                                            $nomor = $index + 1;
+
+                                            // Cek status dari Redis
+                                            $isRagu = isset($tempRagu[$q->id]) && $tempRagu[$q->id] == '1';
+                                            $isAnswered = isset($tempAnswers[$q->id]);
+
+                                            // Prioritas warna: Ragu (Kuning) -> Dijawab (Hijau) -> Kosong (Abu-abu)
+                                            if ($isRagu) {
+                                                $btnClass = 'btn-warning text-dark';
+                                            } elseif ($isAnswered) {
+                                                $btnClass = 'btn-success text-white';
+                                            } else {
+                                                $btnClass = 'btn-outline-secondary';
+                                            }
+                                        @endphp
+
                                         <button type="button"
-                                            class="btn btn-outline-secondary p-0 d-flex justify-content-center align-items-center"
-                                            id="nav-btn-{{ $q['id'] }}"
+                                            class="btn {{ $btnClass }} p-0 d-flex justify-content-center align-items-center"
+                                            id="nav-btn-{{ $nomor }}" data-db-id="{{ $q->id }}"
+                                            {{-- Penting: Kita simpan ID DB di sini untuk dibaca JS --}}
                                             style="width: 45px; height: 45px; font-size: 14px; font-weight: 600;"
-                                            onclick="lompatKeSoal({{ $q['id'] }})">
-                                            {{ $q['id'] }}
+                                            onclick="lompatKeSoal({{ $nomor }})">
+                                            {{ $nomor }}
                                         </button>
                                     @endforeach
+
                                 </div>
                             </div>
+
                             <div class="card-footer bg-light p-3">
                                 <div class="d-flex justify-content-between small mb-3">
                                     <span><span class="badge bg-success">&nbsp;</span> Dijawab</span>
@@ -119,10 +145,13 @@
     </div>
 
     <script>
+        // 1. Variabel Global Server
         let currentSoalId = 1;
-        const totalSoal = 110;
+        const totalSoal = {{ $questions->count() }}; // Otomatis menyesuaikan jumlah soal (110)
+        let timeInSeconds = {{ $durationInSeconds }};
+        const tryoutId = {{ $tryout->id }};
 
-        // Fungsi Pindah Soal
+        // 2. Fungsi Navigasi Tombol Prev & Next
         function gantiSoal(arah) {
             if (arah === 'next' && currentSoalId < totalSoal) {
                 lompatKeSoal(currentSoalId + 1);
@@ -131,98 +160,146 @@
             }
         }
 
-        // Fungsi Lompat Nomor dari Grid
+        // 3. Fungsi Lompat ke Nomor Spesifik (1-110)
         function lompatKeSoal(id) {
-            // Sembunyikan soal saat ini
-            document.getElementById('soal-' + currentSoalId).style.display = 'none';
+            // Sembunyikan soal lama
+            let currentElement = document.getElementById('soal-' + currentSoalId);
+            if (currentElement) currentElement.style.display = 'none';
 
-            // Hapus highlight dari tombol navigasi lama
-            document.getElementById('nav-btn-' + currentSoalId).classList.remove('border-primary', 'border-3');
+            // Hapus border aktif di navigasi kanan
+            let prevNavBtn = document.getElementById('nav-btn-' + currentSoalId);
+            if (prevNavBtn) prevNavBtn.classList.remove('border-primary', 'border-3');
 
-            // Update ID ke soal baru
+            // Update ID
             currentSoalId = id;
 
             // Tampilkan soal baru
-            document.getElementById('soal-' + currentSoalId).style.display = 'block';
+            let newElement = document.getElementById('soal-' + currentSoalId);
+            if (newElement) newElement.style.display = 'block';
 
-            // Beri highlight pada tombol navigasi baru
-            document.getElementById('nav-btn-' + currentSoalId).classList.add('border-primary', 'border-3');
+            // Beri border aktif di navigasi kanan
+            let newNavBtn = document.getElementById('nav-btn-' + currentSoalId);
+            if (newNavBtn) newNavBtn.classList.add('border-primary', 'border-3');
 
-            // Atur tombol prev/next
+            // Matikan tombol jika mentok di awal/akhir
             document.getElementById('btnPrev').disabled = (currentSoalId === 1);
             document.getElementById('btnNext').disabled = (currentSoalId === totalSoal);
 
-            // Cek apakah soal ini ditandai ragu
-            let btnNav = document.getElementById('nav-btn-' + currentSoalId);
-            document.getElementById('checkRagu').checked = btnNav.classList.contains('btn-warning');
+            // Sinkronkan status switch Ragu-ragu
+            document.getElementById('checkRagu').checked = newNavBtn.classList.contains('btn-warning');
         }
 
-        // Fungsi Mewarnai Grid jika Opsi Dipilih (Hijau)
-        document.querySelectorAll('.opsi-radio').forEach(radio => {
-            radio.addEventListener('change', function() {
-                let soalId = this.getAttribute('data-soal-id');
-                let btnNav = document.getElementById('nav-btn-' + soalId);
-
-                // Jika tidak ragu-ragu, warnai hijau
-                if (!btnNav.classList.contains('btn-warning')) {
-                    btnNav.classList.remove('btn-outline-secondary');
-                    btnNav.classList.add('btn-success', 'text-white');
-                }
-            });
-        });
-
-        // Fungsi Fitur Ragu-ragu (Kuning)
+        // 4. Fungsi Ragu-Ragu
         function tandaiRagu() {
             let isChecked = document.getElementById('checkRagu').checked;
             let btnNav = document.getElementById('nav-btn-' + currentSoalId);
+            let dbId = btnNav.getAttribute('data-db-id'); // Ambil ID asli Database dari tombol
 
             if (isChecked) {
                 btnNav.classList.remove('btn-success', 'btn-outline-secondary');
                 btnNav.classList.add('btn-warning', 'text-dark');
             } else {
                 btnNav.classList.remove('btn-warning', 'text-dark');
-                // Cek apakah sudah ada jawaban yg dipilih
-                let isAnswered = document.querySelector(`input[name="jawaban[${currentSoalId}]"]:checked`);
+                // Cek apakah ada jawaban yg sudah dipilih
+                let isAnswered = document.querySelector(`input[data-ui-nomor="${currentSoalId}"]:checked`);
                 if (isAnswered) {
                     btnNav.classList.add('btn-success', 'text-white');
                 } else {
                     btnNav.classList.add('btn-outline-secondary');
                 }
             }
+
+            // --- TAMBAHAN AJAX: Kirim ke Redis ---
+            fetch('{{ route('ujian.simpan_ragu') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    tryout_id: tryoutId,
+                    question_id: dbId,
+                    is_ragu: isChecked ? 1 : 0
+                })
+            });
         }
 
-        // Konfirmasi Selesai Ujian
+        // 5. Fungsi Mengakhiri Ujian
         function selesaiUjian() {
             if (confirm('Yakin ingin mengakhiri ujian? Pastikan semua soal telah terjawab.')) {
                 document.getElementById('formUjian').submit();
             }
         }
 
-        // Timer Ujian (100 Menit)
-        let time = {{ $duration }} * 60;
+        // 6. Timer & Sinkronisasi Redis
         let timerDisplay = document.getElementById('timerDisplay');
-
         let timerInterval = setInterval(() => {
-            let minutes = Math.floor(time / 60);
-            let seconds = time % 60;
+            let minutes = Math.floor(timeInSeconds / 60);
+            let seconds = timeInSeconds % 60;
 
             timerDisplay.innerHTML = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
-            // Sisa 5 Menit -> Efek Kedip Merah
-            if (time <= 300) {
-                timerDisplay.classList.add('animate__animated', 'animate__flash', 'animate__infinite');
+            // Auto-save sisa waktu ke Redis setiap 10 detik
+            if (timeInSeconds > 0 && timeInSeconds % 10 === 0) {
+                fetch('{{ route('ujian.update_timer') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        tryout_id: tryoutId,
+                        sisa_waktu: timeInSeconds
+                    })
+                });
             }
 
-            if (time <= 0) {
+            if (timeInSeconds <= 300) {
+                timerDisplay.classList.add('animate__animated', 'animate__flash', 'animate__infinite',
+                    'text-danger');
+            }
+
+            if (timeInSeconds <= 0) {
                 clearInterval(timerInterval);
-                alert('Waktu Habis! Ujian akan otomatis diakhiri.');
+                alert('Waktu Habis! Jawaban Anda akan otomatis dikirim.');
                 document.getElementById('formUjian').submit();
             }
-            time--;
+            timeInSeconds--;
         }, 1000);
 
-        // Inisiasi awal
-        lompatKeSoal(1);
+        // 7. Simpan Jawaban ke Redis (AJAX)
+        document.querySelectorAll('.opsi-radio').forEach(radio => {
+            radio.addEventListener('change', function() {
+                let uiNomor = this.getAttribute('data-ui-nomor'); // Nomor urut 1-110
+                let dbId = this.getAttribute('data-db-id'); // ID Asli dari DB
+                let opsiId = this.value;
+
+                let btnNav = document.getElementById('nav-btn-' + uiNomor);
+
+                if (!btnNav.classList.contains('btn-warning')) {
+                    btnNav.classList.remove('btn-outline-secondary');
+                    btnNav.classList.add('btn-success', 'text-white');
+                }
+
+                fetch('{{ route('ujian.simpan_temp') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        tryout_id: tryoutId,
+                        question_id: dbId,
+                        option_id: opsiId
+                    })
+                });
+            });
+        });
+
+        // 8. Inisiasi Ujian (Panggil soal nomor 1 saat halaman beres dimuat)
+        document.addEventListener("DOMContentLoaded", function() {
+            lompatKeSoal(1);
+        });
     </script>
 
     <!-- Scroll top -->

@@ -30,7 +30,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('ujian.*') ? 'active' : '' }}"
-                            href="{{ route('ujian.mulai') }}">
+                            href="{{ route('ujian.persiapan', 1) }}">
                             <i class="fe fe-edit nav-icon"></i> Mulai Tryout
                         </a>
                     </li>                    

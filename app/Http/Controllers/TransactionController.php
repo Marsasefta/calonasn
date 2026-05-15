@@ -58,15 +58,26 @@ class TransactionController extends Controller
         return view('user.payment.payment-pending');
     }
 
-    public function history()
-    {
-        // Mengambil semua transaksi milik user yang login, diurutkan dari yang terbaru
-        $transactions = Transaction::where('user_id', Auth::id())
+public function history()
+{
+    $userId = Auth::id();
+
+    // 1. Ambil data transaksi (Riwayat Pembayaran)
+    $transactions = Transaction::where('user_id', $userId)
                         ->orderBy('created_at', 'desc')
                         ->get();
 
-        return view('user.riwayat.riwayat', compact('transactions'));
-    }
+    // 2. Ambil data sesi ujian (Riwayat Nilai & Sertifikat)
+    // Pastikan model ExamSession sudah di-import di atas: use App\Models\ExamSession;
+    $riwayatUjian = \App\Models\ExamSession::with('tryout')
+                        ->where('user_id', $userId)
+                        ->whereNotNull('end_time') // Hanya yang sudah selesai pengerjaannya
+                        ->orderBy('end_time', 'desc')
+                        ->get();
+
+    // Kirim KEDUA variabel ke view menggunakan compact
+    return view('user.riwayat.riwayat', compact('transactions', 'riwayatUjian'));
+}
 
     public function invoice($order_id)
     {

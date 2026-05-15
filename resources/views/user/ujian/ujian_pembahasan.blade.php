@@ -21,8 +21,9 @@
                     <p class="text-muted">Pelajari letak kesalahanmu agar tidak mengulanginya di tes asli.</p>
                 </div>
                 <div class="col-md-4 text-end">
-                    <a href="{{ route('ujian.hasil') ?? route('dashboard') }}"
-                        class="btn btn-outline-secondary">Kembali</a>
+                    <a href="{{ route('ujian.hasil', $id) }}" class="btn btn-outline-secondary">
+                        Kembali
+                    </a>
                 </div>
             </div>
 

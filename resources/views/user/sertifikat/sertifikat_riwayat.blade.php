@@ -13,71 +13,99 @@
     <!-- Sidebar -->
     @include('partials.navbar-student')
 
-    <div class="db-content text-dark">
-        <div class="container py-4">
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <h2 class="fw-bold mb-1">Riwayat & Sertifikat</h2>
-                    <p class="text-muted">Kumpulan hasil tryout dan sertifikat kelulusan Anda di CalonASN.id</p>
+    <div class="db-content">
+        <div class="container mb-4">
+            <div class="row mb-5">
+                <div class="col-12">
+                    <h1 class="h2 mb-0">Riwayat Nilai & Sertifikat</h1>
+                    <p class="text-muted">Pantau progres belajar kamu dan unduh sertifikat kelulusan.</p>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-12">
                     <div class="card shadow-sm border-0">
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle text-nowrap mb-0">
+                            <table class="table text-nowrap mb-0 table-hover">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>Tryout</th>
                                         <th>Tanggal</th>
+                                        <th>Nama Tryout</th>
                                         <th class="text-center">TWK</th>
                                         <th class="text-center">TIU</th>
                                         <th class="text-center">TKP</th>
                                         <th class="text-center">Total</th>
-                                        <th class="text-center">Status</th>
+                                        <th>Status</th>
                                         <th class="text-end">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($riwayat as $item)
+                                    @forelse ($riwayatUjian as $item)
                                         <tr>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <div
-                                                        class="icon-shape icon-sm bg-light-primary text-primary rounded me-2">
-                                                        <i class="fe fe-file-text"></i>
-                                                    </div>
-                                                    <span class="fw-bold">{{ $item['nama_tryout'] }}</span>
+                                            <td class="align-middle">
+                                                {{ $item->end_time->format('d M Y') }}
+                                            </td>
+                                            <td class="align-middle">
+                                                <h5 class="mb-0 text-dark">{{ $item->tryout->title }}</h5>
+                                            </td>
+                                            <td class="align-middle text-center">{{ $item->score_twk ?? '-' }}</td>
+                                            <td class="align-middle text-center">{{ $item->score_tiu ?? '-' }}</td>
+                                            <td class="align-middle text-center">{{ $item->score_tkp ?? '-' }}</td>
+                                            <td class="align-middle text-center fw-bold text-primary">
+                                                {{ $item->total_score }}
+                                            </td>
+                                            <td class="align-middle">
+                                                @if ($item->total_score >= 311)
+                                                    {{-- Contoh standar kelulusan --}}
+                                                    <span class="badge bg-success-soft text-success">LULUS</span>
+                                                @else
+                                                    <span class="badge bg-danger-soft text-danger">TIDAK LULUS</span>
+                                                @endif
+                                            </td>
+                                            <td class="align-middle text-end">
+                                                <div class="dropdown">
+                                                    <a class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                                        href="#" role="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                        Opsi
+                                                    </a>
+                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                        <li>
+                                                            <a class="dropdown-item"
+                                                                href="{{ route('ujian.hasil', $item->tryout_id) }}">
+                                                                <i class="fe fe-bar-chart-2 me-2"></i>Lihat Detail
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item"
+                                                                href="{{ route('ujian.pembahasan', $item->tryout_id) }}">
+                                                                <i class="fe fe-book-open me-2"></i>Pembahasan
+                                                            </a>
+                                                        </li>
+                                                        @if ($item->total_score >= 311)
+                                                            <li>
+                                                                <hr class="dropdown-divider">
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item text-primary"
+                                                                    href="{{ route('ujian.sertifikat', $item->tryout_id) }}">
+                                                                    <i class="fe fe-award me-2"></i>Unduh Sertifikat
+                                                                </a>
+                                                            </li>
+                                                        @endif
+                                                    </ul>
                                                 </div>
                                             </td>
-                                            <td>{{ $item['tanggal'] }}</td>
-                                            <td class="text-center">{{ $item['twk'] }}</td>
-                                            <td class="text-center">{{ $item['tiu'] }}</td>
-                                            <td class="text-center">{{ $item['tkp'] }}</td>
-                                            <td class="text-center fw-bold text-primary">{{ $item['total'] }}</td>
-                                            <td class="text-center">
-                                                @if ($item['status'] == 'Lulus')
-                                                    <span class="badge bg-light-success text-success">Lulus</span>
-                                                @else
-                                                    <span class="badge bg-light-danger text-danger">Tidak Lulus</span>
-                                                @endif
-                                            </td>
-                                            <td class="text-end">
-                                                @if ($item['status'] == 'Lulus')
-                                                    <a href="{{ route('ujian.sertifikat') }}" target="_blank"
-                                                        class="btn btn-sm btn-success">
-                                                        <i class="fe fe-download me-1"></i> Sertifikat
-                                                    </a>
-                                                @else
-                                                    <button class="btn btn-sm btn-secondary" disabled
-                                                        title="Tidak memenuhi passing grade">
-                                                        <i class="fe fe-lock me-1"></i> Terkunci
-                                                    </button>
-                                                @endif
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center py-5">
+                                                <div class="text-muted">
+                                                    <i class="fe fe-database fs-1 d-block mb-2"></i>
+                                                    Belum ada riwayat ujian.
+                                                </div>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>

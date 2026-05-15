@@ -21,9 +21,32 @@
                 <div class="col-md-6">
                     <div class="card border-0 shadow-sm p-4">
                         <h3>Skor Kamu: <span class="text-success">{{ $score }}</span></h3>
-                        <p class="text-muted">Benar: {{ $correct }} | Salah: {{ 10 - $correct }}</p>
+                        <p class="text-muted">Benar: {{ $correct }} | Salah: {{ $totalSoal - $correct }}</p>
 
                         <hr>
+                        {{-- <div class="mt-4 text-start">
+                            <h5 class="fw-bold">Analisis Jawaban (Debug):</h5>
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Pilihan Kamu</th>
+                                        <th>Kunci di Sistem</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($detailHasil as $res)
+                                        <tr class="{{ $res['status'] ? 'table-success' : 'table-danger' }}">
+                                            <td>{{ $res['no'] }}</td>
+                                            <td>{{ $res['user'] ?? '(Kosong)' }}</td>
+                                            <td>{{ $res['kunci'] }}</td>
+                                            <td>{{ $res['status'] ? 'BENAR' : 'SALAH' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div> --}}
 
                         <h5 class="text-danger fw-bold">Mau Lihat Pembahasan Detail?</h5>
                         <p>Maaf, fitur pembahasan detail per soal dan tips trik hanya tersedia untuk member **Premium**.
@@ -33,8 +56,9 @@
                             <a href="{{ route('checkout') }}" class="btn btn-primary btn-lg">
                                 Beli Paket Sekarang (Cuma Rp 20rb)
                             </a>
-                            <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">Kembali ke
-                                Dashboard</a>
+                            <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
+                                Kembali ke Dashboard
+                            </a>
                         </div>
                     </div>
                 </div>

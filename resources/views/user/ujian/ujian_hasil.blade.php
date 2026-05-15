@@ -110,10 +110,11 @@
 
                     <div class="text-center">
                         <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary me-2">Ke Dashboard</a>
-                        <a href="{{ route('ujian.pembahasan') }}" class="btn btn-warning me-2"><i
-                                class="fe fe-book-open"></i> Lihat Pembahasan</a>
+                        <a href="{{ route('ujian.pembahasan', $id) }}" class="btn btn-warning me-2">
+                            <i class="fe fe-book-open"></i> Lihat Pembahasan
+                        </a>
                         @if ($lulus)
-                            <a href="{{ route('ujian.sertifikat') }}" target="_blank"
+                            <a href="{{ route('ujian.sertifikat', $id) }}" target="_blank"
                                 class="btn btn-success me-2 shadow-sm">
                                 <i class="fe fe-award"></i> Unduh Sertifikat
                             </a>

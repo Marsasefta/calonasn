@@ -51,7 +51,8 @@
                                             </td>
                                             <td class="align-middle">{{ $trx->order_id }}</td>
                                             <td class="align-middle">
-                                                <h5 class="mb-0 text-dark">Paket Tryout CPNS</h5>
+                                                <h5 class="mb-0 text-dark">{{ $trx->tryout->title ?? 'Paket Tryout' }}
+                                                </h5>
                                             </td>
                                             <td class="align-middle">
                                                 Rp {{ number_format($trx->amount, 0, ',', '.') }}
@@ -61,10 +62,12 @@
                                                     <span class="badge bg-warning-soft text-warning">
                                                         <i class="fe fe-clock me-1"></i> PENDING
                                                     </span>
-                                                @else
+                                                @elseif($trx->status == 'success')
                                                     <span class="badge bg-success-soft text-success">
                                                         <i class="fe fe-check-circle me-1"></i> SUCCESS
                                                     </span>
+                                                @else
+                                                    <span class="badge bg-danger-soft text-danger">FAILED</span>
                                                 @endif
                                             </td>
                                             <td class="align-middle text-end">
@@ -74,40 +77,20 @@
                                                             class="btn btn-sm btn-primary me-2">
                                                             <i class="fe fe-credit-card"></i> Bayar
                                                         </a>
-
-                                                        <form action="{{ route('riwayat.destroy', $trx->id) }}"
-                                                            method="POST"
-                                                            onsubmit="return confirm('Yakin ingin membatalkan pesanan ini?')">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                class="btn btn-sm btn-outline-danger">
-                                                                <i class="fe fe-trash-2"></i>
-                                                            </button>
-                                                        </form>
                                                     </div>
                                                 @elseif($trx->status == 'success')
                                                     <a href="{{ route('invoice', $trx->order_id) }}"
                                                         class="btn btn-sm btn-outline-secondary me-1" target="_blank">
                                                         <i class="fe fe-file-text"></i> Invoice
                                                     </a>
-                                                    <a href="#" class="btn btn-sm btn-success">
+                                                    {{-- <a href="{{ route('ujian.persiapan', $trx->tryout_id) }}"
+                                                        class="btn btn-sm btn-success">
                                                         <i class="fe fe-play-circle"></i> Mulai Ujian
-                                                    </a>
-                                                @else
-                                                    <span class="text-muted small">Tidak ada aksi</span>
+                                                    </a> --}}
                                                 @endif
                                             </td>
                                         </tr>
                                     @empty
-                                        <tr>
-                                            <td colspan="6" class="text-center py-5">
-                                                <div class="text-muted">
-                                                    <i class="fe fe-shopping-cart fs-1 d-block mb-2"></i>
-                                                    Belum ada riwayat transaksi.
-                                                </div>
-                                            </td>
-                                        </tr>
                                     @endforelse
                                 </tbody>
                             </table>

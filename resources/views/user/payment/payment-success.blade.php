@@ -33,7 +33,8 @@
                             <h2 class="fw-bold mb-2 text-dark">Terima Kasih, Pembayaran Berhasil!</h2>
                             <p class="text-muted mb-4">Paket
                                 <strong>{{ $transaction->order_id ?? 'Tryout CPNS' }}</strong> kamu sekarang sudah
-                                aktif. Kamu bisa langsung memulai ujian sekarang.</p>
+                                aktif. Kamu bisa langsung memulai ujian sekarang.
+                            </p>
 
                             <div class="bg-light p-4 rounded mb-4 text-start border">
                                 <div class="d-flex justify-content-between mb-2">
@@ -63,7 +64,7 @@
                             </div>
 
                             <div class="d-grid gap-2">
-                                <a href="/mulai-ujian" class="btn btn-success btn-lg shadow-sm">
+                                <a href="{{ route('ujian.persiapan', 1) }}" class="btn btn-success btn-lg shadow-sm">
                                     <i class="fe fe-play-circle me-2"></i> Mulai Ujian Sekarang
                                 </a>
                                 <a href="{{ route('checkout') }}" class="btn btn-outline-secondary">
