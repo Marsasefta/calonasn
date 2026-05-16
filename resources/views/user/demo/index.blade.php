@@ -4,7 +4,7 @@
 <head>
     @include('partials.head')
 
-    <title>Student Dashboard | Geeks - Bootstrap 5 Template</title>
+    <title>Tryout Gratis</title>
 </head>
 
 <body>

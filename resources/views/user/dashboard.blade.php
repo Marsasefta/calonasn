@@ -4,7 +4,7 @@
 <head>
     @include('partials.head')
 
-    <title>Student Dashboard | Geeks - Bootstrap 5 Template</title>
+    <title>Dashboard Peserta</title>
 </head>
 
 <body>
@@ -95,10 +95,10 @@
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
                                 <h5 class="fw-bold mb-1 text-dark">🔥 Promo Khusus Hari Ini!</h5>
-                                <p class="mb-0 text-muted small">Buka kunci 5.000+ soal, pembahasan lengkap, dan ranking
-                                    nasional.</p>
+                                {{-- <p class="mb-0 text-muted small">Buka kunci 5.000+ soal, pembahasan lengkap, dan ranking
+                                    nasional.</p> --}}
                             </div>
-                            <a href="#" class="btn btn-warning fw-bold">Upgrade Premium</a>
+                            <a href="{{ route('checkout') }}" class="btn btn-warning fw-bold">Upgrade Premium</a>
                         </div>
                     </div>
 
