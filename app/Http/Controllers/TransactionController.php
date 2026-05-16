@@ -54,7 +54,7 @@ class TransactionController extends Controller
 
         // 2. Generate Data Unik
         $invoiceNumber = 'INV-' . date('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(5));
-        $uniqueCode = rand(111, 999); // 3 digit unik
+        $uniqueCode = rand(1, 199); // 3 digit unik
         $totalAmount = $amount + $uniqueCode;
         $expiredAt = now()->addHours(24); // Waktu kedaluwarsa 24 jam
 
