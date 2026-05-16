@@ -17,7 +17,7 @@
                     </svg>
                 </a> --}}
                 <a href="login" class="btn btn-outline-dark">Login</a>
-                <a href="register" class="btn btn-dark d-none d-md-block">Join Now</a>
+                <a href="register" class="btn btn-dark d-none d-md-block">Daftar</a>
             </div>
         </div>
         <div>
