@@ -167,82 +167,90 @@ class UjianController extends Controller
             ->latest()
             ->first();
 
-        // Jika tidak ada sesi (misal user refresh setelah selesai), cegah error
         if (!$session) {
             return redirect()->route('ujian.hasil', $id);
         }
 
         // 2. Ambil Jawaban User
-        // Kita prioritaskan dari Form Submit. Tapi jika kosong (misal timeout otomatis), kita ambil dari Redis penyelamat kita!
         $jawabanUser = $request->input('jawaban', []);
         if (empty($jawabanUser)) {
             $redisAnswersKey = "temp_answers:user_{$userId}:tryout_{$id}";
             $jawabanUser = \Illuminate\Support\Facades\Redis::hgetAll($redisAnswersKey) ?? [];
         }
         
-        // Simpan ke session untuk keperluan tampilan instan di Blade Hasil
         session(['jawabanUser' => $jawabanUser]);
 
-        // 3. Inisialisasi Variabel Skor
+        // 3. Ambil Urutan Soal Asli dari Redis SEBELUM Dihapus
+        $redisSequenceKey = "sequence:user_{$userId}:tryout_{$id}";
+        $sequenceJson = \Illuminate\Support\Facades\Redis::get($redisSequenceKey);
+        $questionSequence = json_decode($sequenceJson, true);
+
+        // Antisipasi jika karena suatu hal Redis sequence kosong, gunakan key dari jawaban
+        if (empty($questionSequence)) {
+            $questionSequence = array_keys($jawabanUser);
+        }
+
+        // 4. Inisialisasi Variabel Skor
         $skor = ['TWK' => 0, 'TIU' => 0, 'TKP' => 0];
         
-        // Ambil referensi Kategori dari database agar id & passing_grade-nya akurat
         $categories = \App\Models\Category::all()->keyBy('id');
         $catTwk = $categories->where('name', 'TWK')->first();
         $catTiu = $categories->where('name', 'TIU')->first();
         $catTkp = $categories->where('name', 'TKP')->first();
 
-        $examAnswersData = []; // Array untuk menyimpan detail jawaban ke MariaDB
+        $examAnswersData = []; 
 
-        // 4. Hitung Skor Berdasarkan Tabel question_options
-        if (!empty($jawabanUser)) {
-            // Ambil semua soal dan opsi yang dijawab sekaligus agar query tidak lambat (Optimasi)
-            $questionIds = array_keys($jawabanUser);
-            $questions = \App\Models\Question::whereIn('id', $questionIds)->get()->keyBy('id');
-            
-            $optionIds = array_values($jawabanUser);
-            $options = \App\Models\QuestionOption::whereIn('id', $optionIds)->get()->keyBy('id');
+        // Ambil semua data soal dan opsi untuk optimasi query
+        $questions = \App\Models\Question::whereIn('id', $questionSequence)->get()->keyBy('id');
+        $optionIds = array_values($jawabanUser);
+        $options = \App\Models\QuestionOption::whereIn('id', $optionIds)->get()->keyBy('id');
 
-            foreach ($jawabanUser as $qId => $optId) {
-                $question = $questions->get($qId);
-                $option = $options->get($optId);
+        // PERBAIKAN: Looping berdasarkan urutan asli soal (1 s.d 110)
+        foreach ($questionSequence as $qId) {
+            $question = $questions->get($qId);
+            $optId = $jawabanUser[$qId] ?? null; // Bisa bernilai null jika dilewati
+            $option = $optId ? $options->get($optId) : null;
 
-                if ($question && $option) {
-                    // Tambahkan poin berdasarkan kategori soal (0-5 sesuai yang ada di DB options)
+            $pointEarned = 0;
+
+            if ($question) {
+                if ($option) {
+                    $pointEarned = $option->point;
+                    
+                    // Hitung akumulasi skor kategori
                     if ($question->category_id == $catTwk->id) {
-                        $skor['TWK'] += $option->point;
+                        $skor['TWK'] += $pointEarned;
                     } elseif ($question->category_id == $catTiu->id) {
-                        $skor['TIU'] += $option->point;
+                        $skor['TIU'] += $pointEarned;
                     } elseif ($question->category_id == $catTkp->id) {
-                        $skor['TKP'] += $option->point;
+                        $skor['TKP'] += $pointEarned;
                     }
-
-                    // Kumpulkan data jawaban untuk di-insert ke tabel exam_answers
-                    $examAnswersData[] = [
-                        'exam_session_id' => $session->id,
-                        'question_id'     => $qId,
-                        'option_id'       => $optId,
-                        'score_earned'    => $option->point, // <-- Tambahkan ini agar poin tersimpan!
-                        'created_at'      => now(),
-                        'updated_at'      => now(),
-                    ];
                 }
+
+                // Tetap masukkan ke array insert meskipun opsi_id kosong (null)
+                $examAnswersData[] = [
+                    'exam_session_id' => $session->id,
+                    'question_id'     => $qId,
+                    'option_id'       => $optId, // Terpelihara sebagai null di DB baru kamu
+                    'score_earned'    => $pointEarned,
+                    'created_at'      => now(),
+                    'updated_at'      => now(),
+                ];
             }
         }
 
         $skor['TOTAL'] = array_sum($skor);
 
-        // 5. Penentuan Lulus / Tidak Lulus (Sesuai Passing Grade Masing-masing)
+        // 5. Penentuan Lulus / Tidak Lulus
         $passTwk = $skor['TWK'] >= ($catTwk->passing_grade_score ?? 65);
         $passTiu = $skor['TIU'] >= ($catTiu->passing_grade_score ?? 80);
         $passTkp = $skor['TKP'] >= ($catTkp->passing_grade_score ?? 166);
         
-        // Lulus hanya jika KETIGA kategori memenuhi syarat minimal
         $lulus = $passTwk && $passTiu && $passTkp; 
         
         session(['hasilUjian' => compact('skor', 'lulus')]);
 
-        // 6. Simpan Permanen ke Tabel exam_sessions (MariaDB)
+        // 6. Simpan Permanen ke Tabel exam_sessions
         $session->update([
             'end_time'    => now(),
             'score_twk'   => $skor['TWK'],
@@ -251,20 +259,19 @@ class UjianController extends Controller
             'total_score' => $skor['TOTAL'],
         ]);
 
-        // 7. Simpan Riwayat Jawaban per Soal ke exam_answers (Insert Massal)
-        // Syarat: Pastikan kamu sudah membuat Model ExamAnswer
+        // 7. Simpan Riwayat Jawaban (Insert Massal)
         if (count($examAnswersData) > 0) {
             \App\Models\ExamAnswer::insert($examAnswersData);
         }
 
-        // 8. PEMBERSIHAN REDIS (Wajib agar RAM server tidak penuh)
+        // 8. PEMBERSIHAN REDIS 
         \Illuminate\Support\Facades\Redis::del("temp_answers:user_{$userId}:tryout_{$id}");
         \Illuminate\Support\Facades\Redis::del("temp_ragu:user_{$userId}:tryout_{$id}");
         \Illuminate\Support\Facades\Redis::del("timer:user_{$userId}:tryout_{$id}");
         \Illuminate\Support\Facades\Redis::del("sequence:user_{$userId}:tryout_{$id}");
 
         return redirect()->route('ujian.hasil', $id);
-    }    
+    }
 
     // Tambahkan fungsi baru ini untuk menampilkan halaman hasil
     public function hasil($id) // Tambahkan $id agar konsisten
@@ -292,18 +299,25 @@ class UjianController extends Controller
             ->latest()
             ->firstOrFail();
 
-        // 2. Ambil riwayat jawaban user dari database
-        $examAnswers = \App\Models\ExamAnswer::where('exam_session_id', $sessionDb->id)->get();
+        // 2. Ambil riwayat jawaban user dari database (Urutkan dari ID terkecil agar konsisten saat di-insert)
+        $examAnswers = \App\Models\ExamAnswer::where('exam_session_id', $sessionDb->id)
+            ->orderBy('id', 'asc')
+            ->get();
         
         // Ubah menjadi array [ID_Soal => ID_Opsi_Yang_Dipilih] agar mudah dibaca di Blade
         $jawabanUser = $examAnswers->pluck('option_id', 'question_id')->toArray();
 
         // 3. Ambil detail Soal, Opsi, dan Kategorinya
-        // (Kita ambil soal-soal yang ada di riwayat jawaban user)
         $questionIds = $examAnswers->pluck('question_id')->toArray();
+        
+        // KUNCI PERBAIKAN: Gunakan sortBy agar data soal dipaksa mengikuti urutan array $questionIds
         $questions = \App\Models\Question::with(['options', 'category'])
             ->whereIn('id', $questionIds)
-            ->get();
+            ->get()
+            ->sortBy(function ($q) use ($questionIds) {
+                return array_search($q->id, $questionIds);
+            })
+            ->values(); // Mengembalikan indeks array menjadi 0, 1, 2, dst.
 
         return view('user.ujian.ujian_pembahasan', compact('questions', 'jawabanUser', 'id'));
     }

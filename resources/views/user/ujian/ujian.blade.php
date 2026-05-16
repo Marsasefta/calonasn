@@ -21,7 +21,13 @@
                     <p class="mb-0 text-muted small">Total: 110 Soal (TWK, TIU, TKP)</p>
                 </div>
                 <div class="col-md-6 text-end">
-                    <h3 id="timerDisplay" class="mb-0 fw-bold text-danger">100:00</h3>
+                    @php
+                        $initMinutes = floor($durationInSeconds / 60);
+                        $initSeconds = $durationInSeconds % 60;
+                    @endphp
+                    <h3 id="timerDisplay" class="mb-0 fw-bold text-danger">
+                        {{ sprintf('%02d:%02d', $initMinutes, $initSeconds) }}
+                    </h3>
                     <span class="small text-muted">Sisa Waktu</span>
                 </div>
             </div>
@@ -34,7 +40,8 @@
                             <div class="card-body p-4" style="min-height: 400px;">
 
                                 @foreach ($questions as $index => $q)
-                                    @php $nomor = $index + 1; @endphp <div class="soal-container" id="soal-{{ $nomor }}"
+                                    @php $nomor = $index + 1; @endphp
+                                    <div class="soal-container" id="soal-{{ $nomor }}"
                                         style="{{ $index == 0 ? 'display:block;' : 'display:none;' }}">
                                         <div class="d-flex justify-content-between mb-3">
                                             <span
@@ -51,9 +58,10 @@
                                                         name="jawaban[{{ $q->id }}]" value="{{ $opt->id }}"
                                                         id="opt-{{ $q->id }}-{{ $opt->id }}"
                                                         data-ui-nomor="{{ $nomor }}"
-                                                        data-db-id="{{ $q->id }}" {{-- Tambahkan baris di bawah ini --}}
+                                                        data-db-id="{{ $q->id }}"
                                                         {{ isset($tempAnswers[$q->id]) && $tempAnswers[$q->id] == $opt->id ? 'checked' : '' }}>
                                                     <label class="form-check-label w-100 p-2 border rounded"
+                                                        style="cursor: pointer;"
                                                         for="opt-{{ $q->id }}-{{ $opt->id }}">
                                                         {{ chr(65 + $optIndex) }}. {{ $opt->option_text }}
                                                     </label>
@@ -99,12 +107,9 @@
                                     @foreach ($questions as $index => $q)
                                         @php
                                             $nomor = $index + 1;
-
-                                            // Cek status dari Redis
                                             $isRagu = isset($tempRagu[$q->id]) && $tempRagu[$q->id] == '1';
                                             $isAnswered = isset($tempAnswers[$q->id]);
 
-                                            // Prioritas warna: Ragu (Kuning) -> Dijawab (Hijau) -> Kosong (Abu-abu)
                                             if ($isRagu) {
                                                 $btnClass = 'btn-warning text-dark';
                                             } elseif ($isAnswered) {
@@ -117,7 +122,6 @@
                                         <button type="button"
                                             class="btn {{ $btnClass }} p-0 d-flex justify-content-center align-items-center"
                                             id="nav-btn-{{ $nomor }}" data-db-id="{{ $q->id }}"
-                                            {{-- Penting: Kita simpan ID DB di sini untuk dibaca JS --}}
                                             style="width: 45px; height: 45px; font-size: 14px; font-weight: 600;"
                                             onclick="lompatKeSoal({{ $nomor }})">
                                             {{ $nomor }}
@@ -147,7 +151,7 @@
     <script>
         // 1. Variabel Global Server
         let currentSoalId = 1;
-        const totalSoal = {{ $questions->count() }}; // Otomatis menyesuaikan jumlah soal (110)
+        const totalSoal = {{ $questions->count() }};
         let timeInSeconds = {{ $durationInSeconds }};
         const tryoutId = {{ $tryout->id }};
 
@@ -193,14 +197,13 @@
         function tandaiRagu() {
             let isChecked = document.getElementById('checkRagu').checked;
             let btnNav = document.getElementById('nav-btn-' + currentSoalId);
-            let dbId = btnNav.getAttribute('data-db-id'); // Ambil ID asli Database dari tombol
+            let dbId = btnNav.getAttribute('data-db-id');
 
             if (isChecked) {
                 btnNav.classList.remove('btn-success', 'btn-outline-secondary');
                 btnNav.classList.add('btn-warning', 'text-dark');
             } else {
                 btnNav.classList.remove('btn-warning', 'text-dark');
-                // Cek apakah ada jawaban yg sudah dipilih
                 let isAnswered = document.querySelector(`input[data-ui-nomor="${currentSoalId}"]:checked`);
                 if (isAnswered) {
                     btnNav.classList.add('btn-success', 'text-white');
@@ -209,7 +212,7 @@
                 }
             }
 
-            // --- TAMBAHAN AJAX: Kirim ke Redis ---
+            // AJAX Kirim ke Redis
             fetch('{{ route('ujian.simpan_ragu') }}', {
                 method: 'POST',
                 headers: {
@@ -234,13 +237,21 @@
         // 6. Timer & Sinkronisasi Redis
         let timerDisplay = document.getElementById('timerDisplay');
         let timerInterval = setInterval(() => {
+            if (timeInSeconds <= 0) {
+                clearInterval(timerInterval);
+                timerDisplay.innerHTML = "00:00";
+                alert('Waktu Habis! Jawaban Anda akan otomatis dikirim.');
+                document.getElementById('formUjian').submit();
+                return;
+            }
+
             let minutes = Math.floor(timeInSeconds / 60);
             let seconds = timeInSeconds % 60;
 
             timerDisplay.innerHTML = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
             // Auto-save sisa waktu ke Redis setiap 10 detik
-            if (timeInSeconds > 0 && timeInSeconds % 10 === 0) {
+            if (timeInSeconds % 10 === 0) {
                 fetch('{{ route('ujian.update_timer') }}', {
                     method: 'POST',
                     headers: {
@@ -259,19 +270,14 @@
                     'text-danger');
             }
 
-            if (timeInSeconds <= 0) {
-                clearInterval(timerInterval);
-                alert('Waktu Habis! Jawaban Anda akan otomatis dikirim.');
-                document.getElementById('formUjian').submit();
-            }
             timeInSeconds--;
         }, 1000);
 
         // 7. Simpan Jawaban ke Redis (AJAX)
         document.querySelectorAll('.opsi-radio').forEach(radio => {
             radio.addEventListener('change', function() {
-                let uiNomor = this.getAttribute('data-ui-nomor'); // Nomor urut 1-110
-                let dbId = this.getAttribute('data-db-id'); // ID Asli dari DB
+                let uiNomor = this.getAttribute('data-ui-nomor');
+                let dbId = this.getAttribute('data-db-id');
                 let opsiId = this.value;
 
                 let btnNav = document.getElementById('nav-btn-' + uiNomor);
@@ -296,7 +302,7 @@
             });
         });
 
-        // 8. Inisiasi Ujian (Panggil soal nomor 1 saat halaman beres dimuat)
+        // 8. Inisiasi Ujian
         document.addEventListener("DOMContentLoaded", function() {
             lompatKeSoal(1);
         });
