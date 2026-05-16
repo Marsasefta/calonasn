@@ -222,6 +222,7 @@ class UjianController extends Controller
                         'exam_session_id' => $session->id,
                         'question_id'     => $qId,
                         'option_id'       => $optId,
+                        'score_earned'    => $option->point, // <-- Tambahkan ini agar poin tersimpan!
                         'created_at'      => now(),
                         'updated_at'      => now(),
                     ];
@@ -263,28 +264,7 @@ class UjianController extends Controller
         \Illuminate\Support\Facades\Redis::del("sequence:user_{$userId}:tryout_{$id}");
 
         return redirect()->route('ujian.hasil', $id);
-    }
-
-    // public function selesai(Request $request)
-    // {
-    //     $jawabanUser = $request->input('jawaban', []);
-    //     session(['jawabanUser' => $jawabanUser]);
-
-    //     $skor = ['TWK' => 0, 'TIU' => 0, 'TKP' => 0, 'TOTAL' => 0];
-    //     foreach($jawabanUser as $id => $jawaban) {
-    //         if ($id <= 30) { $skor['TWK'] += 5; }
-    //         elseif ($id <= 65) { $skor['TIU'] += 5; }
-    //         else { $skor['TKP'] += rand(1, 5); }
-    //     }
-    //     $skor['TOTAL'] = $skor['TWK'] + $skor['TIU'] + $skor['TKP'];
-    //     $lulus = ($skor['TWK'] >= 65 && $skor['TIU'] >= 80 && $skor['TKP'] >= 166);
-
-    //     // Simpan hasil ke session agar bisa dibaca di rute GET
-    //     session(['hasilUjian' => compact('skor', 'lulus')]);
-
-    //     // REDIRECT ke rute GET hasil
-    //     return redirect()->route('ujian.hasil');
-    // }
+    }    
 
     // Tambahkan fungsi baru ini untuk menampilkan halaman hasil
     public function hasil($id) // Tambahkan $id agar konsisten

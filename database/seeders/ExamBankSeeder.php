@@ -20,8 +20,8 @@ class ExamBankSeeder extends Seeder
         ], [
             'description' => 'Tryout sample untuk TWK, TIU, dan TKP.',
             'schedule_at' => now()->addDays(7),
-            'duration_minutes' => 180,
-            'price' => 0,
+            'duration_minutes' => 100,
+            'price' => 20000,
             'is_active' => true,
             'status' => 'active',
         ]);
