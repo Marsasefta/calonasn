@@ -16,8 +16,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::view('/demo-cat', 'demo')->name('demo.cat');
+
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');    
 
     // Transaksi dan pembayaran
     Route::get('/checkout', [TransactionController::class, 'checkout'])->name('checkout');

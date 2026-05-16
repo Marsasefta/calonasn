@@ -326,7 +326,7 @@
 
                             <div class="d-flex flex-wrap gap-3 mt-2">
                                 {{-- Tombol Demo: Magnet Paling Ampuh --}}
-                                <a href="#"
+                                <a href="{{ route('demo.cat') }}"
                                     class="btn btn-success btn-lg px-4 py-3 border-0 shadow-sm text-white fw-bold">
                                     <i class="fe fe-play-circle me-2 fs-4 align-middle"></i> Coba Demo Gratis (5 Soal)
                                 </a>
