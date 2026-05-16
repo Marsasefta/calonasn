@@ -4,7 +4,7 @@
   <head>
     @include('partials.head')
 
-    <title>{{ config('app.name', 'CalonASN.id') }}</title>
+    <title>Simulasi CAT CPNS 2026 Terakurat & Terbaru</title>
 
     @stack('styles')
   </head>

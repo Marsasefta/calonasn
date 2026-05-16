@@ -39,7 +39,22 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                        // Array untuk mencatat tryout mana saja yang sudah ditampilkan pembahasannya
+                                        $pembahasanDitampilkan = [];
+                                    @endphp
+
                                     @forelse ($riwayatUjian as $item)
+                                        @php
+                                            // Cek apakah tryout ini sudah ada di array (artinya ini adalah riwayat lama)
+                                            $bisaLihatPembahasan = !in_array($item->tryout_id, $pembahasanDitampilkan);
+                                            
+                                            // Jika belum ada, masukkan ke array agar baris bawahnya tidak kebagian tombol lagi
+                                            if ($bisaLihatPembahasan) {
+                                                $pembahasanDitampilkan[] = $item->tryout_id;
+                                            }
+                                        @endphp
+
                                         <tr>
                                             <td class="align-middle">
                                                 {{ $item->end_time->format('d M Y') }}
@@ -55,7 +70,6 @@
                                             </td>
                                             <td class="align-middle">
                                                 @if ($item->total_score >= 311)
-                                                    {{-- Contoh standar kelulusan --}}
                                                     <span class="badge bg-success-soft text-success">LULUS</span>
                                                 @else
                                                     <span class="badge bg-danger-soft text-danger">TIDAK LULUS</span>
@@ -75,12 +89,17 @@
                                                                 <i class="fe fe-bar-chart-2 me-2"></i>Lihat Detail
                                                             </a>
                                                         </li>
-                                                        <li>
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('ujian.pembahasan', $item->tryout_id) }}">
-                                                                <i class="fe fe-book-open me-2"></i>Pembahasan
-                                                            </a>
-                                                        </li>
+
+                                                        {{-- LOGIKA PEMBATASAN MUNCUL DI SINI --}}
+                                                        @if ($bisaLihatPembahasan)
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('ujian.pembahasan', $item->tryout_id) }}">
+                                                                    <i class="fe fe-book-open me-2"></i>Pembahasan
+                                                                </a>
+                                                            </li>
+                                                        @endif
+
                                                         @if ($item->total_score >= 311)
                                                             <li>
                                                                 <hr class="dropdown-divider">

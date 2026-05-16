@@ -355,7 +355,7 @@ class UjianController extends Controller
             ->latest()
             ->get();
 
-        return view('user.sertifikat.sertifikat_riwayat', compact('riwayatUjian'));
+        return view('user.riwayat_tryout.riwayat_ujian', compact('riwayatUjian'));
     }
 
     public function simpanJawabanTemp(Request $request)

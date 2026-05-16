@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice - {{ $transaction->order_id }}</title>
+    <title>Invoice - {{ $transaction->invoice_number ?? $transaction->order_id }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.css">
     <style>
@@ -39,7 +39,7 @@
                         </div>
                         <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
                             <h3 class="text-dark mb-1">INVOICE</h3>
-                            <p class="text-muted mb-0">#{{ $transaction->order_id }}</p>
+                            <p class="text-muted mb-0">#{{ $transaction->invoice_number ?? $transaction->order_id }}</p>
                         </div>
                     </div>
 
@@ -53,8 +53,9 @@
                             <h6 class="text-muted text-uppercase fw-bold mb-2">Detail Transaksi:</h6>
                             <p class="mb-1"><span class="text-muted">Tanggal:</span>
                                 {{ $transaction->created_at->translatedFormat('d F Y, H:i') }} WIB</p>
-                            <p class="mb-0"><span class="text-muted">Status:</span> <span
-                                    class="badge bg-success">LUNAS / SUCCESS</span></p>
+                            <p class="mb-0"><span class="text-muted">Status:</span> 
+                                <span class="badge bg-success">LUNAS / SUCCESS</span>
+                            </p>
                         </div>
                     </div>
 
@@ -69,10 +70,11 @@
                             <tbody>
                                 <tr>
                                     <td class="py-3">
-                                        <h6 class="mb-1">Paket Tryout CPNS Batch 1</h6>
+                                        <h6 class="mb-1">{{ $transaction->tryout->title ?? 'Paket Tryout CPNS Premium' }}</h6>
                                         <small class="text-muted">Akses Penuh ke Simulasi Ujian & Pembahasan</small>
                                     </td>
-                                    <td class="text-end py-3">Rp {{ number_format($transaction->amount, 0, ',', '.') }}
+                                    <td class="text-end py-3 text-dark fw-medium">
+                                        Rp {{ number_format($transaction->amount, 0, ',', '.') }}
                                     </td>
                                 </tr>
                             </tbody>
@@ -80,24 +82,27 @@
                     </div>
 
                     <div class="row justify-content-end">
-                        <div class="col-sm-5 text-end">
+                        <div class="col-sm-6 text-end">
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">Subtotal</span>
-                                <span>Rp {{ number_format($transaction->amount, 0, ',', '.') }}</span>
+                                <span class="text-muted">Subtotal Harga Paket</span>
+                                <span class="text-dark">Rp {{ number_format($transaction->amount, 0, ',', '.') }}</span>
                             </div>
+                            
                             <div class="d-flex justify-content-between mb-3">
-                                <span class="text-muted">Pajak / Biaya Admin</span>
-                                <span>Rp 0</span>
+                                <span class="text-muted">Kode Unik Transfer</span>
+                                <span class="text-success">+ Rp {{ number_format($transaction->unique_code ?? 0, 0, ',', '.') }}</span>
                             </div>
+                            
                             <div class="d-flex justify-content-between border-top pt-3">
                                 <h4 class="fw-bold mb-0">Total Bayar</h4>
-                                <h4 class="fw-bold text-primary mb-0">Rp
-                                    {{ number_format($transaction->amount, 0, ',', '.') }}</h4>
+                                <h4 class="fw-bold text-primary mb-0">
+                                    Rp {{ number_format($transaction->total_amount ?? $transaction->amount, 0, ',', '.') }}
+                                </h4>
                             </div>
                         </div>
                     </div>
-
                 </div>
+
             </div>
         </div>
     </div>

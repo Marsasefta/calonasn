@@ -48,7 +48,7 @@
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('sertifikat.riwayat') ? 'active' : '' }}"
                                 href="{{ route('sertifikat.riwayat') }}">
-                                <i class="fe fe-award nav-icon"></i> Riwayat & Sertifikat
+                                <i class="fe fe-award nav-icon"></i> Riwayat Tryout
                             </a>
                         </li>
                     </ul>

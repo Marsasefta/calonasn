@@ -22,6 +22,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Transaksi dan pembayaran
     Route::get('/checkout', [TransactionController::class, 'checkout'])->name('checkout');
     Route::post('/checkout/process', [TransactionController::class, 'process'])->name('checkout.process');
+    // --- TAMBAHKAN DUA BARIS BARU INI ---
+    Route::get('/payment/qris/{invoice_number}', [TransactionController::class, 'qris'])->name('payment.qris');
+    Route::post('/payment/upload/{invoice_number}', [TransactionController::class, 'uploadProof'])->name('payment.upload');
+    // -------------------------------------
     Route::get('/payment-pending', [TransactionController::class, 'pending'])->name('payment.pending');
     Route::get('/payment-success', [TransactionController::class, 'success'])->name('payment.success');
 
@@ -42,26 +46,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
-// Route Persiapan (Tidak pakai middleware karena ini pintu masuknya)
-Route::get('/ujian/persiapan/{id}', [UjianController::class, 'persiapan'])->name('ujian.persiapan');
+    // Route Persiapan (Tidak pakai middleware karena ini pintu masuknya)
+    Route::get('/ujian/persiapan/{id}', [UjianController::class, 'persiapan'])->name('ujian.persiapan');
 
-// Kelompokkan Route yang diproteksi Middleware Lock & Unlock
-Route::middleware(['auth', 'CheckUjianAccess'])->group(function () {
-    Route::get('/ujian/mulai/{id}', [UjianController::class, 'mulai'])->name('ujian.mulai');
-    Route::post('/ujian/selesai/{id}', [UjianController::class, 'selesai'])->name('ujian.selesai');
-});
+    // Kelompokkan Route yang diproteksi Middleware Lock & Unlock
+    Route::middleware(['auth', 'CheckUjianAccess'])->group(function () {
+        Route::get('/ujian/mulai/{id}', [UjianController::class, 'mulai'])->name('ujian.mulai');
+        Route::post('/ujian/selesai/{id}', [UjianController::class, 'selesai'])->name('ujian.selesai');
+    });
 
-// Route Hasil & Pembahasan (Pakai ID agar tahu TO mana yang dilihat)
-Route::get('/ujian/hasil/{id}', [UjianController::class, 'hasil'])->name('ujian.hasil');
-Route::get('/ujian/pembahasan/{id}', [UjianController::class, 'pembahasan'])->name('ujian.pembahasan');
+    // Route Hasil & Pembahasan (Pakai ID agar tahu TO mana yang dilihat)
+    Route::get('/ujian/hasil/{id}', [UjianController::class, 'hasil'])->name('ujian.hasil');
+    Route::get('/ujian/pembahasan/{id}', [UjianController::class, 'pembahasan'])->name('ujian.pembahasan');
 
-Route::post('/ujian/simpan-jawaban-temp', [UjianController::class, 'simpanJawabanTemp'])->name('ujian.simpan_temp');
-Route::post('/ujian/update-timer', [UjianController::class, 'updateTimer'])->name('ujian.update_timer');
-Route::post('/ujian/simpan-ragu-temp', [UjianController::class, 'simpanRaguTemp'])->name('ujian.simpan_ragu');
+    Route::post('/ujian/simpan-jawaban-temp', [UjianController::class, 'simpanJawabanTemp'])->name('ujian.simpan_temp');
+    Route::post('/ujian/update-timer', [UjianController::class, 'updateTimer'])->name('ujian.update_timer');
+    Route::post('/ujian/simpan-ragu-temp', [UjianController::class, 'simpanRaguTemp'])->name('ujian.simpan_ragu');
 
-// Sertifikat & Riwayat
-Route::get('/ujian/sertifikat/{id}', [UjianController::class, 'sertifikat'])->name('ujian.sertifikat');
-Route::get('/riwayat-sertifikat', [UjianController::class, 'riwayatSertifikat'])->name('sertifikat.riwayat');
+    // Sertifikat & Riwayat
+    Route::get('/ujian/sertifikat/{id}', [UjianController::class, 'sertifikat'])->name('ujian.sertifikat');
+    Route::get('/riwayat-sertifikat', [UjianController::class, 'riwayatSertifikat'])->name('sertifikat.riwayat');
 
 
 
