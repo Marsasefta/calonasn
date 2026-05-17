@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Notifications\AdminPaymentNotification;
+use Illuminate\Support\Facades\Notification;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -92,13 +94,13 @@ class TransactionController extends Controller
     // Memproses Upload Bukti Pembayaran
     public function uploadProof(Request $request, $invoice_number)
     {
-    $request->validate([
-            'payment_proof' => 'required|image|mimes:jpeg,png,jpg|max:15360', // 15360 KB = 15MB
-        ], [
-            'payment_proof.max' => 'Ukuran file bukti transfer terlalu besar, maksimal adalah 15MB.',
-            'payment_proof.image' => 'File harus berupa gambar.',
-            'payment_proof.mimes' => 'Format gambar harus JPG, JPEG, atau PNG.',
-    ]);
+        $request->validate([
+                'payment_proof' => 'required|image|mimes:jpeg,png,jpg|max:15360', // 15MB
+            ], [
+                'payment_proof.max' => 'Ukuran file bukti transfer terlalu besar, maksimal adalah 15MB.',
+                'payment_proof.image' => 'File harus berupa gambar.',
+                'payment_proof.mimes' => 'Format gambar harus JPG, JPEG, atau PNG.',
+        ]);
 
         $transaction = Transaction::where('invoice_number', $invoice_number)
                         ->where('user_id', Auth::id())
@@ -109,8 +111,16 @@ class TransactionController extends Controller
 
         $transaction->update([
             'payment_proof' => $path,
-            'status'        => 'pending' // Tetap pending agar aman dari error ENUM lama
+            'status'        => 'pending' 
         ]);
+
+        // --- SINKRONISASI NOTIFIKASI EMAIL ADMIN ---
+        // Masukkan email kamu dan temanmu di dalam array ini
+        $adminEmails = ['fenthalari@gmail.com'];
+
+        // Kirim notifikasi menggunakan facade Notification Laravel
+        Notification::route('mail', $adminEmails)->notify(new AdminPaymentNotification($transaction));
+        // --- END NOTIFIKASI ---
 
         return redirect()->route('payment.pending')->with('success', 'Bukti transfer berhasil diunggah.');
     }
