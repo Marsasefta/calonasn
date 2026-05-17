@@ -20,7 +20,7 @@
                 <a href="register" class="btn btn-dark d-none d-md-block">Daftar</a>
             </div>
         </div>
-        <div>
+        {{-- <div>
             <!-- Button -->
             <button class="navbar-toggler collapsed ms-2" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbar-default" aria-controls="navbar-default" aria-expanded="false"
@@ -29,7 +29,7 @@
                 <span class="icon-bar middle-bar"></span>
                 <span class="icon-bar bottom-bar"></span>
             </button>
-        </div>
+        </div> --}}
         <!-- Collapse -->
         <div class="collapse navbar-collapse" id="navbar-default">
 

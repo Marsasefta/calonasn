@@ -69,16 +69,35 @@
                                         <img src="{{ asset('image/qris.jpeg') }}" alt="QRIS Payment" class="img-fluid"
                                             style="max-width: 250px;">
                                     </div>
+
+                                    <div class="mt-3">
+                                        <a href="{{ asset('image/qris.jpeg') }}"
+                                            download="QRIS_Pembayaran_{{ $transaction->invoice_number }}.jpeg"
+                                            class="btn btn-outline-primary btn-sm fw-bold shadow-sm">
+                                            <i class="fe fe-download me-2"></i> Simpan / Unduh QRIS
+                                        </a>
+                                    </div>
                                 </div>
 
                                 <hr class="mb-4">
 
                                 <div class="bg-light p-4 rounded border-0">
-                                    <h5 class="fw-bold mb-3"><i
-                                            class="fe fe-check-circle text-success me-2"></i>Konfirmasi Pembayaran</h5>
+                                    <h5 class="fw-bold mb-3">
+                                        <i class="fe fe-check-circle text-success me-2"></i>Konfirmasi Pembayaran
+                                    </h5>
                                     <p class="text-muted small mb-4">Jika Anda sudah melakukan transfer, wajib
                                         mengunggah foto struk atau *screenshot* bukti transaksi agar Admin dapat segera
                                         memverifikasi pesanan Anda.</p>
+
+                                    @if ($errors->any())
+                                        <div class="alert alert-danger border-0 shadow-sm small mb-4">
+                                            <ul class="mb-0 list-unstyled">
+                                                @foreach ($errors->all() as $error)
+                                                    <li><i class="fe fe-alert-circle me-2"></i> {{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
 
                                     <form action="{{ route('payment.upload', $transaction->invoice_number) }}"
                                         method="POST" enctype="multipart/form-data">
@@ -86,11 +105,20 @@
                                         <div class="mb-4">
                                             <label for="payment_proof" class="form-label fw-medium text-dark">Pilih File
                                                 Bukti Transfer</label>
-                                            <input class="form-control form-control-lg bg-white" type="file"
-                                                id="payment_proof" name="payment_proof"
+
+                                            <input
+                                                class="form-control form-control-lg bg-white @error('payment_proof') is-invalid @enderror"
+                                                type="file" id="payment_proof" name="payment_proof"
                                                 accept="image/jpeg,image/png,image/jpg" required>
+
+                                            @error('payment_proof')
+                                                <div class="invalid-feedback mt-2 fw-medium">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+
                                             <div class="form-text mt-2">Format yang diizinkan: JPG, JPEG, PNG. Maksimal
-                                                ukuran file 2MB.</div>
+                                                ukuran file 15MB.</div>
                                         </div>
 
                                         <div class="d-grid mt-2">

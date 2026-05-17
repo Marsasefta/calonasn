@@ -92,9 +92,13 @@ class TransactionController extends Controller
     // Memproses Upload Bukti Pembayaran
     public function uploadProof(Request $request, $invoice_number)
     {
-        $request->validate([
-            'payment_proof' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+    $request->validate([
+            'payment_proof' => 'required|image|mimes:jpeg,png,jpg|max:15360', // 15360 KB = 15MB
+        ], [
+            'payment_proof.max' => 'Ukuran file bukti transfer terlalu besar, maksimal adalah 15MB.',
+            'payment_proof.image' => 'File harus berupa gambar.',
+            'payment_proof.mimes' => 'Format gambar harus JPG, JPEG, atau PNG.',
+    ]);
 
         $transaction = Transaction::where('invoice_number', $invoice_number)
                         ->where('user_id', Auth::id())
