@@ -74,41 +74,39 @@ class DemoController extends Controller
     }
 
     public function finish(Request $request) {
-    // 1. Ambil data soal
-    $questions = $this->getDemoQuestions();
-    
-    // 2. Ambil jawaban dari user
-    $answers = $request->input('jawaban', []);
-    
-    $correct = 0;
-    $detailHasil = []; // <-- Inisialisasi variabel agar tidak undefined
-
-    foreach($questions as $q) {
-        $jawabanUser = isset($answers[$q['id']]) ? $answers[$q['id']] : null;
+        // 1. Ambil data soal
+        $questions = $this->getDemoQuestions();
         
-        // Kita bandingkan secara case-insensitive dan hapus spasi (Trim)
-        $isCorrect = (strtolower(trim($jawabanUser)) === strtolower(trim($q['kunci'])));
+        // 2. Ambil jawaban dari user
+        $answers = $request->input('jawaban', []);
         
-        if($isCorrect) {
-            $correct++;
-        }
+        $correct = 0;
+        $detailHasil = []; 
 
-        // Masukkan ke array detail untuk ditampilkan di tabel debug
-        $detailHasil[] = [
-            'no' => $q['id'],
-            'user' => $jawabanUser,
+        foreach($questions as $q) {
+            $jawabanUser = isset($answers[$q['id']]) ? $answers[$q['id']] : null;
+            
+            $isCorrect = (strtolower(trim($jawabanUser)) === strtolower(trim($q['kunci'])));
+            
+            if($isCorrect) {
+                $correct++;
+            }
+
+            $detailHasil[] = [
+                'no' => $q['id'],
+                'user' => $jawabanUser,
                 'kunci' => $q['kunci'],
                 'status' => $isCorrect
             ];
         }
 
         $totalSoal = count($questions);
-        $score = ($totalSoal > 0) ? round(($correct / $totalSoal) * 100) : 0;
 
-        // --- PENTING: Tambahkan 'detailHasil' di sini ---
+        // --- PERBAIKAN DI SINI ---
+        // Mengubah dari sistem persentase ke standar poin CAT BKN (1 soal = 5 poin)
+        $score = $correct * 5;
+
         return view('user.demo.result', compact('correct', 'score', 'totalSoal', 'detailHasil'));
     }
-
-   
 
 }
