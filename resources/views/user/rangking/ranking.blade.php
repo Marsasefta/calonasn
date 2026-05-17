@@ -23,9 +23,10 @@
                 <div class="col-md-4">
                     <label class="form-label fw-bold">Pilih Periode Tryout:</label>
                     <select class="form-select shadow-sm">
-                        <option value="batch1">Batch 1 (01 - 05 Juni 2026)</option>
-                        <option value="batch2">Batch 2 (06 - 10 Juni 2026)</option>
-                        <option value="batch3">Terbaru (Sedang Berjalan)</option>
+                        <option value="batch1">Batch 1 (01 - 05 Mei 2026)</option>
+                        <option value="batch2">Batch 2 (06 - 10 Mei 2026)</option>
+                        <option value="batch3">Batch 3 (11 - 15 Mei 2026)</option>
+                        <option value="batch4">Terbaru (Sedang Berjalan)</option>
                     </select>
                 </div>
             </div>
