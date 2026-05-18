@@ -28,4 +28,20 @@ class CategoryController extends Controller
 
         return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil disimpan.');
     }
+
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'passing_grade_score' => 'nullable|integer|min:0',
+        ]);
+
+        $category = Category::findOrFail($id);
+        $category->update([
+            'name' => $validated['name'],
+            'passing_grade_score' => $validated['passing_grade_score'] ?? 0,
+        ]);
+
+        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil diperbarui.');
+    }
 }

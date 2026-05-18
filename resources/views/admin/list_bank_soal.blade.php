@@ -3,6 +3,8 @@
 
 <head>
     @include('partials.head')
+    <link href="/build/assets/plugins/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <link href="/build/assets/plugins/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -50,11 +52,21 @@
                     </div>
                 @endif
 
+                <div class="row mb-3">
+                    <div class="col-lg-12 col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-0">Gunakan kolom pencarian di tabel untuk menemukan soal berdasarkan teks, tryout, atau kategori.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-lg-12 col-12">
                         @if($questions->count() > 0)
                             <div class="table-responsive">
-                                <table class="table table-bordered table-hover">
+                                <table class="table table-bordered table-hover table-striped nowrap" id="questions-table" style="width:100%">
                                     <thead class="table-light">
                                         <tr>
                                             <th style="width: 80px;">No</th>
@@ -68,7 +80,7 @@
                                     <tbody>
                                         @foreach($questions as $index => $question)
                                             <tr>
-                                                <td>{{ ($questions->currentPage() - 1) * $questions->perPage() + $loop->iteration }}</td>
+                                                <td>{{ $loop->iteration }}</td>
                                                 <td>
                                                     <small>{{ Str::limit($question->question_text, 100) }}</small>
                                                 </td>
@@ -105,14 +117,6 @@
                                 </table>
                             </div>
 
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <div class="text-muted small">
-                                    Menampilkan {{ $questions->firstItem() }} sampai {{ $questions->lastItem() }} dari {{ $questions->total() }} soal
-                                </div>
-                                <div>
-                                    {{ $questions->links() }}
-                                </div>
-                            </div>
                         @else
                             <div class="alert alert-info">
                                 <p class="mb-0">Belum ada soal. <a href="{{ route('admin.create-bank-soal') }}">Tambahkan soal</a> atau <a href="{{ route('admin.import-bank-soal') }}">import dari file</a>.</p>
@@ -125,6 +129,10 @@
     </div>
 
     @include('partials.scripts')
+    <script src="/build/assets/plugins/datatables.net/js/dataTables.min.js"></script>
+    <script src="/build/assets/plugins/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="/build/assets/plugins/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="/build/assets/plugins/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
     <script>
         // Bootstrap alert auto-dismiss
         document.addEventListener('DOMContentLoaded', function() {
@@ -135,6 +143,30 @@
                     bsAlert.close();
                 }, 5000);
             });
+
+            if (window.jQuery && $.fn.DataTable) {
+                $('#questions-table').DataTable({
+                    responsive: true,
+                    autoWidth: false,
+                    pageLength: 10,
+                    lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                    columnDefs: [
+                        { orderable: false, targets: [0, 5] }
+                    ],
+                    language: {
+                        search: 'Cari:',
+                        lengthMenu: 'Tampilkan _MENU_ baris',
+                        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ soal',
+                        infoEmpty: 'Menampilkan 0 sampai 0 dari 0 soal',
+                        infoFiltered: '(disaring dari _MAX_ total soal)',
+                        zeroRecords: 'Tidak ditemukan data yang sesuai',
+                        paginate: {
+                            previous: 'Sebelumnya',
+                            next: 'Berikutnya'
+                        }
+                    }
+                });
+            }
         });
     </script>
 </body>

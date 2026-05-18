@@ -88,6 +88,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/store-tryout', [CreateTryoutController::class, 'storeTryout'])->name('store-tryout');
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
         Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('categories.update');
 
         Route::get('/users', [UserTypeController::class, 'userType'])->name('users.index');
         Route::post('/users', [UserTypeController::class, 'store'])->name('users.store');

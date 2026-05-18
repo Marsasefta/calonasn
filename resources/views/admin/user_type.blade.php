@@ -36,7 +36,7 @@
                 @endif
 
                 <div class="row gy-4 mb-4">
-                    <div class="col-xl-3 col-lg-6 col-md-12 col-12">
+                    <div class="col-xl-6 col-lg-6 col-md-12 col-12">
                         <div class="card">
                             <div class="card-body d-flex flex-column gap-3">
                                 <div class="d-flex align-items-center justify-content-between lh-1">
@@ -54,7 +54,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-3 col-lg-6 col-md-12 col-12">
+                    <div class="col-xl-6 col-lg-6 col-md-12 col-12">
                         <div class="card">
                             <div class="card-body d-flex flex-column gap-3">
                                 <div class="d-flex align-items-center justify-content-between lh-1">
@@ -72,7 +72,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-3 col-lg-6 col-md-12 col-12">
+                    <!-- <div class="col-xl-3 col-lg-6 col-md-12 col-12">
                         <div class="card">
                             <div class="card-body d-flex flex-column gap-3">
                                 <div class="d-flex align-items-center justify-content-between lh-1">
@@ -107,7 +107,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div class="row">
@@ -126,7 +126,6 @@
                                             <th>Email</th>
                                             <th>Telepon</th>
                                             <th>Premium</th>
-                                            <th>Status</th>
                                             <th>Terdaftar</th>
                                             <th class="text-end">Aksi</th>
                                         </tr>
@@ -142,13 +141,6 @@
                                                     <span class="badge bg-{{ $user->is_premium ? 'success' : 'secondary' }}">
                                                         {{ $user->is_premium ? 'Ya' : 'Tidak' }}
                                                     </span>
-                                                </td>
-                                                <td>
-                                                    @if($user->email_verified_at)
-                                                        <span class="badge bg-success-light text-success">Terverifikasi</span>
-                                                    @else
-                                                        <span class="badge bg-warning-light text-warning">Menunggu</span>
-                                                    @endif
                                                 </td>
                                                 <td>{{ $user->created_at->format('d M Y') }}</td>
                                                 <td class="text-end">

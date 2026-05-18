@@ -71,10 +71,9 @@ class BankSoalController extends Controller
     {
         $tryouts = Tryout::orderBy('title')->get();
         $categories = Category::orderBy('name')->get();
-        
         $questions = Question::with(['tryout', 'category', 'options'])
             ->orderBy('id', 'desc')
-            ->paginate(10);
+            ->get();
 
         return view('admin.list_bank_soal', compact('questions', 'tryouts', 'categories'));
     }
