@@ -84,6 +84,44 @@
         </div>
     </div>
 
+    {{-- SCRIPT AJAX POLLING UNTUK CEK STATUS OTOMATIS --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Atur interval pengecekan setiap 5 detik (5000ms)
+            const checkInterval = setInterval(function() {
+
+                // Tembak route check status yang ada di controller
+                fetch("{{ route('payment.check.status') }}")
+                    .then(response => response.json())
+                    .then(data => {
+
+                        // Jika admin klik ACC / status jadi success
+                        if (data.status === 'success') {
+                            clearInterval(checkInterval);
+
+                            // Arahkan ke halaman Sukses Pembayaran milikmu
+                            window.location.href = "{{ route('payment.success') }}";
+                        }
+
+                        // Jika admin klik TOLAK / status jadi failed atau canceled
+                        else if (data.status === 'failed' || data.status === 'canceled') {
+                            clearInterval(checkInterval);
+
+                            alert(
+                                'Mohon maaf, bukti pembayaran Anda ditolak oleh Admin. Silakan cek ulang riwayat transaksi.'
+                                );
+                            window.location.href = "{{ route('riwayat') }}";
+                        }
+
+                    })
+                    .catch(error => console.error('Gagal mengecek status pembayaran:', error));
+
+            }, 5000);
+
+        });
+    </script>
+
     <!-- Scroll top -->
     @include('partials.btn-scroll-top')
     <!-- Scripts -->
@@ -91,6 +129,7 @@
     <script src="assets/js/vendors/tnsSlider.js"></script>
     <script src="assets/js/vendors/chart.js"></script>
     <script src="assets/js/vendors/navbar-nav.js"></script>
+
 </body>
 
 </html>

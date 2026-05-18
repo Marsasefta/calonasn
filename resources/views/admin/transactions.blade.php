@@ -49,7 +49,7 @@
                                         <td>{{ $transaction->order_id }}</td>
                                         <td>{{ $transaction->user->name ?? '-' }}</td>
                                         <td>{{ $transaction->tryout->title ?? '-' }}</td>
-                                        <td>Rp {{ number_format($transaction->amount, 0, ',', '.') }}</td>
+                                        <td>Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}</td>
                                         <td>
                                             @if(!empty($transaction->payment_proof))
                                                 <a href="{{ asset('storage/' . $transaction->payment_proof) }}" target="_blank" class="btn btn-sm btn-outline-info">

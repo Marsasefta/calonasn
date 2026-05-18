@@ -30,40 +30,32 @@
             <div class="row justify-content-center">
                 <div class="col-md-10">
                     <div class="row g-3 mb-4">
-                        <div class="col-md-3">
-                            <div class="card border-0 shadow-sm text-center p-3">
-                                <h6 class="text-muted small uppercase">Skor TWK</h6>
-                                <h2 class="fw-bold {{ $skor['TWK'] >= 65 ? 'text-success' : 'text-danger' }}">
-                                    {{ $skor['TWK'] }}
-                                </h2>
-                                <small class="text-muted">Min: 65</small>
+
+                        @foreach ($hasilPerKategori as $hasil)
+                            <div class="col-md-3">
+                                <div class="card border-0 shadow-sm text-center p-3">
+                                    <h6 class="text-muted small uppercase">Skor {{ $hasil['name'] }}</h6>
+
+                                    <h2
+                                        class="fw-bold {{ $hasil['skor'] >= $hasil['passing_grade'] ? 'text-success' : 'text-danger' }}">
+                                        {{ $hasil['skor'] }}
+                                    </h2>
+
+                                    <small class="text-muted">Min: {{ $hasil['passing_grade'] }}</small>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card border-0 shadow-sm text-center p-3">
-                                <h6 class="text-muted small uppercase">Skor TIU</h6>
-                                <h2 class="fw-bold {{ $skor['TIU'] >= 80 ? 'text-success' : 'text-danger' }}">
-                                    {{ $skor['TIU'] }}
-                                </h2>
-                                <small class="text-muted">Min: 80</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card border-0 shadow-sm text-center p-3">
-                                <h6 class="text-muted small uppercase">Skor TKP</h6>
-                                <h2 class="fw-bold {{ $skor['TKP'] >= 166 ? 'text-success' : 'text-danger' }}">
-                                    {{ $skor['TKP'] }}
-                                </h2>
-                                <small class="text-muted">Min: 166</small>
-                            </div>
-                        </div>
+                        @endforeach
+
                         <div class="col-md-3">
                             <div class="card bg-primary text-white shadow-sm text-center p-3">
-                                <h6 class="text-white-50 small uppercase">Total Skor</h6>
-                                <h2 class="fw-bold mb-0">{{ $skor['TOTAL'] }}</h2>
+                                <h6 class="text-white small uppercase">Total Skor</h6>
+                                <h2 class="fw-bold mb-1"
+                                    style="color: #ffffff; text-shadow: 1px 1px 3px rgba(0,0,0,0.3);">
+                                    {{ $totalSkor }}</h2>
                                 <small>Akumulasi</small>
                             </div>
                         </div>
+
                     </div>
 
                     <div class="card border-0 shadow-sm mb-4">
@@ -79,29 +71,32 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>TWK (Wawasan Kebangsaan)</td>
-                                            <td>Kemampuan penguasaan pengetahuan dan kemampuan mengimplementasikan
-                                                nilai-nilai pilar kebangsaan.</td>
-                                            <td>{!! $skor['TWK'] >= 65
-                                                ? '<span class="badge bg-success">Lulus</span>'
-                                                : '<span class="badge bg-danger">Tidak Lulus</span>' !!}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>TIU (Intelegensia Umum)</td>
-                                            <td>Kemampuan verbal, numerik, dan figural.</td>
-                                            <td>{!! $skor['TIU'] >= 80
-                                                ? '<span class="badge bg-success">Lulus</span>'
-                                                : '<span class="badge bg-danger">Tidak Lulus</span>' !!}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>TKP (Karakteristik Pribadi)</td>
-                                            <td>Kemampuan dalam pelayanan publik, jejaring kerja, dan profesionalisme.
-                                            </td>
-                                            <td>{!! $skor['TKP'] >= 166
-                                                ? '<span class="badge bg-success">Lulus</span>'
-                                                : '<span class="badge bg-danger">Tidak Lulus</span>' !!}</td>
-                                        </tr>
+                                        @foreach ($hasilPerKategori as $hasil)
+                                            @php
+                                                // Pemetaan deskripsi karena di DB belum ada kolom keterangan
+                                                $deskripsi = 'Evaluasi kemampuan materi ' . $hasil['name'];
+                                                if (strtoupper($hasil['name']) == 'TWK') {
+                                                    $deskripsi =
+                                                        'Kemampuan penguasaan pengetahuan dan kemampuan mengimplementasikan nilai-nilai pilar kebangsaan.';
+                                                } elseif (strtoupper($hasil['name']) == 'TIU') {
+                                                    $deskripsi = 'Kemampuan verbal, numerik, dan figural.';
+                                                } elseif (strtoupper($hasil['name']) == 'TKP') {
+                                                    $deskripsi =
+                                                        'Kemampuan dalam pelayanan publik, jejaring kerja, dan profesionalisme.';
+                                                }
+                                            @endphp
+                                            <tr>
+                                                <td class="fw-bold">{{ $hasil['name'] }}</td>
+                                                <td>{{ $deskripsi }}</td>
+                                                <td>
+                                                    @if ($hasil['skor'] >= $hasil['passing_grade'])
+                                                        <span class="badge bg-success">Lulus</span>
+                                                    @else
+                                                        <span class="badge bg-danger">Tidak Lulus</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>

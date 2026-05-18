@@ -32,20 +32,38 @@
 
                             <h2 class="fw-bold mb-2 text-dark">Terima Kasih, Pembayaran Berhasil!</h2>
                             <p class="text-muted mb-4">Paket
-                                <strong>{{ $transaction->order_id ?? 'Tryout CPNS' }}</strong> kamu sekarang sudah
+                                <strong>{{ $transaction->tryout->title ?? 'Tryout CPNS' }}</strong> kamu sekarang sudah
                                 aktif. Kamu bisa langsung memulai ujian sekarang.
                             </p>
 
                             <div class="bg-light p-4 rounded mb-4 text-start border">
+
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted">Order ID:</span>
-                                    <span class="fw-bold text-dark">{{ $transaction->order_id ?? '-' }}</span>
+                                    <span class="text-muted">No. Invoice:</span>
+                                    <span
+                                        class="fw-bold text-dark">{{ $transaction->invoice_number ?? ($transaction->order_id ?? '-') }}</span>
                                 </div>
+
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted">Total Bayar:</span>
-                                    <span class="fw-bold text-success">Rp
+                                    <span class="text-muted">Harga Paket:</span>
+                                    <span class="fw-medium text-dark">Rp
                                         {{ number_format($transaction->amount ?? 0, 0, ',', '.') }}</span>
                                 </div>
+
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Kode Unik:</span>
+                                    <span class="fw-medium text-warning">+ Rp
+                                        {{ $transaction->unique_code ?? 0 }}</span>
+                                </div>
+
+                                <hr class="my-2 border-secondary border-opacity-25">
+
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span class="text-muted fw-bold">Total Transfer:</span>
+                                    <span class="fw-bold text-success fs-5">Rp
+                                        {{ number_format($transaction->total_amount ?? 0, 0, ',', '.') }}</span>
+                                </div>
+
                                 <div class="d-flex justify-content-between">
                                     <span class="text-muted">Status:</span>
                                     <span class="badge bg-success">SUCCESS</span>
@@ -64,11 +82,12 @@
                             </div>
 
                             <div class="d-grid gap-2">
-                                <a href="{{ route('ujian.persiapan', 1) }}" class="btn btn-success btn-lg shadow-sm">
+                                <a href="{{ route('ujian.persiapan', $transaction->tryout_id ?? 1) }}"
+                                    class="btn btn-success btn-lg shadow-sm">
                                     <i class="fe fe-play-circle me-2"></i> Mulai Ujian Sekarang
                                 </a>
-                                <a href="{{ route('checkout') }}" class="btn btn-outline-secondary">
-                                    Kembali
+                                <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
+                                    Kembali ke Dashboard
                                 </a>
                             </div>
 

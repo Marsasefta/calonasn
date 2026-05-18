@@ -29,6 +29,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/payment/upload/{invoice_number}', [TransactionController::class, 'uploadProof'])->name('payment.upload');
     // -------------------------------------
     Route::get('/payment-pending', [TransactionController::class, 'pending'])->name('payment.pending');
+    Route::get('/payment/check-status', [TransactionController::class, 'checkStatus'])->name('payment.check.status');
     Route::get('/payment-success', [TransactionController::class, 'success'])->name('payment.success');
 
     // Riwayat transaksi dan invoice
@@ -43,9 +44,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/demo', [DemoController::class, 'index'])->name('demo.index');
     Route::get('/demo/ujian', [DemoController::class, 'start'])->name('demo.ujian');
     Route::post('/demo/selesai', [DemoController::class, 'finish'])->name('demo.selesai');
-
-
-
 
 
     // Route Persiapan (Tidak pakai middleware karena ini pintu masuknya)

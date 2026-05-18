@@ -39,25 +39,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @php
-                                        // Array untuk mencatat tryout mana saja yang sudah ditampilkan pembahasannya
-                                        $pembahasanDitampilkan = [];
-                                    @endphp
-
                                     @forelse ($riwayatUjian as $item)
                                         @php
-                                            // Cek apakah tryout ini sudah ada di array (artinya ini adalah riwayat lama)
-                                            $bisaLihatPembahasan = !in_array($item->tryout_id, $pembahasanDitampilkan);
-                                            
-                                            // Jika belum ada, masukkan ke array agar baris bawahnya tidak kebagian tombol lagi
-                                            if ($bisaLihatPembahasan) {
-                                                $pembahasanDitampilkan[] = $item->tryout_id;
-                                            }
+                                            // Cek apakah baris ini adalah percobaan terbaru dari tryout tersebut
+                                            $isTerbaru = in_array($item->id, $sessionTerbaruPerTryout);
+                                            // Cek status kelulusan
+                                            $isLulus = $item->total_score >= 311;
                                         @endphp
 
                                         <tr>
                                             <td class="align-middle">
-                                                {{ $item->end_time->format('d M Y') }}
+                                                {{ $item->end_time->format('d M Y H:i') }}
+                                                @if ($isTerbaru)
+                                                    <span class="badge bg-primary ms-1"
+                                                        style="font-size: 10px;">Terbaru</span>
+                                                @endif
                                             </td>
                                             <td class="align-middle">
                                                 <h5 class="mb-0 text-dark">{{ $item->tryout->title }}</h5>
@@ -69,7 +65,7 @@
                                                 {{ $item->total_score }}
                                             </td>
                                             <td class="align-middle">
-                                                @if ($item->total_score >= 311)
+                                                @if ($isLulus)
                                                     <span class="badge bg-success-soft text-success">LULUS</span>
                                                 @else
                                                     <span class="badge bg-danger-soft text-danger">TIDAK LULUS</span>
@@ -83,39 +79,49 @@
                                                         Opsi
                                                     </a>
                                                     <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li>
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('ujian.hasil', $item->tryout_id) }}">
-                                                                <i class="fe fe-bar-chart-2 me-2"></i>Lihat Detail
-                                                            </a>
-                                                        </li>
 
-                                                        {{-- LOGIKA PEMBATASAN MUNCUL DI SINI --}}
-                                                        @if ($bisaLihatPembahasan)
+                                                        {{-- TOMBOL DETAIL & PEMBAHASAN HANYA MUNCUL DI DATA TERBARU --}}
+                                                        @if ($isTerbaru)
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('ujian.hasil', $item->tryout_id) }}">
+                                                                    <i class="fe fe-bar-chart-2 me-2"></i>Lihat Detail
+                                                                </a>
+                                                            </li>
                                                             <li>
                                                                 <a class="dropdown-item"
                                                                     href="{{ route('ujian.pembahasan', $item->tryout_id) }}">
                                                                     <i class="fe fe-book-open me-2"></i>Pembahasan
                                                                 </a>
                                                             </li>
+                                                        @else
+                                                            <li>
+                                                                <span class="dropdown-item text-muted"
+                                                                    style="font-size: 12px; font-style: italic;">
+                                                                    <i class="fe fe-lock me-2"></i>Terkunci (Data Lama)
+                                                                </span>
+                                                            </li>
                                                         @endif
 
-                                                        @if ($item->total_score >= 311)
+                                                        {{-- TOMBOL SERTIFIKAT TETAP MUNCUL JIKA LULUS --}}
+                                                        @if ($isLulus)
                                                             <li>
                                                                 <hr class="dropdown-divider">
                                                             </li>
                                                             <li>
-                                                                <a class="dropdown-item text-primary"
-                                                                    href="{{ route('ujian.sertifikat', $item->tryout_id) }}">
+                                                                <a class="dropdown-item text-primary fw-bold"
+                                                                    href="{{ route('ujian.sertifikat', $item->id) }}">
                                                                     <i class="fe fe-award me-2"></i>Unduh Sertifikat
                                                                 </a>
                                                             </li>
                                                         @endif
+
                                                     </ul>
                                                 </div>
                                             </td>
                                         </tr>
                                     @empty
+                                        {{-- BAGIAN INI YANG KEMARIN HILANG LUR --}}
                                         <tr>
                                             <td colspan="8" class="text-center py-5">
                                                 <div class="text-muted">

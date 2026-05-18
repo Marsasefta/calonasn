@@ -116,10 +116,10 @@ class TransactionController extends Controller
 
         // --- SINKRONISASI NOTIFIKASI EMAIL ADMIN ---
         // Masukkan email kamu dan temanmu di dalam array ini
-        $adminEmails = ['fenthalari@gmail.com','Marsasefta02@gmail.com'];
+        // $adminEmails = ['fenthalari@gmail.com','Marsasefta02@gmail.com'];
 
         // Kirim notifikasi menggunakan facade Notification Laravel
-        Notification::route('mail', $adminEmails)->notify(new AdminPaymentNotification($transaction));
+        // Notification::route('mail', $adminEmails)->notify(new AdminPaymentNotification($transaction));
         // --- END NOTIFIKASI ---
 
         return redirect()->route('payment.pending')->with('success', 'Bukti transfer berhasil diunggah.');
@@ -181,5 +181,21 @@ class TransactionController extends Controller
         $transaction->delete();
 
         return redirect()->route('riwayat')->with('success', 'Pesanan berhasil dibatalkan.');
+    }
+
+    public function checkStatus(Request $request)
+    {
+        // Ambil transaksi terakhir milik user yang sedang login
+        $transaction = \App\Models\Transaction::where('user_id', auth()->id())
+                        ->latest()
+                        ->first();
+
+        if ($transaction) {
+            return response()->json([
+                'status' => $transaction->status // Mengembalikan 'pending', 'success', atau 'failed'
+            ]);
+        }
+
+        return response()->json(['status' => 'not_found'], 404);
     }
 }

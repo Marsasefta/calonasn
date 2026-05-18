@@ -177,38 +177,43 @@ class UjianController extends Controller
             $redisAnswersKey = "temp_answers:user_{$userId}:tryout_{$id}";
             $jawabanUser = \Illuminate\Support\Facades\Redis::hgetAll($redisAnswersKey) ?? [];
         }
-        
-        session(['jawabanUser' => $jawabanUser]);
 
         // 3. Ambil Urutan Soal Asli dari Redis SEBELUM Dihapus
         $redisSequenceKey = "sequence:user_{$userId}:tryout_{$id}";
         $sequenceJson = \Illuminate\Support\Facades\Redis::get($redisSequenceKey);
         $questionSequence = json_decode($sequenceJson, true);
 
-        // Antisipasi jika karena suatu hal Redis sequence kosong, gunakan key dari jawaban
         if (empty($questionSequence)) {
             $questionSequence = array_keys($jawabanUser);
         }
 
-        // 4. Inisialisasi Variabel Skor
-        $skor = ['TWK' => 0, 'TIU' => 0, 'TKP' => 0];
-        
+        // ==========================================
+        // 4. PERSIAPAN SKOR DINAMIS BERDASARKAN KATEGORI
+        // ==========================================
         $categories = \App\Models\Category::all()->keyBy('id');
-        $catTwk = $categories->where('name', 'TWK')->first();
-        $catTiu = $categories->where('name', 'TIU')->first();
-        $catTkp = $categories->where('name', 'TKP')->first();
+        $skorPerKategori = []; // Array penampung dinamis
+        $totalSkorKeseluruhan = 0;
 
-        $examAnswersData = []; 
+        // Inisialisasi awal nilai 0 untuk setiap kategori yang ada di DB
+        foreach ($categories as $catId => $catData) {
+            $skorPerKategori[$catId] = [
+                'name' => $catData->name,
+                'skor' => 0,
+                'passing_grade' => $catData->passing_grade_score ?? 0 // Sesuaikan nama kolom PG kamu
+            ];
+        }
 
-        // Ambil semua data soal dan opsi untuk optimasi query
+        $examAnswersData = [];
         $questions = \App\Models\Question::whereIn('id', $questionSequence)->get()->keyBy('id');
         $optionIds = array_values($jawabanUser);
         $options = \App\Models\QuestionOption::whereIn('id', $optionIds)->get()->keyBy('id');
 
-        // PERBAIKAN: Looping berdasarkan urutan asli soal (1 s.d 110)
+        // ==========================================
+        // 5. PROSES PERHITUNGAN DINAMIS (TANPA HARDCODE TWK/TIU/TKP)
+        // ==========================================
         foreach ($questionSequence as $qId) {
             $question = $questions->get($qId);
-            $optId = $jawabanUser[$qId] ?? null; // Bisa bernilai null jika dilewati
+            $optId = $jawabanUser[$qId] ?? null;
             $option = $optId ? $options->get($optId) : null;
 
             $pointEarned = 0;
@@ -216,22 +221,18 @@ class UjianController extends Controller
             if ($question) {
                 if ($option) {
                     $pointEarned = $option->point;
-                    
-                    // Hitung akumulasi skor kategori
-                    if ($question->category_id == $catTwk->id) {
-                        $skor['TWK'] += $pointEarned;
-                    } elseif ($question->category_id == $catTiu->id) {
-                        $skor['TIU'] += $pointEarned;
-                    } elseif ($question->category_id == $catTkp->id) {
-                        $skor['TKP'] += $pointEarned;
+                    // Tambahkan poin ke array dinamis berdasarkan category_id soal
+                    if (isset($skorPerKategori[$question->category_id])) {
+                        $skorPerKategori[$question->category_id]['skor'] += $pointEarned;
                     }
                 }
 
-                // Tetap masukkan ke array insert meskipun opsi_id kosong (null)
+                $totalSkorKeseluruhan += $pointEarned;
+
                 $examAnswersData[] = [
                     'exam_session_id' => $session->id,
                     'question_id'     => $qId,
-                    'option_id'       => $optId, // Terpelihara sebagai null di DB baru kamu
+                    'option_id'       => $optId,
                     'score_earned'    => $pointEarned,
                     'created_at'      => now(),
                     'updated_at'      => now(),
@@ -239,32 +240,54 @@ class UjianController extends Controller
             }
         }
 
-        $skor['TOTAL'] = array_sum($skor);
+        // ==========================================
+        // 6. PENENTUAN KELULUSAN (LULUS SEMUA KATEGORI)
+        // ==========================================
+        $lulus = true;
+        foreach ($skorPerKategori as $hasilKategori) {
+            if ($hasilKategori['skor'] < $hasilKategori['passing_grade']) {
+                $lulus = false;
+                break; // Jika ada 1 yang di bawah passing grade, langsung tidak lulus
+            }
+        }
 
-        // 5. Penentuan Lulus / Tidak Lulus
-        $passTwk = $skor['TWK'] >= ($catTwk->passing_grade_score ?? 65);
-        $passTiu = $skor['TIU'] >= ($catTiu->passing_grade_score ?? 80);
-        $passTkp = $skor['TKP'] >= ($catTkp->passing_grade_score ?? 166);
-        
-        $lulus = $passTwk && $passTiu && $passTkp; 
-        
-        session(['hasilUjian' => compact('skor', 'lulus')]);
-
-        // 6. Simpan Permanen ke Tabel exam_sessions
-        $session->update([
-            'end_time'    => now(),
-            'score_twk'   => $skor['TWK'],
-            'score_tiu'   => $skor['TIU'],
-            'score_tkp'   => $skor['TKP'],
-            'total_score' => $skor['TOTAL'],
+        // Lempar data matang ke Session untuk diambil di fungsi hasil()
+        session([
+            'hasilUjian' => [
+                'skorPerKategori' => $skorPerKategori,
+                'total_score' => $totalSkorKeseluruhan,
+                'lulus' => $lulus
+            ]
         ]);
 
-        // 7. Simpan Riwayat Jawaban (Insert Massal)
+        // ==========================================
+        // 7. SIMPAN PERMANEN KE DB
+        // ==========================================
+        // CATATAN: Kolom score_twk, score_tiu, score_tkp di tabel exam_sessions
+        // bisa kamu pertahankan dulu untuk kompatibilitas data lama. 
+        // Tapi nilai dinamis kita simpan sebagai JSON di kolom 'total_score' (jika memungkinkan)
+        // atau simpan totalnya saja.
+        
+        // Cari ID TWK, TIU, TKP untuk mengisi legacy column secara aman
+        $twkId = $categories->where('name', 'TWK')->first()->id ?? null;
+        $tiuId = $categories->where('name', 'TIU')->first()->id ?? null;
+        $tkpId = $categories->where('name', 'TKP')->first()->id ?? null;
+
+        $session->update([
+            'end_time'    => now(),
+            'score_twk'   => $twkId ? $skorPerKategori[$twkId]['skor'] : 0,
+            'score_tiu'   => $tiuId ? $skorPerKategori[$tiuId]['skor'] : 0,
+            'score_tkp'   => $tkpId ? $skorPerKategori[$tkpId]['skor'] : 0,
+            'total_score' => $totalSkorKeseluruhan,
+        ]);
+
         if (count($examAnswersData) > 0) {
             \App\Models\ExamAnswer::insert($examAnswersData);
         }
 
+        // ==========================================
         // 8. PEMBERSIHAN REDIS 
+        // ==========================================
         \Illuminate\Support\Facades\Redis::del("temp_answers:user_{$userId}:tryout_{$id}");
         \Illuminate\Support\Facades\Redis::del("temp_ragu:user_{$userId}:tryout_{$id}");
         \Illuminate\Support\Facades\Redis::del("timer:user_{$userId}:tryout_{$id}");
@@ -273,17 +296,20 @@ class UjianController extends Controller
         return redirect()->route('ujian.hasil', $id);
     }
 
-    // Tambahkan fungsi baru ini untuk menampilkan halaman hasil
-    public function hasil($id) // Tambahkan $id agar konsisten
+
+    // FUNGSI HASIL
+    public function hasil($id)
     {
         $hasil = session('hasilUjian');
+        
         if (!$hasil) {
             return redirect()->route('ujian.persiapan', $id);
         }
 
         return view('user.ujian.ujian_hasil', [
             'id' => $id,
-            'skor' => $hasil['skor'],
+            'hasilPerKategori' => $hasil['skorPerKategori'],
+            'totalSkor' => $hasil['total_score'],
             'lulus' => $hasil['lulus']
         ]);
     }
@@ -320,37 +346,7 @@ class UjianController extends Controller
             ->values(); // Mengembalikan indeks array menjadi 0, 1, 2, dst.
 
         return view('user.ujian.ujian_pembahasan', compact('questions', 'jawabanUser', 'id'));
-    }
-
-    public function sertifikat()
-    {
-        $hasil = session('hasilUjian');
-        
-        // Proteksi: Jika tidak ada data ujian atau tidak lulus, tendang balik ke dashboard
-        if (!$hasil || !$hasil['lulus']) {
-            return redirect()->route('dashboard')->with('error', 'Sertifikat hanya tersedia bagi peserta yang lulus Passing Grade.');
-        }
-
-        return view('user.ujian.sertifikat', [
-            'user' => auth()->user(),
-            'skor' => $hasil['skor'],
-            'tanggal' => date('d F Y') // Format tanggal hari ini
-        ]);
-    }
-
-    public function riwayatSertifikat()
-    {
-        $userId = auth()->id();
-
-        // Mengambil riwayat ujian yang sudah selesai
-        $riwayatUjian = \App\Models\ExamSession::with('tryout')
-            ->where('user_id', $userId)
-            ->whereNotNull('end_time')
-            ->latest()
-            ->get();
-
-        return view('user.riwayat_tryout.riwayat_ujian', compact('riwayatUjian'));
-    }
+    }    
 
     public function simpanJawabanTemp(Request $request)
     {
@@ -398,4 +394,70 @@ class UjianController extends Controller
 
         return response()->json(['status' => 'success']);
     }
+
+    public function riwayatSertifikat()
+    {
+        $userId = auth()->id();
+
+        // 1. Mengambil riwayat ujian yang sudah selesai (Diurutkan dari yang paling baru)
+        $riwayatUjian = \App\Models\ExamSession::with('tryout')
+            ->where('user_id', $userId)
+            ->whereNotNull('end_time')
+            ->latest() // Ini sama dengan orderBy('created_at', 'desc')
+            ->get();
+
+        // 2. Mencari ID sesi terbaru untuk masing-masing Tryout
+        $sessionTerbaruPerTryout = $riwayatUjian->groupBy('tryout_id')
+            ->map(function ($group) {
+                // Karena $riwayatUjian di atas sudah diurutkan (latest), 
+                // maka urutan pertama (first) di setiap grup pasti adalah data yang paling baru.
+                return $group->first()->id; 
+            })->toArray();
+
+        // 3. Lempar kedua variabel ke file View
+        return view('user.riwayat_tryout.riwayat_ujian', compact('riwayatUjian', 'sessionTerbaruPerTryout'));
+    }
+
+    public function sertifikat($id)
+    {
+        $userId = auth()->id();
+
+        // 1. Ambil data BERDASARKAN ID SESI UJIAN LANGSUNG (bukan tryout_id)
+        $session = \App\Models\ExamSession::where('user_id', $userId)
+            ->where('id', $id) // Tembak langsung ke primary key id session-nya
+            ->first();
+
+        // 🔴 TEPAT DI SINI KITA PASANG ALAT DETEKTIF (DEBBUGING)
+        // Jika kamu masih mental ke dashboard, hapus tanda komentar (//) pada baris dd di bawah ini:
+        // dd($session->toArray());
+
+        if (!$session) {
+            return redirect()->route('dashboard')->with('error', 'Sesi ujian tidak ditemukan.');
+        }
+
+        // 2. Kalkulasi aman untuk mengantisipasi data lama yang total_score-nya masih 0
+        $totalSkorReal = $session->total_score;
+        if (!$totalSkorReal || $totalSkorReal == 0) {
+            $totalSkorReal = ($session->score_twk ?? 0) + ($session->score_tiu ?? 0) + ($session->score_tkp ?? 0);
+        }
+
+        // 3. Cek passing grade total
+        if ($totalSkorReal < 311) {
+            return redirect()->route('dashboard')->with('error', 'Skor Anda (' . $totalSkorReal . ') belum memenuhi passing grade kelulusan.');
+        }
+
+        // 4. Susun format untuk dilempar ke Blade Sertifikat
+        $skorFormat = [
+            'TWK' => $session->score_twk ?? 0,
+            'TIU' => $session->score_tiu ?? 0,
+            'TKP' => $session->score_tkp ?? 0,
+            'TOTAL' => $totalSkorReal
+        ];
+
+        return view('user.ujian.sertifikat', [
+            'user' => auth()->user(),
+            'skor' => $skorFormat,
+            'tanggal' => $session->end_time ? $session->end_time->format('d F Y') : date('d F Y')
+        ]);
+    }    
 }

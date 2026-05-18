@@ -13,22 +13,36 @@
     <!-- Sidebar -->
     @include('partials.navbar-student')
 
-    <div class="db-content text-dark">
+    <div class="db-content text-dark p-2 p-md-4" id="areaUjian" style="background-color: #f4f6f9; overflow-y: auto;">
         <div class="container-fluid mb-4">
+
             <div class="row align-items-center mb-4 bg-white p-3 shadow-sm rounded">
-                <div class="col-md-6">
+
+                <div class="col-md-6 col-12 mb-3 mb-md-0">
                     <h4 class="mb-0 fw-bold text-primary">Simulasi CAT CPNS 2026</h4>
                     <p class="mb-0 text-muted small">Total: 110 Soal (TWK, TIU, TKP)</p>
                 </div>
-                <div class="col-md-6 text-end">
-                    @php
-                        $initMinutes = floor($durationInSeconds / 60);
-                        $initSeconds = $durationInSeconds % 60;
-                    @endphp
-                    <h3 id="timerDisplay" class="mb-0 fw-bold text-danger">
-                        {{ sprintf('%02d:%02d', $initMinutes, $initSeconds) }}
-                    </h3>
-                    <span class="small text-muted">Sisa Waktu</span>
+
+                <div
+                    class="col-md-6 col-12 d-flex justify-content-md-end justify-content-between align-items-center gap-4">
+
+                    <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center"
+                        id="btnFullscreen" title="Layar Penuh">
+                        <i class="fe fe-maximize me-md-2" id="iconFullscreen"></i>
+                        <span id="textFullscreen" class="d-none d-md-inline">Fokus / Fullscreen</span>
+                    </button>
+
+                    <div class="text-end">
+                        @php
+                            $initMinutes = floor($durationInSeconds / 60);
+                            $initSeconds = $durationInSeconds % 60;
+                        @endphp
+                        <h3 id="timerDisplay" class="mb-0 fw-bold text-danger lh-1">
+                            {{ sprintf('%02d:%02d', $initMinutes, $initSeconds) }}
+                        </h3>
+                        <span class="small text-muted">Sisa Waktu</span>
+                    </div>
+
                 </div>
             </div>
 
@@ -305,6 +319,73 @@
         // 8. Inisiasi Ujian
         document.addEventListener("DOMContentLoaded", function() {
             lompatKeSoal(1);
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnFullscreen = document.getElementById('btnFullscreen');
+            const iconFullscreen = document.getElementById('iconFullscreen');
+            const textFullscreen = document.getElementById('textFullscreen');
+
+            // Targetkan elemen yang mau di-fullscreen (seluruh halaman web)
+            const elem = document.getElementById('areaUjian');
+
+            btnFullscreen.addEventListener('click', function() {
+                // Mengecek apakah browser saat ini sedang TIDAK fullscreen
+                if (!document.fullscreenElement && !document.mozFullScreenElement && !document
+                    .webkitFullscreenElement && !document.msFullscreenElement) {
+
+                    // Minta izin ke browser untuk masuk mode Fullscreen
+                    if (elem.requestFullscreen) {
+                        elem.requestFullscreen();
+                    } else if (elem.webkitRequestFullscreen) {
+                        /* Safari & Chrome lama */
+                        elem.webkitRequestFullscreen();
+                    } else if (elem.msRequestFullscreen) {
+                        /* IE11 / Edge lama */
+                        elem.msRequestFullscreen();
+                    }
+
+                    // Ubah tampilan tombol jadi "Minimize"
+                    iconFullscreen.classList.replace('fe-maximize', 'fe-minimize');
+                    textFullscreen.innerText = 'Keluar Fokus';
+                    btnFullscreen.classList.replace('btn-outline-secondary', 'btn-secondary');
+
+                } else {
+                    // Jika sedang fullscreen, maka keluar dari mode fullscreen
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        /* Safari & Chrome lama */
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        /* IE11 / Edge lama */
+                        document.msExitFullscreen();
+                    }
+
+                    // Kembalikan tampilan tombol ke awal
+                    iconFullscreen.classList.replace('fe-minimize', 'fe-maximize');
+                    textFullscreen.innerText = 'Fokus / Fullscreen';
+                    btnFullscreen.classList.replace('btn-secondary', 'btn-outline-secondary');
+                }
+            });
+
+            // (Opsional) Deteksi jika user keluar fullscreen pakai tombol 'ESC' di keyboard
+            document.addEventListener('fullscreenchange', exitHandler);
+            document.addEventListener('webkitfullscreenchange', exitHandler);
+            document.addEventListener('mozfullscreenchange', exitHandler);
+            document.addEventListener('MSFullscreenChange', exitHandler);
+
+            function exitHandler() {
+                if (!document.fullscreenElement && !document.webkitIsFullScreen && !document.mozFullScreen && !
+                    document.msFullscreenElement) {
+                    // Kembalikan tombol ke mode normal jika user tekan tombol ESC
+                    iconFullscreen.classList.replace('fe-minimize', 'fe-maximize');
+                    textFullscreen.innerText = 'Fokus / Fullscreen';
+                    btnFullscreen.classList.replace('btn-secondary', 'btn-outline-secondary');
+                }
+            }
         });
     </script>
 
