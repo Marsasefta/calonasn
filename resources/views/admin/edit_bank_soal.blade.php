@@ -82,7 +82,7 @@
 
                                     @php
                                         $options = $question->options()->orderBy('id')->get();
-                                        $optionLetters = ['A', 'B', 'C', 'D'];
+                                        $optionLetters = ['A', 'B', 'C', 'D', 'E'];
                                     @endphp
 
                                     @foreach($optionLetters as $index => $letter)

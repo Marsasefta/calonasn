@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\SoalImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
+
 use App\Models\Category;
 use App\Models\Question;
 use App\Models\QuestionOption;
 use App\Models\Tryout;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class BankSoalController extends Controller
@@ -146,192 +149,193 @@ class BankSoalController extends Controller
     }
 
     public function importBankSoal(Request $request)
-    {
-        $validated = $request->validate([
-            'file' => 'required|file|mimes:csv,txt,xlsx,xls',
-            'tryout_id' => 'required|exists:tryouts,id',
-            'category_id' => 'required|exists:categories,id',
-        ]);
+{
+    $request->validate([
+        'file' => 'required|file|mimes:csv,txt,xlsx,xls',
+        'tryout_id' => 'required|exists:tryouts,id',
+    ]);
 
-        $file = $request->file('file');
-        $tryout_id = $validated['tryout_id'];
-        $category_id = $validated['category_id'];
-
-        try {
-            $imported = 0;
-            $errors = [];
-            
-            if ($file->getClientOriginalExtension() === 'xlsx' || $file->getClientOriginalExtension() === 'xls') {
-                $imported = $this->importFromExcel($file, $tryout_id, $category_id, $errors);
-            } else {
-                $imported = $this->importFromCsv($file, $tryout_id, $category_id, $errors);
-            }
-
-            if (count($errors) > 0) {
-                return back()->with('success', "$imported soal berhasil diimpor.")
-                             ->with('warnings', $errors);
-            }
-
-            return back()->with('success', "$imported soal berhasil diimpor.");
-        } catch (\Exception $e) {
-            return back()->withErrors(['file' => 'Gagal mengimpor file: ' . $e->getMessage()]);
-        }
-    }
-
-    private function importFromCsv($file, $tryout_id, $category_id, &$errors)
-    {
-        $imported = 0;
-        $handle = fopen($file->getRealPath(), 'r');
-        $header = fgetcsv($handle);
-        $row = 1;
-
-        while (($data = fgetcsv($handle)) !== false) {
-            $row++;
-
-            if (count($data) < 10) {
-                $errors[] = "Baris $row: Kolom tidak lengkap (diperlukan minimal 10 kolom: pertanyaan, 4 pilihan, 4 poin, pembahasan)";
-                continue;
-            }
-
-            try {
-                $category = Category::find($category_id);
-                $isTkp = $category && strtolower($category->name) === 'tkp';
-
-                // Ambil poin pilihan terlebih dahulu dan validasi
-                $optionPoints = [];
-                for ($i = 0; $i < 4; $i++) {
-                    $p = (int)($data[$i + 5] ?? 0);
-                    $optionPoints[] = $p;
-                }
-
-                if ($isTkp) {
-                    foreach ($optionPoints as $p) {
-                        if ($p < 1 || $p > 5) {
-                            $errors[] = "Baris $row: Untuk kategori TKP, bobot setiap pilihan harus antara 1 dan 5.";
-                            continue 2;
-                        }
-                    }
-                } else {
-                    foreach ($optionPoints as $p) {
-                        if ($p < 0 || $p > 5) {
-                            $errors[] = "Baris $row: Point setiap pilihan harus antara 0 dan 5.";
-                            continue 2;
-                        }
-                    }
-                }
-
-                $question = Question::create([
-                    'tryout_id' => $tryout_id,
-                    'category_id' => $category_id,
-                    'question_text' => trim($data[0]),
-                    'discussion' => !empty($data[9]) ? trim($data[9]) : null,
-                ]);
-
-                for ($i = 0; $i < 4; $i++) {
-                    QuestionOption::create([
-                        'question_id' => $question->id,
-                        'option_text' => trim($data[$i + 1]),
-                        'point' => $optionPoints[$i],
-                    ]);
-                }
-
-                $imported++;
-            } catch (\Exception $e) {
-                $errors[] = "Baris $row: " . $e->getMessage();
-            }
-        }
-
-        fclose($handle);
-        return $imported;
-    }
-
-    private function importFromExcel($file, $tryout_id, $category_id, &$errors)
-    {
-        $imported = 0;
+    try {
+        // Deklarasikan objek import-nya dulu
+        $importData = new SoalImport($request->tryout_id);
         
-        try {
-            // Simple Excel reading using native PHP
-            require_once storage_path('app/vendor/autoload.php');
-            
-            // Alternative: read xlsx as zip and parse XML
-            $zip = new \ZipArchive();
-            if ($zip->open($file->getRealPath()) === true) {
-                $xml = $zip->getFromName('xl/worksheets/sheet1.xml');
-                $zip->close();
-                
-                // Parse XML and extract data
-                $xmlObject = simplexml_load_string($xml);
-                
-                $row = 0;
-                foreach ($xmlObject->sheetData->row as $rowElement) {
-                    $row++;
-                    
-                    if ($row === 1) continue; // Skip header
-                    
-                    $cells = [];
-                    foreach ($rowElement->c as $cell) {
-                        $value = (string)$cell->v;
-                        $cells[] = $value;
-                    }
+        // Eksekusi
+        Excel::import($importData, $request->file('file'));
 
-                    if (count($cells) < 10) {
-                        $errors[] = "Baris $row: Kolom tidak lengkap (diperlukan minimal 10 kolom: pertanyaan, 4 pilihan, 4 poin, pembahasan)";
-                        continue;
-                    }
+        // Ambil hasil hitungannya
+        $sukses = $importData->rowCountSukses;
+        $gagal = $importData->rowCountGagal;
 
-                    try {
-                        $category = Category::find($category_id);
-                        $isTkp = $category && strtolower($category->name) === 'tkp';
-
-                        // Ambil poin pilihan terlebih dahulu dan validasi
-                        $optionPoints = [];
-                        for ($i = 0; $i < 4; $i++) {
-                            $p = (int)($cells[$i + 5] ?? 0);
-                            $optionPoints[] = $p;
-                        }
-
-                        if ($isTkp) {
-                            foreach ($optionPoints as $p) {
-                                if ($p < 1 || $p > 5) {
-                                    $errors[] = "Baris $row: Untuk kategori TKP, bobot setiap pilihan harus antara 1 dan 5.";
-                                    continue 2;
-                                }
-                            }
-                        } else {
-                            foreach ($optionPoints as $p) {
-                                if ($p < 0 || $p > 5) {
-                                    $errors[] = "Baris $row: Point setiap pilihan harus antara 0 dan 5.";
-                                    continue 2;
-                                }
-                            }
-                        }
-
-                        $question = Question::create([
-                            'tryout_id' => $tryout_id,
-                            'category_id' => $category_id,
-                            'question_text' => trim($cells[0]),
-                            'discussion' => !empty($cells[9]) ? trim($cells[9]) : null,
-                        ]);
-
-                        for ($i = 0; $i < 4; $i++) {
-                            QuestionOption::create([
-                                'question_id' => $question->id,
-                                'option_text' => trim($cells[$i + 1]),
-                                'point' => $optionPoints[$i],
-                            ]);
-                        }
-
-                        $imported++;
-                    } catch (\Exception $e) {
-                        $errors[] = "Baris $row: " . $e->getMessage();
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            // Fallback: treat as CSV
-            return $this->importFromCsv($file, $tryout_id, $category_id, $errors);
+        // Susun pesan notifikasinya
+        if ($gagal > 0) {
+            return back()->with('success', "Proses selesai! $sukses soal berhasil diimpor.")
+                         ->with('warning', "Perhatian: Ada $gagal baris soal yang gagal/dilewati (Mungkin kategori salah ketik atau teks pertanyaan kosong di Excel).");
         }
 
-        return $imported;
+        return back()->with('success', "Luar biasa! Seluruh $sukses soal berhasil diimpor tanpa ada yang gagal.");
+        
+    } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+        return back()->withErrors(['file' => 'Format file Excel tidak sesuai standar.']);
+    } catch (\Exception $e) {
+        return back()->withErrors(['file' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
     }
+}
+
+
+    // private function importFromCsv($file, $tryout_id, $category_id, &$errors)
+    // {
+    //     $imported = 0;
+    //     $handle = fopen($file->getRealPath(), 'r');
+    //     $header = fgetcsv($handle);
+    //     $row = 1;
+
+    //     while (($data = fgetcsv($handle)) !== false) {
+    //         $row++;
+
+    //         if (count($data) < 10) {
+    //             $errors[] = "Baris $row: Kolom tidak lengkap (diperlukan minimal 10 kolom: pertanyaan, 4 pilihan, 4 poin, pembahasan)";
+    //             continue;
+    //         }
+
+    //         try {
+    //             $category = Category::find($category_id);
+    //             $isTkp = $category && strtolower($category->name) === 'tkp';
+
+    //             // Ambil poin pilihan terlebih dahulu dan validasi
+    //             $optionPoints = [];
+    //             for ($i = 0; $i < 4; $i++) {
+    //                 $p = (int)($data[$i + 5] ?? 0);
+    //                 $optionPoints[] = $p;
+    //             }
+
+    //             if ($isTkp) {
+    //                 foreach ($optionPoints as $p) {
+    //                     if ($p < 1 || $p > 5) {
+    //                         $errors[] = "Baris $row: Untuk kategori TKP, bobot setiap pilihan harus antara 1 dan 5.";
+    //                         continue 2;
+    //                     }
+    //                 }
+    //             } else {
+    //                 foreach ($optionPoints as $p) {
+    //                     if ($p < 0 || $p > 5) {
+    //                         $errors[] = "Baris $row: Point setiap pilihan harus antara 0 dan 5.";
+    //                         continue 2;
+    //                     }
+    //                 }
+    //             }
+
+    //             $question = Question::create([
+    //                 'tryout_id' => $tryout_id,
+    //                 'category_id' => $category_id,
+    //                 'question_text' => trim($data[0]),
+    //                 'discussion' => !empty($data[9]) ? trim($data[9]) : null,
+    //             ]);
+
+    //             for ($i = 0; $i < 4; $i++) {
+    //                 QuestionOption::create([
+    //                     'question_id' => $question->id,
+    //                     'option_text' => trim($data[$i + 1]),
+    //                     'point' => $optionPoints[$i],
+    //                 ]);
+    //             }
+
+    //             $imported++;
+    //         } catch (\Exception $e) {
+    //             $errors[] = "Baris $row: " . $e->getMessage();
+    //         }
+    //     }
+
+    //     fclose($handle);
+    //     return $imported;
+    // }
+
+    // private function importFromExcel($file, $tryout_id, $category_id, &$errors)
+    // {
+    //     $imported = 0;
+        
+    //     try {
+    //         // Simple Excel reading using native PHP
+    //         require_once storage_path('app/vendor/autoload.php');
+            
+    //         // Alternative: read xlsx as zip and parse XML
+    //         $zip = new \ZipArchive();
+    //         if ($zip->open($file->getRealPath()) === true) {
+    //             $xml = $zip->getFromName('xl/worksheets/sheet1.xml');
+    //             $zip->close();
+                
+    //             // Parse XML and extract data
+    //             $xmlObject = simplexml_load_string($xml);
+                
+    //             $row = 0;
+    //             foreach ($xmlObject->sheetData->row as $rowElement) {
+    //                 $row++;
+                    
+    //                 if ($row === 1) continue; // Skip header
+                    
+    //                 $cells = [];
+    //                 foreach ($rowElement->c as $cell) {
+    //                     $value = (string)$cell->v;
+    //                     $cells[] = $value;
+    //                 }
+
+    //                 if (count($cells) < 10) {
+    //                     $errors[] = "Baris $row: Kolom tidak lengkap (diperlukan minimal 10 kolom: pertanyaan, 4 pilihan, 4 poin, pembahasan)";
+    //                     continue;
+    //                 }
+
+    //                 try {
+    //                     $category = Category::find($category_id);
+    //                     $isTkp = $category && strtolower($category->name) === 'tkp';
+
+    //                     // Ambil poin pilihan terlebih dahulu dan validasi
+    //                     $optionPoints = [];
+    //                     for ($i = 0; $i < 4; $i++) {
+    //                         $p = (int)($cells[$i + 5] ?? 0);
+    //                         $optionPoints[] = $p;
+    //                     }
+
+    //                     if ($isTkp) {
+    //                         foreach ($optionPoints as $p) {
+    //                             if ($p < 1 || $p > 5) {
+    //                                 $errors[] = "Baris $row: Untuk kategori TKP, bobot setiap pilihan harus antara 1 dan 5.";
+    //                                 continue 2;
+    //                             }
+    //                         }
+    //                     } else {
+    //                         foreach ($optionPoints as $p) {
+    //                             if ($p < 0 || $p > 5) {
+    //                                 $errors[] = "Baris $row: Point setiap pilihan harus antara 0 dan 5.";
+    //                                 continue 2;
+    //                             }
+    //                         }
+    //                     }
+
+    //                     $question = Question::create([
+    //                         'tryout_id' => $tryout_id,
+    //                         'category_id' => $category_id,
+    //                         'question_text' => trim($cells[0]),
+    //                         'discussion' => !empty($cells[9]) ? trim($cells[9]) : null,
+    //                     ]);
+
+    //                     for ($i = 0; $i < 4; $i++) {
+    //                         QuestionOption::create([
+    //                             'question_id' => $question->id,
+    //                             'option_text' => trim($cells[$i + 1]),
+    //                             'point' => $optionPoints[$i],
+    //                         ]);
+    //                     }
+
+    //                     $imported++;
+    //                 } catch (\Exception $e) {
+    //                     $errors[] = "Baris $row: " . $e->getMessage();
+    //                 }
+    //             }
+    //         }
+    //     } catch (\Exception $e) {
+    //         // Fallback: treat as CSV
+    //         return $this->importFromCsv($file, $tryout_id, $category_id, $errors);
+    //     }
+
+    //     return $imported;
+    // }
 }
