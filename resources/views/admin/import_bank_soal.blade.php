@@ -105,10 +105,10 @@
                                     <li><strong>Pilihan B</strong> - Teks pilihan B</li>
                                     <li><strong>Pilihan C</strong> - Teks pilihan C</li>
                                     <li><strong>Pilihan D</strong> - Teks pilihan D</li>
-                                    <li><strong>Point A</strong> - Poin untuk pilihan A (0-5)</li>
-                                    <li><strong>Point B</strong> - Poin untuk pilihan B (0-5)</li>
-                                    <li><strong>Point C</strong> - Poin untuk pilihan C (0-5)</li>
-                                    <li><strong>Point D</strong> - Poin untuk pilihan D (0-5)</li>
+                                    <li><strong>Point A</strong> - Poin untuk pilihan A (0-5). Untuk kategori TKP gunakan 1-5</li>
+                                    <li><strong>Point B</strong> - Poin untuk pilihan B (0-5). Untuk kategori TKP gunakan 1-5</li>
+                                    <li><strong>Point C</strong> - Poin untuk pilihan C (0-5). Untuk kategori TKP gunakan 1-5</li>
+                                    <li><strong>Point D</strong> - Poin untuk pilihan D (0-5). Untuk kategori TKP gunakan 1-5</li>
                                     <li><strong>Pembahasan</strong> (opsional) - Penjelasan jawaban</li>
                                 </ol>
 

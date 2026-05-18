@@ -188,25 +188,51 @@ class BankSoalController extends Controller
 
         while (($data = fgetcsv($handle)) !== false) {
             $row++;
-            
-            if (count($data) < 9) {
-                $errors[] = "Baris $row: Kolom tidak lengkap (diperlukan minimal 9 kolom)";
+
+            if (count($data) < 10) {
+                $errors[] = "Baris $row: Kolom tidak lengkap (diperlukan minimal 10 kolom: pertanyaan, 4 pilihan, 4 poin, pembahasan)";
                 continue;
             }
 
             try {
+                $category = Category::find($category_id);
+                $isTkp = $category && strtolower($category->name) === 'tkp';
+
+                // Ambil poin pilihan terlebih dahulu dan validasi
+                $optionPoints = [];
+                for ($i = 0; $i < 4; $i++) {
+                    $p = (int)($data[$i + 5] ?? 0);
+                    $optionPoints[] = $p;
+                }
+
+                if ($isTkp) {
+                    foreach ($optionPoints as $p) {
+                        if ($p < 1 || $p > 5) {
+                            $errors[] = "Baris $row: Untuk kategori TKP, bobot setiap pilihan harus antara 1 dan 5.";
+                            continue 2;
+                        }
+                    }
+                } else {
+                    foreach ($optionPoints as $p) {
+                        if ($p < 0 || $p > 5) {
+                            $errors[] = "Baris $row: Point setiap pilihan harus antara 0 dan 5.";
+                            continue 2;
+                        }
+                    }
+                }
+
                 $question = Question::create([
                     'tryout_id' => $tryout_id,
                     'category_id' => $category_id,
                     'question_text' => trim($data[0]),
-                    'discussion' => !empty($data[8]) ? trim($data[8]) : null,
+                    'discussion' => !empty($data[9]) ? trim($data[9]) : null,
                 ]);
 
                 for ($i = 0; $i < 4; $i++) {
                     QuestionOption::create([
                         'question_id' => $question->id,
                         'option_text' => trim($data[$i + 1]),
-                        'point' => (int)($data[$i + 5] ?? 0),
+                        'point' => $optionPoints[$i],
                     ]);
                 }
 
@@ -249,24 +275,50 @@ class BankSoalController extends Controller
                         $cells[] = $value;
                     }
 
-                    if (count($cells) < 9) {
-                        $errors[] = "Baris $row: Kolom tidak lengkap";
+                    if (count($cells) < 10) {
+                        $errors[] = "Baris $row: Kolom tidak lengkap (diperlukan minimal 10 kolom: pertanyaan, 4 pilihan, 4 poin, pembahasan)";
                         continue;
                     }
 
                     try {
+                        $category = Category::find($category_id);
+                        $isTkp = $category && strtolower($category->name) === 'tkp';
+
+                        // Ambil poin pilihan terlebih dahulu dan validasi
+                        $optionPoints = [];
+                        for ($i = 0; $i < 4; $i++) {
+                            $p = (int)($cells[$i + 5] ?? 0);
+                            $optionPoints[] = $p;
+                        }
+
+                        if ($isTkp) {
+                            foreach ($optionPoints as $p) {
+                                if ($p < 1 || $p > 5) {
+                                    $errors[] = "Baris $row: Untuk kategori TKP, bobot setiap pilihan harus antara 1 dan 5.";
+                                    continue 2;
+                                }
+                            }
+                        } else {
+                            foreach ($optionPoints as $p) {
+                                if ($p < 0 || $p > 5) {
+                                    $errors[] = "Baris $row: Point setiap pilihan harus antara 0 dan 5.";
+                                    continue 2;
+                                }
+                            }
+                        }
+
                         $question = Question::create([
                             'tryout_id' => $tryout_id,
                             'category_id' => $category_id,
                             'question_text' => trim($cells[0]),
-                            'discussion' => !empty($cells[8]) ? trim($cells[8]) : null,
+                            'discussion' => !empty($cells[9]) ? trim($cells[9]) : null,
                         ]);
 
                         for ($i = 0; $i < 4; $i++) {
                             QuestionOption::create([
                                 'question_id' => $question->id,
                                 'option_text' => trim($cells[$i + 1]),
-                                'point' => (int)($cells[$i + 5] ?? 0),
+                                'point' => $optionPoints[$i],
                             ]);
                         }
 
