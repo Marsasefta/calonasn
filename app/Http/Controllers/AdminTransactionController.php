@@ -19,13 +19,13 @@ class AdminTransactionController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,settlement,failed,expired',
+            'status' => 'required|in:pending,success,failed,expired',
         ]);
 
         $transaction = Transaction::with('user')->findOrFail($id);
         $transaction->update(['status' => $request->status]);
 
-        if ($request->status === 'settlement' && $transaction->user) {
+        if ($request->status === 'success' && $transaction->user) {
             $transaction->user->update(['is_premium' => true]);
         }
 

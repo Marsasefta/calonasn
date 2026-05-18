@@ -36,6 +36,7 @@
                                     <th>Peserta</th>
                                     <th>Tryout</th>
                                     <th>Jumlah</th>
+                                    <th>Bukti Bayar</th>
                                     <th>Status</th>
                                     <th>Tanggal</th>
                                     <th class="text-end">Aksi</th>
@@ -50,27 +51,31 @@
                                         <td>{{ $transaction->tryout->title ?? '-' }}</td>
                                         <td>Rp {{ number_format($transaction->amount, 0, ',', '.') }}</td>
                                         <td>
-                                            <span class="badge bg-{{ $transaction->status === 'settlement' ? 'success' : ($transaction->status === 'pending' ? 'warning' : 'danger') }}">
+                                            @if(!empty($transaction->payment_proof))
+                                                <a href="{{ asset('storage/' . $transaction->payment_proof) }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                                    Lihat Bukti
+                                                </a>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ $transaction->status === 'success' ? 'success' : ($transaction->status === 'pending' ? 'warning' : 'danger') }}">
                                                 {{ ucfirst($transaction->status) }}
                                             </span>
                                         </td>
                                         <td>{{ $transaction->created_at->format('d M Y H:i') }}</td>
                                         <td class="text-end">
-                                            <form action="{{ route('admin.transactions.update-status', $transaction->id) }}" method="POST" class="d-inline">
+                                            <form action="{{ route('admin.transactions.update-status', $transaction->id) }}" method="POST" class="confirm-payment-form d-flex justify-content-end align-items-center gap-2 mb-0">
                                                 @csrf
-                                                <select name="status" class="form-select form-select-sm d-inline w-auto me-2">
-                                                    <option value="pending" @selected($transaction->status === 'pending')>Pending</option>
-                                                    <option value="settlement" @selected($transaction->status === 'settlement')>Lunas</option>
-                                                    <option value="failed" @selected($transaction->status === 'failed')>Gagal</option>
-                                                    <option value="expired" @selected($transaction->status === 'expired')>Expired</option>
-                                                </select>
-                                                <button type="submit" class="btn btn-sm btn-primary">Simpan</button>
+                                                <input type="hidden" name="status" value="success">
+                                                <button type="submit" class="btn btn-sm btn-primary">Konfirmasi</button>
                                             </form>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center py-5">
+                                        <td colspan="9" class="text-center py-5">
                                             <div class="text-muted">
                                                 <i class="fe fe-inbox fs-3 mb-2 d-block"></i>
                                                 Belum ada transaksi.
@@ -92,5 +97,28 @@
 </div>
 
 @include('partials.scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.confirm-payment-form').forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: 'Konfirmasi Pembayaran',
+                    text: 'Apakah pembayaran ini sudah sesuai?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, sesuai',
+                    cancelButtonText: 'Batal',
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
 </body>
 </html>

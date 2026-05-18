@@ -116,7 +116,7 @@ class TransactionController extends Controller
 
         // --- SINKRONISASI NOTIFIKASI EMAIL ADMIN ---
         // Masukkan email kamu dan temanmu di dalam array ini
-        $adminEmails = ['fenthalari@gmail.com'];
+        $adminEmails = ['fenthalari@gmail.com','Marsasefta02@gmail.com'];
 
         // Kirim notifikasi menggunakan facade Notification Laravel
         Notification::route('mail', $adminEmails)->notify(new AdminPaymentNotification($transaction));

@@ -34,7 +34,7 @@ class DashboardController extends Controller
             $totalQuestions = Question::count();
             $revenueThisMonth = Transaction::whereYear('created_at', Carbon::now()->year)
                 ->whereMonth('created_at', Carbon::now()->month)
-                ->where('status', 'settlement')
+                ->where('status', 'success')
                 ->sum('amount');
             $onlineUsers = DB::table('sessions')
                 ->where('last_activity', '>=', Carbon::now()->subMinutes(15)->getTimestamp())
