@@ -100,7 +100,13 @@ class UjianController extends Controller
             $tiuQuestions = \App\Models\Question::with(['options', 'category'])->where('category_id', $catTiu)->inRandomOrder()->limit(35)->get();
             $tkpQuestions = \App\Models\Question::with(['options', 'category'])->where('category_id', $catTkp)->inRandomOrder()->limit(45)->get();
 
-            $allQuestions = $twkQuestions->merge($tiuQuestions)->merge($tkpQuestions);
+            // --- TAMBAHKAN unique('id') DI SINI ---
+            $allQuestions = $twkQuestions->merge($tiuQuestions)
+                                        ->merge($tkpQuestions)
+                                        ->unique('id')
+                                        ->values(); // Reset key agar urutannya bersih
+
+
             $questionSequence = $allQuestions->pluck('id')->toArray();
             $questions = $allQuestions; 
 
@@ -120,28 +126,25 @@ class UjianController extends Controller
             \Illuminate\Support\Facades\Redis::expire($redisTimerKey, ($tryout->duration_minutes + 10) * 60);
 
         } else {
-            // --- LANJUTKAN SESI LAMA (Biar gak ganti soal kalau di-refresh) ---
-            
+            // --- LANJUTKAN SESI LAMA ---
             $sequenceJson = \Illuminate\Support\Facades\Redis::get($redisSequenceKey);
             $questionSequence = json_decode($sequenceJson, true);
 
-            // --- PROTEKSI DATA HILANG ---
-            // Jika sesi di MariaDB ada, tapi data urutan di Redis hilang / expired
             if (empty($questionSequence)) {
-                // Kita hapus sesi yang "gantung" ini di MariaDB
                 $session->delete();
-                
-                // Lalu paksa sistem untuk me-reload halaman agar membuat sesi & urutan baru dari awal
                 return redirect()->route('ujian.mulai', $id);
             }
 
-            // Ambil data soal berdasarkan urutan yang sudah dikunci
-            $questions = \App\Models\Question::with(['options', 'category']) 
+            // Ambil data soal
+            $questionsData = \App\Models\Question::with(['options', 'category']) 
                 ->whereIn('id', $questionSequence)
                 ->get()
-                ->sortBy(function ($q) use ($questionSequence) {
-                    return array_search($q->id, $questionSequence);
-                })->values();
+                ->keyBy('id'); // Indexing berdasarkan ID agar pencarian cepat
+
+            // --- SORTING DENGAN METODE YANG LEBIH CLEAN & PASTI ---
+            $questions = collect($questionSequence)->map(function ($id) use ($questionsData) {
+                return $questionsData->get($id); // Ambil object berdasarkan ID
+            })->filter(); // Menghapus jika ada ID yang tidak ketemu (null)
         }
 
         // Ambil sisa waktu dari Redis
