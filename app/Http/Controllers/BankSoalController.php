@@ -149,37 +149,39 @@ class BankSoalController extends Controller
     }
 
     public function importBankSoal(Request $request)
-{
-    $request->validate([
-        'file' => 'required|file|mimes:csv,txt,xlsx,xls',
-        'tryout_id' => 'required|exists:tryouts,id',
-    ]);
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt,xlsx,xls',
+            'tryout_id' => 'required|exists:tryouts,id',
+        ]);
 
-    try {
-        // Deklarasikan objek import-nya dulu
-        $importData = new SoalImport($request->tryout_id);
-        
-        // Eksekusi
-        Excel::import($importData, $request->file('file'));
+        try {
+            // Deklarasikan objek import-nya dulu
+            $importData = new \App\Imports\SoalImport($request->tryout_id);
+            
+            // Eksekusi Import
+            \Maatwebsite\Excel\Facades\Excel::import($importData, $request->file('file'));
 
-        // Ambil hasil hitungannya
-        $sukses = $importData->rowCountSukses;
-        $gagal = $importData->rowCountGagal;
+            // Ambil hasil hitungannya dari class Import
+            $sukses = $importData->rowCountSukses;
+            $gagal = $importData->rowCountGagal;
+            $duplikat = $importData->rowCountDuplikat; 
 
-        // Susun pesan notifikasinya
-        if ($gagal > 0) {
-            return back()->with('success', "Proses selesai! $sukses soal berhasil diimpor.")
-                         ->with('warning', "Perhatian: Ada $gagal baris soal yang gagal/dilewati (Mungkin kategori salah ketik atau teks pertanyaan kosong di Excel).");
+            // Susun pesan notifikasinya
+            if ($gagal > 0 || $duplikat > 0) {
+                return back()->with('success', "Proses selesai! $sukses soal baru berhasil diimpor.")
+                            ->with('warning', "Perhatian: Ada $duplikat soal duplikat yang ditolak, dan $gagal baris gagal diimpor (karena teks/kategori kosong).");
+            }
+
+            return back()->with('success', "Luar biasa! Seluruh $sukses soal berhasil diimpor tanpa ada yang gagal atau duplikat.");
+            
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            return back()->withErrors(['file' => 'Format file Excel tidak sesuai standar.']);
+        } catch (\Exception $e) {
+            // Menangkap error jika file rusak atau sistem down
+            return back()->withErrors(['file' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
         }
-
-        return back()->with('success', "Luar biasa! Seluruh $sukses soal berhasil diimpor tanpa ada yang gagal.");
-        
-    } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-        return back()->withErrors(['file' => 'Format file Excel tidak sesuai standar.']);
-    } catch (\Exception $e) {
-        return back()->withErrors(['file' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
     }
-}
 
 
     // private function importFromCsv($file, $tryout_id, $category_id, &$errors)

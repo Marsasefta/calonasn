@@ -13,10 +13,11 @@ class SoalImport implements ToCollection, WithHeadingRow
 {
     protected $tryoutId;
     protected $categories;
+    protected $existingQuestions; 
     
-    // Tambahkan variabel mesin penghitung di sini
     public $rowCountSukses = 0;
     public $rowCountGagal = 0;
+    public $rowCountDuplikat = 0; 
 
     public function __construct($tryoutId)
     {
@@ -24,27 +25,46 @@ class SoalImport implements ToCollection, WithHeadingRow
         $this->categories = Category::all()->keyBy(function($item) {
             return strtoupper(trim($item->name));
         });
+
+        // Simpan memori soal yang sudah ada di database ke dalam array
+        $this->existingQuestions = Question::where('tryout_id', $tryoutId)
+            ->pluck('question_text')
+            ->map(function($text) {
+                return strtolower(trim($text));
+            })
+            ->toArray();
     }
 
     public function collection(Collection $rows)
     {
         foreach ($rows as $row) {
-            // Jika pertanyaan kosong, hitung sebagai gagal dan lewati
+            // 1. Cek Pertanyaan Kosong
             if (empty($row['pertanyaan'])) {
                 $this->rowCountGagal++;
                 continue;
             }
 
+            // 2. CEK DUPLIKAT (Filter Utama)
+            $teksSoalNormal = strtolower(trim($row['pertanyaan']));
+            
+            if (in_array($teksSoalNormal, $this->existingQuestions)) {
+                $this->rowCountDuplikat++; // Hitung sebagai duplikat
+                continue; // Hentikan proses untuk baris ini, lanjut ke baris berikutnya
+            }
+
+            // Masukkan soal baru ini ke memori agar kalau ada soal kembar di baris bawahnya, langsung tertolak
+            $this->existingQuestions[] = $teksSoalNormal;
+
+            // 3. Cek Kategori
             $catName = strtoupper(trim($row['kategori']));
             $categoryId = $this->categories->has($catName) ? $this->categories[$catName]->id : null;
 
-            // Jika kategori tidak ada di database, hitung sebagai gagal dan lewati
             if (!$categoryId) {
                 $this->rowCountGagal++;
                 continue;
             }
 
-            // Jika aman, eksekusi penyimpanan soal
+            // 4. Lolos Semua Filter -> Simpan ke Database
             $question = Question::create([
                 'tryout_id'     => $this->tryoutId,
                 'category_id'   => $categoryId,
@@ -70,7 +90,6 @@ class SoalImport implements ToCollection, WithHeadingRow
                 }
             }
 
-            // Jika sampai di titik ini, berarti soal sukses masuk database
             $this->rowCountSukses++;
         }
     }
