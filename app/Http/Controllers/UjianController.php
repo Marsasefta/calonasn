@@ -63,7 +63,7 @@ class UjianController extends Controller
 
     public function mulai($id)
     {
-        $tryout = \App\Models\Tryout::findOrFail($id);
+        $tryout = Tryout::findOrFail($id);
         $userId = auth()->id();
 
         // Key Redis sesuai Blueprint
@@ -73,7 +73,7 @@ class UjianController extends Controller
         $redisSequenceKey = "sequence:user_{$userId}:tryout_{$id}";
 
         // 1. Cek Sesi Ujian di MariaDB
-        $session = \App\Models\ExamSession::where('user_id', $userId)
+        $session = ExamSession::where('user_id', $userId)
                     ->where('tryout_id', $id)
                     ->whereNull('end_time')
                     ->first();
@@ -82,79 +82,71 @@ class UjianController extends Controller
 
         if (!$session) {
             // --- PROSES MEMBERSIHKAN DATA LAMA (CLEAN UP) ---
-            // PENTING: Bersihkan semua sisa jawaban, timer, dan ragu-ragu dari sesi sebelumnya
-            \Illuminate\Support\Facades\Redis::del($redisTimerKey);
-            \Illuminate\Support\Facades\Redis::del($redisAnswersKey);
-            \Illuminate\Support\Facades\Redis::del($redisRaguKey);
-            \Illuminate\Support\Facades\Redis::del($redisSequenceKey);
+            Redis::del($redisTimerKey);
+            Redis::del($redisAnswersKey);
+            Redis::del($redisRaguKey);
+            Redis::del($redisSequenceKey);
 
             // --- SESI BARU: GENERATE SOAL ACAK SESUAI BKN ---
             
             // Ambil ID Kategori (Pastikan penamaan di database sesuai)
-            $catTwk = \App\Models\Category::where('name', 'TWK')->value('id');
-            $catTiu = \App\Models\Category::where('name', 'TIU')->value('id');
-            $catTkp = \App\Models\Category::where('name', 'TKP')->value('id');
+            $catTwk = Category::where('name', 'TWK')->value('id');
+            $catTiu = Category::where('name', 'TIU')->value('id');
+            $catTkp = Category::where('name', 'TKP')->value('id');
 
             // Tarik Soal Acak per Kategori
-            $twkQuestions = \App\Models\Question::with(['options', 'category'])->where('category_id', $catTwk)->inRandomOrder()->limit(30)->get();
-            $tiuQuestions = \App\Models\Question::with(['options', 'category'])->where('category_id', $catTiu)->inRandomOrder()->limit(35)->get();
-            $tkpQuestions = \App\Models\Question::with(['options', 'category'])->where('category_id', $catTkp)->inRandomOrder()->limit(45)->get();
+            $twkQuestions = Question::with(['options', 'category'])->where('category_id', $catTwk)->inRandomOrder()->limit(30)->get();
+            $tiuQuestions = Question::with(['options', 'category'])->where('category_id', $catTiu)->inRandomOrder()->limit(35)->get();
+            $tkpQuestions = Question::with(['options', 'category'])->where('category_id', $catTkp)->inRandomOrder()->limit(45)->get();
 
-            // --- TAMBAHKAN unique('id') DI SINI ---
-            $allQuestions = $twkQuestions->merge($tiuQuestions)
-                                        ->merge($tkpQuestions)
-                                        ->unique('id')
-                                        ->values(); // Reset key agar urutannya bersih
-
-
+            $allQuestions = $twkQuestions->merge($tiuQuestions)->merge($tkpQuestions);
             $questionSequence = $allQuestions->pluck('id')->toArray();
             $questions = $allQuestions; 
 
             // Buat Sesi di MariaDB
-            $session = \App\Models\ExamSession::create([
+            $session = ExamSession::create([
                 'user_id' => $userId,
                 'tryout_id' => $id,
                 'start_time' => now(),
             ]);
 
             // Simpan urutan di Redis agar tidak teracak jika user refresh browser
-            \Illuminate\Support\Facades\Redis::set($redisSequenceKey, json_encode($questionSequence));
-            \Illuminate\Support\Facades\Redis::expire($redisSequenceKey, ($tryout->duration_minutes + 10) * 60);
+            Redis::set($redisSequenceKey, json_encode($questionSequence));
+            Redis::expire($redisSequenceKey, ($tryout->duration_minutes + 10) * 60);
 
             // Set Timer awal di Redis (dalam detik)
-            \Illuminate\Support\Facades\Redis::set($redisTimerKey, $tryout->duration_minutes * 60);
-            \Illuminate\Support\Facades\Redis::expire($redisTimerKey, ($tryout->duration_minutes + 10) * 60);
+            Redis::set($redisTimerKey, $tryout->duration_minutes * 60);
+            Redis::expire($redisTimerKey, ($tryout->duration_minutes + 10) * 60);
 
         } else {
-            // --- LANJUTKAN SESI LAMA ---
-            $sequenceJson = \Illuminate\Support\Facades\Redis::get($redisSequenceKey);
+            // --- LANJUTKAN SESI LAMA (Biar gak ganti soal kalau di-refresh) ---
+            
+            $sequenceJson = Redis::get($redisSequenceKey);
             $questionSequence = json_decode($sequenceJson, true);
 
+            // --- PROTEKSI DATA HILANG ---
             if (empty($questionSequence)) {
                 $session->delete();
                 return redirect()->route('ujian.mulai', $id);
             }
 
-            // Ambil data soal
-            $questionsData = \App\Models\Question::with(['options', 'category']) 
+            // Ambil data soal berdasarkan urutan yang sudah dikunci
+            $questions = Question::with(['options', 'category']) 
                 ->whereIn('id', $questionSequence)
                 ->get()
-                ->keyBy('id'); // Indexing berdasarkan ID agar pencarian cepat
-
-            // --- SORTING DENGAN METODE YANG LEBIH CLEAN & PASTI ---
-            $questions = collect($questionSequence)->map(function ($id) use ($questionsData) {
-                return $questionsData->get($id); // Ambil object berdasarkan ID
-            })->filter(); // Menghapus jika ada ID yang tidak ketemu (null)
+                ->sortBy(function ($q) use ($questionSequence) {
+                    return array_search($q->id, $questionSequence);
+                })->values();
         }
 
         // Ambil sisa waktu dari Redis
-        $durationInSeconds = \Illuminate\Support\Facades\Redis::get($redisTimerKey) ?? ($tryout->duration_minutes * 60);
+        $durationInSeconds = Redis::get($redisTimerKey) ?? ($tryout->duration_minutes * 60);
 
-        // Ambil jawaban sementara dari Redis (Format HASH: Key = Soal ID, Value = Opsi ID)
-        $tempAnswers = \Illuminate\Support\Facades\Redis::hgetAll($redisAnswersKey) ?? [];
+        // Ambil jawaban sementara dari Redis
+        $tempAnswers = Redis::hgetAll($redisAnswersKey) ?? [];
 
         // Ambil status ragu-ragu dari Redis
-        $tempRagu = \Illuminate\Support\Facades\Redis::hgetAll($redisRaguKey) ?? [];
+        $tempRagu = Redis::hgetAll($redisRaguKey) ?? [];
 
         return view('user.ujian.ujian', compact('questions', 'durationInSeconds', 'tryout', 'tempAnswers', 'tempRagu'));
     }
