@@ -16,6 +16,29 @@
             @include('partials.dashboard-header')
 
             <div class="container-fluid p-4">
+                <div class="row mb-4">
+    @foreach($categories as $category)
+    <div class="col-lg-4 col-md-4 col-12">
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0 text-muted">{{ $category->name }}</h4>
+                        <h2 class="fw-bold mt-2 mb-0">{{ $category->questions_count }}</h2>
+                        <p class="small text-muted mb-0">Total Soal Tersedia</p>
+                    </div>
+                    <div class="icon-shape bg-light-primary text-primary rounded-circle p-3">
+                        <i class="fe fe-book fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endforeach
+</div>
+
+
+
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-12">
                         <div class="border-bottom pb-3 mb-3 d-flex justify-content-between align-items-center">

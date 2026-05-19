@@ -73,7 +73,10 @@ class BankSoalController extends Controller
     public function listBankSoal()
     {
         $tryouts = Tryout::orderBy('title')->get();
-        $categories = Category::orderBy('name')->get();
+
+        // TAMBAHKAN withCount('questions') DI SINI
+        $categories = Category::withCount('questions')->orderBy('name')->get();
+
         $questions = Question::with(['tryout', 'category', 'options'])
             ->orderBy('id', 'desc')
             ->get();
