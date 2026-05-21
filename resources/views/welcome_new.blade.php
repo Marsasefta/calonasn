@@ -107,6 +107,72 @@
         }
       }
 
+      /* Tambahkan ini di bagian paling bawah dalam block <style> kamu */
+      .blog-card {
+        border: 1px solid rgba(59, 130, 246, 0.1);
+        border-radius: 16px;
+        background: #ffffff;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+      }
+
+      .blog-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-large);
+      }
+
+      .blog-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        padding-top: 56.25%; /* Rasio 16:9 */
+      }
+
+      .blog-image-wrapper img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+
+      .blog-card:hover .blog-image-wrapper img {
+        transform: scale(1.05);
+      }
+
+      .blog-category-badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--color-primary);
+        font-weight: 600;
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+        box-shadow: var(--shadow-light);
+        backdrop-filter: blur(4px);
+      }
+
+      .blog-title-link {
+        color: var(--color-text-dark);
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      .blog-title-link:hover {
+        color: var(--color-secondary);
+      }
+
+      .blog-excerpt {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       .stat-card {
         background: linear-gradient(135deg, #ffffff 0%, var(--color-light) 100%);
         border: 1px solid rgba(59, 130, 246, 0.1);
@@ -376,6 +442,68 @@
             <p class="mb-0 text-muted fw-semibold">Tingkat Kelulusan</p>
             <small class="text-muted">Rate kesuksesan tinggi</small>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-8">
+    <div class="container">
+      <div class="row align-items-end mb-5">
+        <div class="col-md-8 col-12 text-center text-md-start">
+          <h2 class="section-title h1 mb-2">Artikel & Kabar Terbaru</h2>
+          <p class="section-subtitle mb-0 text-muted">Ikuti tips sukses, info regulasi CPNS, dan materi pembelajaran terupdate langsung dari ahlinya.</p>
+        </div>
+        <div class="col-md-4 col-12 text-center text-md-end d-none d-md-block">
+          <a href="#!" class="btn btn-outline-primary">Lihat Semua Artikel <i class="fas fa-arrow-right ms-2"></i></a>
+        </div>
+      </div>
+
+      <div class="row gy-4">
+        @forelse($latestPosts as $post)
+          <div class="col-lg-4 col-md-6 col-12">
+            <article class="blog-card h-100 card border-0 shadow-sm">
+              <div class="blog-image-wrapper">
+                <img src="{{ $post->image_url ?? '/build/assets/images/course/default-blog.png' }}" alt="{{ $post->title }}">
+                <span class="blog-category-badge">{{ $post->category->name }}</span>
+              </div>
+              
+              <div class="card-body p-4 d-flex flex-column justify-content-between">
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-2 text-muted fs-7">
+                    <span><i class="far fa-calendar-alt me-1"></i> {{ $post->published_at ? $post->published_at->format('d M Y') : $post->created_at->format('d M Y') }}</span>
+                    <span>•</span>
+                    <span><i class="far fa-user me-1"></i> {{ $post->author->name ?? 'Admin' }}</span>
+                  </div>
+                  <h4 class="card-title fw-bold lh-base mb-2">
+                    <a href="#!" class="blog-title-link">{{ $post->title }}</a>
+                  </h4>
+                  <p class="card-text text-muted blog-excerpt fs-6 mb-4">
+                    {{ $post->excerpt ?? Str::limit(strip_tags($post->content), 90) }}
+                  </p>
+                </div>
+                
+                <div class="pt-3 border-top mt-auto">
+                  <a href="#!" class="text-primary fw-bold text-decoration-none d-flex align-items-center gap-1 fs-6">
+                    Baca Selengkapnya <i class="fas fa-chevron-right fs-7 transition-transform"></i>
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+        @empty
+          <div class="col-12 text-center py-5">
+            <div class="text-muted p-4">
+              <i class="far fa-newspaper fa-3x mb-3 text-secondary opacity-50"></i>
+              <p class="mb-0 fw-medium">Belum ada artikel yang diterbitkan.</p>
+            </div>
+          </div>
+        @endforelse
+      </div>
+
+      <div class="row d-md-none mt-4">
+        <div class="col-12 text-center">
+          <a href="#!" class="btn btn-outline-primary w-100">Lihat Semua Artikel</a>
         </div>
       </div>
     </div>

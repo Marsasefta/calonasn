@@ -286,6 +286,16 @@
             line-height: 1.75;
         }
 
+        /* Efek memperbesar gambar secara smooth saat card disentuh */
+        .blog-card:hover img {
+            transform: scale(1.06);
+        }
+        
+        /* Efek panah bergeser ke kanan saat tombol Baca Selengkapnya disentuh */
+        .blog-card:hover .blog-read-more-btn i {
+            transform: translateX(4px);
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2.5rem;
@@ -500,6 +510,92 @@
                             <p class="text-muted small mx-auto" style="max-width: 280px;">Buka lembar riwayat evaluasi
                                 nilai, pelajari trik materi yang salah, dan ulangi hingga paham.</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-xl-8 py-6">
+            <div class="container">
+                <div class="row justify-content-center text-center mb-5">
+                    <div class="col-lg-6 col-12">
+                        <h2 class="isplay-5 fw-bold text-dark">Artikel & Kabar Terbaru</h2>
+                        <p class="text-muted">Ikuti tips sukses dan informasi pembukaan CPNS</p>
+                    </div>
+                    <!-- <div class="col-md-4 col-12 text-center text-md-end d-none d-md-block">
+                        <a href="#!" class="btn btn-outline-primary rounded-3">
+                            Lihat Semua Artikel <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div> -->
+                </div>
+
+                <div class="row gy-4">
+                    @forelse($latestPosts as $post)
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <article class="blog-card card border-0 shadow-sm h-100 overflow-hidden" style="transition: all 0.3s ease;">
+                                
+                                <div class="position-relative overflow-hidden bg-light" style="height: 220px;">
+                                    <img src="{{ $post->image_url ?? '/build/assets/images/course/default-blog.png' }}" 
+                                        alt="{{ $post->title }}" 
+                                        class="w-100 h-100" 
+                                        style="object-fit: cover; object-position: center; transition: transform 0.5s ease;" />
+                                    
+                                    <span class="blog-category-badge position-absolute bg-white text-primary fw-bold shadow-sm" 
+                                        style="top: 1rem; left: 1rem; z-index: 2; font-size: 0.75rem; padding: 6px 14px; border-radius: 30px;">
+                                        {{ $post->category->name }}
+                                    </span>
+                                </div>
+                                
+                                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div class="d-flex align-items-center gap-3 mb-3 text-muted small">
+                                            <span class="d-flex align-items-center gap-1">
+                                                <i class="far fa-calendar-alt text-secondary"></i> 
+                                                {{ $post->published_at ? $post->published_at->format('d M Y') : $post->created_at->format('d M Y') }}
+                                            </span>
+                                            <span class="text-secondary opacity-25">|</span>
+                                            <span class="d-flex align-items-center gap-1">
+                                                <i class="far fa-user text-secondary"></i> 
+                                                {{ $post->author->name ?? 'Admin' }}
+                                            </span>
+                                        </div>
+                                        
+                                        <h4 class="card-title fw-bold lh-base mb-2">
+                                            <a href="#!" class="blog-title-link text-dark text-decoration-none" 
+                                            style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 3rem;">
+                                                {{ $post->title }}
+                                            </a>
+                                        </h4>
+                                        
+                                        <p class="card-text text-muted fs-6 mb-4" 
+                                        style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                            {{ $post->excerpt ?? Str::limit(strip_tags($post->content), 120) }}
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="pt-3 border-top mt-auto">
+                                        <a href="#!" class="text-primary fw-bold text-decoration-none d-flex align-items-center gap-1 fs-6 blog-read-more-btn">
+                                            Baca Selengkapnya 
+                                            <i class="fas fa-arrow-right fs-7 ms-1 transition-transform" style="transition: transform 0.2s ease;"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                            </article>
+                        </div>
+                    @empty
+                        <div class="col-12 text-center py-5">
+                            <div class="text-muted p-5 bg-white rounded-4 shadow-sm">
+                                <i class="far fa-newspaper fa-3x mb-3 text-secondary opacity-50"></i>
+                                <p class="mb-0 fw-medium fs-5">Belum ada artikel yang diterbitkan.</p>
+                            </div>
+                        </div>
+                    @endforelse
+                </div>
+
+                <div class="row d-md-none mt-4">
+                    <div class="col-12 text-center">
+                        <a href="#!" class="btn btn-outline-primary w-100 rounded-3">Lihat Semua Artikel</a>
                     </div>
                 </div>
             </div>

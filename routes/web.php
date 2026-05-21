@@ -10,11 +10,24 @@ use App\Http\Controllers\RankingController;
 use App\Http\Controllers\DemoController;
 use App\Http\Controllers\UjianController;
 use App\Http\Controllers\BlogController;
+use App\Models\Post;
+
 use App\Http\Controllers\UserTypeController;
 use Illuminate\Support\Facades\Route;
 
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
 Route::get('/', function () {
-    return view('welcome');
+    // Mengambil 3 artikel terbaru yang berstatus published beserta kategorinya
+    $latestPosts = Post::with('category')
+                        ->where('status', 'published')
+                        ->latest()
+                        ->take(3)
+                        ->get();
+
+    return view('welcome', compact('latestPosts')); // Sesuaikan dengan nama file blade kamu (welcome atau welcome_new)
 });
 
 Route::view('/demo-cat', 'demo')->name('demo.cat');
