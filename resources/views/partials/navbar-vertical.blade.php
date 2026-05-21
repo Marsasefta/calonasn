@@ -97,6 +97,16 @@
 
               <li class="nav-item">
                 <a
+                  class="nav-link rounded px-3 py-2 @@if (context.page === 'categories.index') { active }"
+                  href="{{ route('admin.categories.index') }}"
+                >
+                  <i class="fe fe-tag me-2"></i>
+                  Kategori Soal
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a
                   class="nav-link rounded px-3 py-2 @@if (context.page === 'create-tryout') { active }"
                   href="{{ route('admin.create-tryout') }}"
                 >
@@ -124,14 +134,13 @@
                   Laporan & Peringkat
                 </a>
               </li>
-
               <li class="nav-item">
                 <a
-                  class="nav-link rounded px-3 py-2 @@if (context.page === 'categories.index') { active }"
-                  href="{{ route('admin.categories.index') }}"
+                  class="nav-link rounded px-3 py-2 @@if (context.page === 'blog.index') { active }"
+                  href="{{ route('admin.blog.index') }}"
                 >
-                  <i class="fe fe-tag me-2"></i>
-                  Kategori Soal
+                  <i class="fe fe-paperclip me-2"></i>
+                  Artikel & Berita
                 </a>
               </li>
 

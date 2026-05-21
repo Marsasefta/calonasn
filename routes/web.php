@@ -9,6 +9,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\DemoController;
 use App\Http\Controllers\UjianController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\UserTypeController;
 use Illuminate\Support\Facades\Route;
 
@@ -105,7 +106,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/user_type', [UserTypeController::class, 'userType'])->name('user_type');
         Route::post('/users/{id}/update-role', [UserTypeController::class, 'updateRole'])->name('users.update-role');
         Route::post('/users/{id}/update-status', [UserTypeController::class, 'updateStatus'])->name('users.update-status');
-    });
+
+
+        Route::get('/blog-categories', [App\Http\Controllers\BlogCategoryController::class, 'index'])->name('blog-categories.index');
+        Route::post('/blog-categories', [App\Http\Controllers\BlogCategoryController::class, 'store'])->name('blog-categories.store');
+        Route::put('/blog-categories/{id}', [App\Http\Controllers\BlogCategoryController::class, 'update'])->name('blog-categories.update');
+        Route::delete('/blog-categories/{id}', [App\Http\Controllers\BlogCategoryController::class, 'destroy'])->name('blog-categories.destroy');
+
+        
+        // 1. Tampilan utama: Daftar semua artikel blog
+        Route::get('/blog', [App\Http\Controllers\BlogController::class, 'index'])->name('blog.index');
+
+        // 2. Create: Tampilan form menulis artikel baru
+        Route::get('/blog/create', [App\Http\Controllers\BlogController::class, 'create'])->name('blog.create');
+
+        // 3. Store: Proses menyimpan artikel baru ke database
+        Route::post('/blog', [App\Http\Controllers\BlogController::class, 'store'])->name('blog.store');
+
+        // 4. Edit: Tampilan form untuk mengubah isi artikel yang sudah ada
+        Route::get('/blog/{id}/edit', [App\Http\Controllers\BlogController::class, 'edit'])->name('blog.edit');
+
+        // 5. Update: Proses menyimpan perubahan artikel ke database
+        Route::put('/blog/{id}', [App\Http\Controllers\BlogController::class, 'update'])->name('blog.update');
+
+        // 6. Destroy: Proses menghapus artikel (akan masuk Trash karena pakai SoftDeletes)
+        Route::delete('/blog/{id}', [App\Http\Controllers\BlogController::class, 'destroy'])->name('blog.destroy');   
+
+        
+    
+        });
 });
 
 Route::middleware('auth')->group(function () {
