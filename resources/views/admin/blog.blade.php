@@ -68,6 +68,7 @@
                                                     </td>
                                                     <td>{{ $post->published_at ? $post->published_at->format('d M Y H:i') : '-' }}</td>
                                                     <td class="text-end">
+                                                        <a href="{{ route('admin.blog.show', $post->id) }}" class="btn btn-sm btn-outline-warning me-1">Lihat</a>
                                                         <a href="{{ route('admin.blog.edit', $post->id) }}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
                                                         <form action="{{ route('admin.blog.destroy', $post->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus artikel ini?')">
                                                             @csrf

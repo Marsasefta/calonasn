@@ -3,7 +3,16 @@
 
 <head>
     @include('partials.head')
-    <script src="https://cdn.jsdelivr.net/npm/@ckeditor/ckeditor5-build-classic/build/ckeditor.js"></script>
+    <!-- PENTING: Memakai CDN CKEditor 5 Standar Resmi Terbaru -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+    <style>
+        /* Mengunci tinggi box editor agar seragam ala WordPress */
+        .ck-editor__editable_inline {
+            min-height: 350px !important;
+            max-height: 600px !important;
+            text-align: left;
+        }
+    </style>
 </head>
 
 <body>
@@ -44,7 +53,8 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label fw-bold">Isi Artikel</label>
-                                        <textarea name="content" id="editor" rows="12" class="form-control">{{ old('content') }}</textarea>
+                                        <!-- ID editor dipastikan unik untuk dicari oleh JS -->
+                                        <textarea name="content" id="editor" class="form-control d-none">{{ old('content') }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -130,8 +140,10 @@
         </div>
     </div>
 
+    <!-- 1. SCRIPT PARTIALS DILOAD TERLEBIH DAHULU -->
     @include('partials.scripts')
 
+    <!-- 2. MODAL DI LETAKKAN DI BAWAH -->
     <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -156,13 +168,52 @@
         </div>
     </div>
 
+    <!-- 3. INITIALIZATION SCRIPT UTAMA DI TARUH PADA POSISI PALING AKHIR -->
     <script>
-        ClassicEditor
-            .create(document.querySelector('#editor'))
-            .catch(error => {
-                console.error(error);
-            });
+        window.addEventListener('load', function() {
+            ClassicEditor
+                .create(document.querySelector('#editor'), {
+                    // Konfigurasi Toolbar Lengkap ala WordPress / CMS Modern
+                    toolbar: {
+                        items: [
+                            'heading', 
+                            '|', 
+                            'bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript',
+                            '|', 
+                            'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent', 
+                            '|', 
+                            'alignment', // Mengatur rata kiri, kanan, tengah, dan justify
+                            '|', 
+                            'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 
+                            '|', 
+                            'link', 'imageUpload', 'blockQuote', 'insertTable', 'mediaEmbed', 'code', 'codeBlock',
+                            '|', 
+                            'undo', 'redo',
+                            '|',
+                            'findAndReplace', 'selectAll', 'removeFormat'
+                        ],
+                        shouldNotGroupWhenFull: true // Membuat toolbar otomatis turun ke baris baru jika layar admin kekecilan (sangat responsif)
+                    },
+                    // Pengaturan tambahan untuk navigasi peletakan gambar & tabel
+                    table: {
+                        contentToolbar: [
+                            'tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties'
+                        ]
+                    },
+                    image: {
+                        toolbar: [
+                            'imageStyle:inline', 'imageStyle:block', 'imageStyle:side', '|',
+                            'toggleImageCaption', 'imageTextAlternative'
+                        ]
+                    }
+                })
+                .then(editor => {
+                    console.log('CKEditor 5 dengan Toolbar Lengkap berhasil dimuat!');
+                })
+                .catch(error => {
+                    console.error('Kendala load CKEditor:', error);
+                });
+        });
     </script>
 </body>
-
 </html>

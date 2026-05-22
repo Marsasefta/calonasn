@@ -30,6 +30,10 @@ Route::get('/', function () {
     return view('welcome', compact('latestPosts')); // Sesuaikan dengan nama file blade kamu (welcome atau welcome_new)
 });
 
+// ROUTE PUBLIK (Bisa diakses siapa saja sebelum login)
+    Route::get('/blog/{slug}', [App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
+
+
 Route::view('/demo-cat', 'demo')->name('demo.cat');
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -81,8 +85,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/ujian/sertifikat/{id}', [UjianController::class, 'sertifikat'])->name('ujian.sertifikat');
     Route::get('/riwayat-sertifikat', [UjianController::class, 'riwayatSertifikat'])->name('sertifikat.riwayat');
 
-
-
+    
 
 
     // Admin routes with /admin/ prefix and admin middleware
@@ -145,7 +148,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // 6. Destroy: Proses menghapus artikel (akan masuk Trash karena pakai SoftDeletes)
         Route::delete('/blog/{id}', [App\Http\Controllers\BlogController::class, 'destroy'])->name('blog.destroy');   
 
-        
+        // Tambahkan ini di dalam grup Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () { ... })
+
+        Route::get('/blog/{id}', [App\Http\Controllers\BlogController::class, 'showAdmin'])->name('blog.show');
     
         });
 });

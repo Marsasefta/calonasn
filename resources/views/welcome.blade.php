@@ -515,39 +515,48 @@
             </div>
         </section>
 
-        <section class="py-xl-8 py-6">
+        <section class="py-xl-8 py-6 bg-light border-top border-bottom">
             <div class="container">
-                <div class="row justify-content-center text-center mb-5">
-                    <div class="col-lg-6 col-12">
-                        <h2 class="isplay-5 fw-bold text-dark">Artikel & Kabar Terbaru</h2>
-                        <p class="text-muted">Ikuti tips sukses dan informasi pembukaan CPNS</p>
+                <!-- Header Section dengan Tombol "Lihat Semua" di Sisi Kanan -->
+                <div class="row align-items-end mb-5">
+                    <div class="col-md-8 col-12 text-center text-md-start">
+                        <h2 class="display-5 fw-bold text-dark mb-2">Artikel & Kabar Terbaru</h2>
+                        <p class="text-muted mb-0">Ikuti tips sukses, info regulasi CPNS, dan materi pembelajaran terupdate langsung dari ahlinya.</p>
                     </div>
-                    <!-- <div class="col-md-4 col-12 text-center text-md-end d-none d-md-block">
+                    <div class="col-md-4 col-12 text-center text-md-end d-none d-md-block">
+                        <!-- Nantinya href ini bisa diarahkan ke halaman indeks seluruh blog publik -->
                         <a href="#!" class="btn btn-outline-primary rounded-3">
                             Lihat Semua Artikel <i class="fas fa-arrow-right ms-2"></i>
                         </a>
-                    </div> -->
+                    </div>
                 </div>
 
+                <!-- Grid Card Artikel -->
                 <div class="row gy-4">
                     @forelse($latestPosts as $post)
                         <div class="col-lg-4 col-md-6 col-12">
                             <article class="blog-card card border-0 shadow-sm h-100 overflow-hidden" style="transition: all 0.3s ease;">
                                 
+                                <!-- Image Wrapper (Aman & Tidak Terpotong) -->
                                 <div class="position-relative overflow-hidden bg-light" style="height: 220px;">
-                                    <img src="{{ $post->image_url ?? '/build/assets/images/course/default-blog.png' }}" 
-                                        alt="{{ $post->title }}" 
-                                        class="w-100 h-100" 
-                                        style="object-fit: cover; object-position: center; transition: transform 0.5s ease;" />
+                                    <a href="{{ route('blog.show', $post->slug) }}">
+                                        <img src="{{ $post->image_url ?? '/build/assets/images/course/default-blog.png' }}" 
+                                            alt="{{ $post->title }}" 
+                                            class="w-100 h-100" 
+                                            style="object-fit: cover; object-position: center; transition: transform 0.5s ease;" />
+                                    </a>
                                     
+                                    <!-- Category Badge -->
                                     <span class="blog-category-badge position-absolute bg-white text-primary fw-bold shadow-sm" 
                                         style="top: 1rem; left: 1rem; z-index: 2; font-size: 0.75rem; padding: 6px 14px; border-radius: 30px;">
                                         {{ $post->category->name }}
                                     </span>
                                 </div>
                                 
+                                <!-- Card Body (Bagian Konten) -->
                                 <div class="card-body p-4 d-flex flex-column justify-content-between">
                                     <div>
+                                        <!-- Meta Data Info -->
                                         <div class="d-flex align-items-center gap-3 mb-3 text-muted small">
                                             <span class="d-flex align-items-center gap-1">
                                                 <i class="far fa-calendar-alt text-secondary"></i> 
@@ -560,21 +569,24 @@
                                             </span>
                                         </div>
                                         
+                                        <!-- Link Judul Artikel (Memicu Route Detail Berdasarkan Slug) -->
                                         <h4 class="card-title fw-bold lh-base mb-2">
-                                            <a href="#!" class="blog-title-link text-dark text-decoration-none" 
+                                            <a href="{{ route('blog.show', $post->slug) }}" class="blog-title-link text-dark text-decoration-none" 
                                             style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 3rem;">
                                                 {{ $post->title }}
                                             </a>
                                         </h4>
                                         
+                                        <!-- Ringkasan Deskripsi -->
                                         <p class="card-text text-muted fs-6 mb-4" 
                                         style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
                                             {{ $post->excerpt ?? Str::limit(strip_tags($post->content), 120) }}
                                         </p>
                                     </div>
                                     
+                                    <!-- Link Baca Selengkapnya Aktif -->
                                     <div class="pt-3 border-top mt-auto">
-                                        <a href="#!" class="text-primary fw-bold text-decoration-none d-flex align-items-center gap-1 fs-6 blog-read-more-btn">
+                                        <a href="{{ route('blog.show', $post->slug) }}" class="text-primary fw-bold text-decoration-none d-flex align-items-center gap-1 fs-6 blog-read-more-btn">
                                             Baca Selengkapnya 
                                             <i class="fas fa-arrow-right fs-7 ms-1 transition-transform" style="transition: transform 0.2s ease;"></i>
                                         </a>
@@ -584,6 +596,7 @@
                             </article>
                         </div>
                     @empty
+                        <!-- Fallback Tampilan Jika Data Kosong -->
                         <div class="col-12 text-center py-5">
                             <div class="text-muted p-5 bg-white rounded-4 shadow-sm">
                                 <i class="far fa-newspaper fa-3x mb-3 text-secondary opacity-50"></i>
@@ -593,13 +606,14 @@
                     @endforelse
                 </div>
 
+                <!-- Navigasi Mobile View Only -->
                 <div class="row d-md-none mt-4">
                     <div class="col-12 text-center">
                         <a href="#!" class="btn btn-outline-primary w-100 rounded-3">Lihat Semua Artikel</a>
                     </div>
                 </div>
             </div>
-        </section>
+        </section>      
     </main>
 @endsection
 

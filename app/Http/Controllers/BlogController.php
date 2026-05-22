@@ -114,4 +114,32 @@ class BlogController extends Controller
 
         return redirect()->route('admin.blog.index')->with('success', 'Artikel berhasil dipindahkan ke kotak sampah!');
     }
+    
+    // Menampilkan preview detail artikel khusus di dalam dashboard Admin
+    public function showAdmin($id)
+    {
+        // Menggunakan findOrFail agar jika ID tidak ada langsung memicu error 404
+        $post = Post::with(['category', 'author'])->findOrFail($id);
+        
+        return view('admin.blog_show', compact('post'));
+    }
+
+    // Menampilkan detail artikel untuk pembaca umum (sebelum login)
+    public function show($slug)
+    {
+        // Cari artikel berdasarkan slug dan wajib berstatus published
+        $post = \App\Models\Post::with(['category', 'author'])
+                    ->where('slug', $slug)
+                    ->where('status', 'published')
+                    ->firstOrFail(); // Jika tidak ketemu atau masih draft, otomatis 404
+
+        // Ambil 3 artikel terbaru lainnya untuk dipasang di sidebar rekomendasi
+        $relatedPosts = \App\Models\Post::where('status', 'published')
+                            ->where('id', '!=', $post->id)
+                            ->latest()
+                            ->take(3)
+                            ->get();
+
+        return view('blog_show', compact('post', 'relatedPosts'));
+    }
 }
