@@ -10,12 +10,12 @@
 <meta property="og:url" content="{{ url()->current() }}">
 <meta property="og:title" content="Simulasi CAT CPNS 2026 Terakurat & Terbaru | CalonASN.id">
 <meta property="og:description" content="Simulasi CAT CPNS 2026 terakurat standar BKN. Sedia paket tryout online SKD (TWK, TIU, TKP) dengan soal HOTS terbaru & pembahasan cepat. Coba demo gratis!">
-<meta property="og:image" content="{{ asset('assets/images/og-image.jpg') }}">
+<meta property="og:image" content="{{ asset('image/og-image.jpg') }}">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Simulasi CAT CPNS 2026 Terakurat & Terbaru | CalonASN.id">
 <meta name="twitter:description" content="Simulasi CAT CPNS 2026 terakurat standar BKN. Sedia paket tryout online SKD (TWK, TIU, TKP) dengan soal HOTS terbaru & pembahasan cepat. Coba demo gratis!">
-<meta name="twitter:image" content="{{ asset('assets/images/og-image.jpg') }}">
+<meta name="twitter:image" content="{{ asset('image/og-image.jpg') }}">
 
 @yield('meta_tags')
 
