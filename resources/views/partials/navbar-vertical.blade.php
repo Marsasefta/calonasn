@@ -82,6 +82,13 @@
         </li>
 
         <li class="nav-item">
+          <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.promo.*') ? 'active' : '' }}" href="{{ route('admin.promo.index') }}">
+            <i class="fe fe-percent me-2"></i>
+            <span>Kode Promo</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
           <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.reports.*') ? 'active' : '' }}" href="{{ route('admin.reports.index') }}">
             <i class="fe fe-bar-chart-2 me-2"></i>
             <span>Laporan & Peringkat</span>

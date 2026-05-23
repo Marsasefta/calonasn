@@ -10,6 +10,8 @@ use App\Http\Controllers\RankingController;
 use App\Http\Controllers\DemoController;
 use App\Http\Controllers\UjianController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\PromoCodeController;
+
 use App\Models\Post;
 
 use App\Http\Controllers\UserTypeController;
@@ -152,6 +154,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/blog/{id}', [App\Http\Controllers\BlogController::class, 'showAdmin'])->name('blog.show');
     
+
+        Route::get('promo-codes', [PromoCodeController::class, 'index'])->name('promo.index');
+        Route::post('promo-codes', [PromoCodeController::class, 'store'])->name('promo.store');
+        Route::put('promo-codes/{id}', [PromoCodeController::class, 'update'])->name('promo.update');
+        Route::delete('promo-codes/{id}', [PromoCodeController::class, 'destroy'])->name('promo.destroy');
         });
 });
 
