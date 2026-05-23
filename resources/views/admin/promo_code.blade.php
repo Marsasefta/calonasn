@@ -19,7 +19,6 @@
                     <div class="col-12">
                         <div class="border-bottom pb-3 mb-4 d-flex justify-content-between align-items-center">
                             <h1 class="mb-0 h2 fw-bold">Kode Promo</h1>
-                            <!-- Tombol Pemicu Modal Tambah -->
                             <button type="button" class="btn btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modalTambahPromo">
                                 <i class="fe fe-plus me-2"></i> Tambah Kode Promo
                             </button>
@@ -27,7 +26,7 @@
                     </div>
                 </div>
 
-                <!-- Notifikasi Sukses / Balasan Simpan -->
+                <!-- Notifikasi Sukses -->
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
                         <i class="fe fe-check-circle me-2"></i> {{ session('success') }}
@@ -35,7 +34,7 @@
                     </div>
                 @endif
 
-                <!-- Notifikasi Gagal / Error Validasi -->
+                <!-- Notifikasi Gagal -->
                 @if($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
                         <ul class="mb-0">
@@ -47,7 +46,7 @@
                     </div>
                 @endif
 
-                <!-- Tabel Konten Utama (Daftar Kode Promo) -->
+                <!-- Tabel Utama -->
                 <div class="row">
                     <div class="col-12">
                         <div class="card shadow-sm border-0 mb-4">
@@ -89,17 +88,10 @@
                                             <td class="text-muted">{{ $promo->created_at->format('d M Y, H:i') }} WIB</td>
                                             <td class="text-end px-4">
                                                 <div class="d-flex justify-content-end gap-2">
-                                                    <!-- Tombol Edit -->
-                                                    <button type="button" class="btn btn-outline-secondary btn-sm" 
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#modalEditPromo{{ $promo->id }}">
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditPromo{{ $promo->id }}">
                                                         <i class="fe fe-edit-2"></i>
                                                     </button>
-                                                    
-                                                    <!-- Tombol Hapus -->
-                                                    <button type="button" class="btn btn-outline-danger btn-sm" 
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#modalHapusPromo{{ $promo->id }}">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalHapusPromo{{ $promo->id }}">
                                                         <i class="fe fe-trash-2"></i>
                                                     </button>
                                                 </div>
@@ -124,18 +116,15 @@
         </div>
     </div>
 
-    <!-- 1. SCRIPT PARTIALS DILOAD TERLEBIH DAHULU -->
     @include('partials.scripts')
-
-    <!-- 2. KUMPULAN MODAL DI LETAKKAN DI LUAR STRUKTUR TABEL / DI BAWAH SCRIPT -->
     
-    <!-- Modal Tambah Promo -->
+    <!-- MODAL TAMBAH PROMO -->
     <div class="modal fade" id="modalTambahPromo" tabindex="-1" aria-labelledby="modalTambahPromoLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow">
                 <div class="modal-header bg-light">
                     <h5 class="modal-title fw-bold" id="modalTambahPromoLabel">Buat Kode Promo Baru</h5>
-                    <button type="button" class="btn-close" data-bs-close="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="{{ route('admin.promo.store') }}" method="POST">
                     @csrf
@@ -155,13 +144,13 @@
                         <div class="mb-3">
                             <label for="status" class="form-label fw-bold">Status Awal</label>
                             <select class="form-select form-control-lg" id="status" name="status" required>
-                                <option value="aktif" selected>Aktif (Langsung bisa digunakan)</option>
+                                <option value="aktif" selected>Aktif</option>
                                 <option value="non-aktif">Non-Aktif</option>
                             </select>
                         </div>
                     </div>
                     <div class="modal-footer bg-light border-top-0 px-4 py-3">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-close="modal">Batal</button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary px-4">Simpan Kode</button>
                     </div>
                 </form>
@@ -169,15 +158,14 @@
         </div>
     </div>
 
-    <!-- Looping Modal Edit & Hapus Agar Terisolasi Sempurna dari Elemen Tabel -->
+    <!-- MODAL EDIT & HAPUS LOOPING -->
     @foreach($promoCodes as $promo)
-        <!-- MODAL EDIT DATA -->
-        <div class="modal fade" id="modalEditPromo{{ $promo->id }}" tabindex="-1" aria-labelledby="modalEditPromoLabel{{ $promo->id }}" aria-hidden="true">
+        <div class="modal fade" id="modalEditPromo{{ $promo->id }}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow">
                     <div class="modal-header bg-light">
-                        <h5 class="modal-title fw-bold" id="modalEditPromoLabel{{ $promo->id }}">Ubah Kode Promo</h5>
-                        <button type="button" class="btn-close" data-bs-close="modal" aria-label="Close"></button>
+                        <h5 class="modal-title fw-bold">Ubah Kode Promo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form action="{{ route('admin.promo.update', $promo->id) }}" method="POST">
                         @csrf
@@ -203,7 +191,7 @@
                             </div>
                         </div>
                         <div class="modal-footer bg-light border-top-0 px-4 py-3">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-close="modal">Batal</button>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-dismiss="modal">Batal</button>
                             <button type="submit" class="btn btn-primary px-4">Simpan Perubahan</button>
                         </div>
                     </form>
@@ -211,17 +199,16 @@
             </div>
         </div>
 
-        <!-- MODAL CONFIRM HAPUS -->
-        <div class="modal fade" id="modalHapusPromo{{ $promo->id }}" tabindex="-1" aria-labelledby="modalHapusPromoLabel{{ $promo->id }}" aria-hidden="true">
+        <div class="modal fade" id="modalHapusPromo{{ $promo->id }}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-sm">
                 <div class="modal-content border-0 shadow">
                     <div class="modal-body text-center p-4">
                         <i class="fe fe-alert-triangle text-danger d-block mb-3" style="font-size: 3rem;"></i>
                         <h4 class="fw-bold mb-2">Hapus Kode Promo?</h4>
-                        <p class="text-muted mb-0">Apakah Anda yakin ingin menghapus kode <span class="fw-bold text-dark">{{ $promo->code }}</span>? Tindakan ini tidak dapat dibatalkan.</p>
+                        <p class="text-muted mb-0">Apakah Anda yakin ingin menghapus kode <span class="fw-bold text-dark">{{ $promo->code }}</span>?</p>
                     </div>
                     <div class="modal-footer bg-light justify-content-center border-top-0 gap-2 py-3">
-                        <button type="button" class="btn btn-outline-secondary btn-sm px-3" data-bs-close="modal">Batal</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm px-3" data-bs-dismiss="modal" data-dismiss="modal">Batal</button>
                         <form action="{{ route('admin.promo.destroy', $promo->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
