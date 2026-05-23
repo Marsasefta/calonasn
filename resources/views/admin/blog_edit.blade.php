@@ -3,7 +3,16 @@
 
 <head>
     @include('partials.head')
-    <script src="https://cdn.jsdelivr.net/npm/@ckeditor/ckeditor5-build-classic/build/ckeditor.js"></script>
+     <!-- PENTING: Memakai CDN CKEditor 5 Standar Resmi Terbaru -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+    <style>
+        /* Mengunci tinggi box editor agar seragam ala WordPress */
+        .ck-editor__editable_inline {
+            min-height: 350px !important;
+            max-height: 600px !important;
+            text-align: left;
+        }
+    </style>
 </head>
 
 <body>
