@@ -30,9 +30,9 @@ Route::get('/', function () {
     return view('welcome', compact('latestPosts')); // Sesuaikan dengan nama file blade kamu (welcome atau welcome_new)
 });
 
-// ROUTE PUBLIK (Bisa diakses siapa saja sebelum login)
-    Route::get('/blog/{slug}', [App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
-
+// Di area publik (luar middleware admin)
+Route::get('/blog', [App\Http\Controllers\BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
 
 Route::view('/demo-cat', 'demo')->name('demo.cat');
 
@@ -131,7 +131,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         
         // 1. Tampilan utama: Daftar semua artikel blog
-        Route::get('/blog', [App\Http\Controllers\BlogController::class, 'index'])->name('blog.index');
+        Route::get('/blog', [App\Http\Controllers\BlogController::class, 'adminIndex'])->name('blog.index');
 
         // 2. Create: Tampilan form menulis artikel baru
         Route::get('/blog/create', [App\Http\Controllers\BlogController::class, 'create'])->name('blog.create');

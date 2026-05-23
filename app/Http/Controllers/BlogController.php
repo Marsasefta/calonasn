@@ -11,11 +11,17 @@ use Illuminate\Support\Facades\Auth;
 
 class BlogController extends Controller
 {
+    // Menampilkan daftar artikel untuk pengunjung (calonasn.id/blog)
     public function index()
     {
-        // Mengarah ke admin.blog (resources/views/admin/blog.blade.php)
-        $posts = Post::with('category')->latest()->paginate(10);
-        return view('admin.blog', compact('posts'));
+        // Hanya tampilkan yang berstatus 'published'
+        $posts = Post::with(['category', 'author'])
+                    ->where('status', 'published')
+                    ->latest()
+                    ->paginate(9); // 9 agar pas kalau pakai grid 3 kolom
+
+        // Mengarah ke view publik (misal: resources/views/blog_index.blade.php)
+        return view('blog_index', compact('posts'));
     }
 
     public function create()
@@ -127,19 +133,28 @@ class BlogController extends Controller
     // Menampilkan detail artikel untuk pembaca umum (sebelum login)
     public function show($slug)
     {
-        // Cari artikel berdasarkan slug dan wajib berstatus published
         $post = \App\Models\Post::with(['category', 'author'])
                     ->where('slug', $slug)
                     ->where('status', 'published')
-                    ->firstOrFail(); // Jika tidak ketemu atau masih draft, otomatis 404
+                    ->firstOrFail(); 
 
-        // Ambil 3 artikel terbaru lainnya untuk dipasang di sidebar rekomendasi
         $relatedPosts = \App\Models\Post::where('status', 'published')
                             ->where('id', '!=', $post->id)
                             ->latest()
                             ->take(3)
                             ->get();
 
+        // Mengarah ke view baca artikel (resources/views/blog_show.blade.php)
         return view('blog_show', compact('post', 'relatedPosts'));
+    }
+
+    // 0. Menampilkan tabel daftar artikel di Dashboard Admin
+    public function adminIndex()
+    {
+        // Tampilkan semua artikel (termasuk draft) untuk dikelola admin
+        $posts = Post::with('category')->latest()->paginate(10);
+        
+        // Mengarah ke admin.blog (resources/views/admin/blog.blade.php)
+        return view('admin.blog', compact('posts'));
     }
 }

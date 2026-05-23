@@ -1,7 +1,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<meta name="description" content="Simulasi CAT CPNS 2026 terakurat standar BKN. Sedia paket tryout online SKD (TWK, TIU, TKP) dengan soal HOTS terbaru & pembahasan cepat. Coba demo gratis!">
+<meta name="description" content="@yield('meta_description', 'Simulasi CAT CPNS 2026 terakurat standar BKN. Sedia paket tryout online SKD (TWK, TIU, TKP) dengan soal HOTS terbaru & pembahasan cepat. Coba demo gratis!')">
 <meta name="robots" content="index, follow">
 <meta name="author" content="CalonASN.id">
 <link rel="canonical" href="{{ url()->current() }}">
@@ -16,6 +16,8 @@
 <meta name="twitter:title" content="Simulasi CAT CPNS 2026 Terakurat & Terbaru | CalonASN.id">
 <meta name="twitter:description" content="Simulasi CAT CPNS 2026 terakurat standar BKN. Sedia paket tryout online SKD (TWK, TIU, TKP) dengan soal HOTS terbaru & pembahasan cepat. Coba demo gratis!">
 <meta name="twitter:image" content="{{ asset('assets/images/og-image.jpg') }}">
+
+@yield('meta_tags')
 
 <!-- Favicon untuk Mesin Pencari Google & Browser -->
 <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('image/logoasn-96.png') }}">

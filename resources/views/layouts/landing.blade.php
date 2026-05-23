@@ -4,7 +4,8 @@
   <head>
     @include('partials.head')
 
-    <title>Simulasi CAT CPNS 2026 Terakurat & Terbaru | CalonASN.id</title>
+    <title>@yield('title', 'Simulasi CAT CPNS 2026 Terakurat & Terbaru | CalonASN.id')</title>
+
 
     @stack('styles')
   </head>
