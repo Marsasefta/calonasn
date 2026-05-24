@@ -43,6 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Transaksi dan pembayaran
     Route::get('/checkout', [TransactionController::class, 'checkout'])->name('checkout');
+    Route::post('/transaction/check-promo', [App\Http\Controllers\TransactionController::class, 'checkPromo'])->name('transaction.checkPromo');
     Route::post('/checkout/process', [TransactionController::class, 'process'])->name('checkout.process');
     // --- TAMBAHKAN DUA BARIS BARU INI ---
     Route::get('/payment/qris/{invoice_number}', [TransactionController::class, 'qris'])->name('payment.qris');

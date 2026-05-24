@@ -32,6 +32,14 @@
                         </div>
                     @endif
 
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fe fe-check-circle me-2"></i> {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                aria-label="Close"></button>
+                        </div>
+                    @endif
+
                     <div class="card mb-4 shadow-sm border-0">
                         <div
                             class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center py-4">
@@ -46,10 +54,19 @@
                                     @endif
                                 </span>
                             </div>
+
                             <div class="text-md-end text-start bg-light p-3 rounded border">
                                 <span class="text-muted small d-block mb-1">Nominal Tagihan:</span>
-                                <h2 class="fw-bold mb-0 text-primary">Rp
-                                    {{ number_format($transaction->total_amount, 0, ',', '.') }}</h2>
+                                <h2 class="fw-bold mb-0 text-primary">
+                                    Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}
+                                </h2>
+
+                                @if ($transaction->discount_amount > 0)
+                                    <div class="mt-2 text-success small fw-bold">
+                                        <i class="fe fe-gift me-1"></i> Hemat Rp
+                                        {{ number_format($transaction->discount_amount, 0, ',', '.') }} dari Promo!
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
