@@ -3,7 +3,7 @@
 
 <head>
     @include('partials.head')
-     <!-- PENTING: Memakai CDN CKEditor 5 Standar Resmi Terbaru -->
+    <!-- PENTING: Memakai CDN CKEditor 5 Standar Resmi Terbaru -->
     <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
     <style>
         /* Mengunci tinggi box editor agar seragam ala WordPress */
@@ -63,19 +63,6 @@
 
                             <div class="card mb-4 border-start border-3 border-success">
                                 <div class="card-header bg-white">
-                                    <h4 class="mb-0 text-success fw-bold">🔍 Ringkasan / Meta Description SEO</h4>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <label class="form-label">Excerpt (Deskripsi Singkat)</label>
-                                        <textarea name="excerpt" rows="3" class="form-control"
-                                            placeholder="Tulis ringkasan konten untuk cuplikan Google... (Max 160 karakter)">{{ old('excerpt', $post->excerpt) }}</textarea>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card mb-4 border-start border-3 border-success">
-                                <div class="card-header bg-white">
                                     <h4 class="mb-0 text-success fw-bold">🔍 Konfigurasi SEO</h4>
                                 </div>
                                 <div class="card-body">
@@ -93,9 +80,22 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label fw-bold">Excerpt (Deskripsi Singkat)</label>
-                                        <textarea name="excerpt" rows="3" class="form-control"
+                                        <label class="form-label fw-bold">
+                                            Excerpt (Deskripsi Singkat)
+                                        </label>
+
+                                        <textarea name="excerpt" rows="3" maxlength="200" class="form-control" id="excerpt"
                                             placeholder="Tulis ringkasan konten untuk cuplikan Google... (Max 160 karakter)">{{ old('excerpt', $post->excerpt) }}</textarea>
+
+                                        <div class="d-flex justify-content-between mt-2">
+                                            <small class="text-muted">
+                                                Disarankan maksimal 160 karakter untuk SEO Google.
+                                            </small>
+
+                                            <small id="excerpt-counter" class="fw-bold text-primary">
+                                                0 / 160
+                                            </small>
+                                        </div>
                                     </div>
 
                                 </div>
@@ -214,6 +214,36 @@
             .catch(error => {
                 console.error(error);
             });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const excerpt = document.getElementById('excerpt');
+            const counter = document.getElementById('excerpt-counter');
+
+            function updateCounter() {
+
+                const length = excerpt.value.length;
+
+                counter.innerText = `${length} / 160`;
+
+                if (length > 160) {
+
+                    counter.classList.remove('text-primary');
+                    counter.classList.add('text-danger');
+
+                } else {
+
+                    counter.classList.remove('text-danger');
+                    counter.classList.add('text-primary');
+                }
+            }
+
+            updateCounter();
+
+            excerpt.addEventListener('input', updateCounter);
+        });
     </script>
 </body>
 

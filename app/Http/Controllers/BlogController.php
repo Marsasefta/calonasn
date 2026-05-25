@@ -43,19 +43,31 @@ class BlogController extends Controller
         ]);
 
         $data = $request->all();
-        $data['slug'] = Str::slug($request->title);
+
+        $data['slug'] = $request->filled('slug')
+            ? Str::slug($request->slug)
+            : Str::slug($request->title);
+
         $data['user_id'] = Auth::id();
-        $data['published_at'] = $request->status === 'published' ? now() : null;
+
+        $data['published_at'] = $request->status === 'published'
+            ? now()
+            : null;
 
         if ($request->hasFile('image')) {
+
             $file = $request->file('image');
+
             $path = $file->store('blog-images', 'public');
+
             $data['image_url'] = Storage::url($path);
         }
 
         Post::create($data);
 
-        return redirect()->route('admin.blog.index')->with('success', 'Artikel berhasil diterbitkan!');
+        return redirect()
+            ->route('admin.blog.index')
+            ->with('success', 'Artikel berhasil diterbitkan!');
     }
 
     // 1. Menampilkan Form Edit Artikel beserta data lamanya

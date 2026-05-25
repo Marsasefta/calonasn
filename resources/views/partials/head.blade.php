@@ -13,8 +13,7 @@
     @yield('meta_tags')
 @else
     {{-- Jika ini homepage/halaman lain, gunakan SEO default ini --}}
-    <meta name="description"
-        content="Simulasi CAT CPNS 2026 terakurat standar BKN. Sedia paket tryout online SKD (TWK, TIU, TKP) dengan soal HOTS terbaru & pembahasan cepat. Coba demo gratis!">
+    <meta name="description" content="Simulasi CAT CPNS 2026 terakurat standar BKN. Sedia paket tryout online SKD (TWK, TIU, TKP) dengan soal HOTS terbaru & pembahasan cepat. Coba demo gratis!">
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
