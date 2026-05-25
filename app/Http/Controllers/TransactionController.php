@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PromoCode; // Pastikan model PromoCode di-import di paling atas
 use App\Notifications\AdminPaymentNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 
 class TransactionController extends Controller
 {
@@ -29,46 +31,79 @@ class TransactionController extends Controller
         $userId = Auth::id();
         $tryoutId = $request->tryout_id;
         
-        // Ambil harga (Jika tabel tryouts sudah jalan, gunakan Tryout::find)
+        // Ambil harga asli paket
         $amount = $request->amount ?? 50000; 
 
-        // 1. Cek apakah ada tagihan pending agar tidak double
+        // --- 1. AMBIL LOGIKA PROMO CODE TERLEBIH DAHULU ---
+        $discountAmount = 0;
+        $promoCodeId = null;
+
+        if ($request->filled('promo_code_id')) {
+            $promo = \App\Models\PromoCode::where('id', $request->promo_code_id)
+                                          ->where('status', 'aktif')
+                                          ->first();
+                                          
+            if ($promo) {
+                $discountAmount = $promo->discount_amount;
+                $promoCodeId = $promo->id;
+            }
+        }
+
+        // --- 2. CEK APAKAH ADA TAGIHAN PENDING ---
         $pendingTx = Transaction::where('user_id', $userId)
                         ->where('tryout_id', $tryoutId)
                         ->whereIn('status', ['pending', 'verifying'])
                         ->first();
 
+        // JIKA ADA TAGIHAN PENDING: Update nilainya
         if ($pendingTx) {
-            // FIX BUG: Jika data lama belum punya invoice_number, buatkan instan
-            if (empty($pendingTx->invoice_number)) {
-                $pendingTx->update([
-                    'invoice_number' => 'INV-' . date('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(5)),
-                    'unique_code'    => rand(111, 999),
-                    'total_amount'   => ($pendingTx->amount ?? $amount) + rand(111, 999),
-                    'payment_method' => 'qris',
-                ]);
-                $pendingTx->refresh();
-            }
+            // Gunakan kode unik yang sudah ada di transaksi itu
+            $uniqueCode = $pendingTx->unique_code ?? rand(1, 199);
+            
+            // Hitung total bayar yang baru
+            $hargaSetelahDiskon = max(0, $amount - $discountAmount);
+            $totalAmount = $hargaSetelahDiskon + $uniqueCode;
 
-            return redirect()->route('payment.qris', $pendingTx->invoice_number)
-                ->with('info', 'Selesaikan pembayaran Anda sebelumnya.');
+            // Update data transaksi lama di database
+            $pendingTx->update([
+                'promo_code_id'   => $promoCodeId,
+                'discount_amount' => $discountAmount,
+                'total_amount'    => $totalAmount,
+                'invoice_number'  => $pendingTx->invoice_number ?? 'INV-' . date('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(5)),
+                'payment_method'  => 'qris',
+            ]);
+
+            // --- PERBAIKAN BUG PESAN REDIRECT ---
+            // Jika user benar-benar pakai promo, kasih pesan sukses warna hijau
+            if ($promoCodeId) {
+                return redirect()->route('payment.qris', $pendingTx->invoice_number)
+                    ->with('success', 'Tagihan Anda berhasil diperbarui menggunakan kode promo.');
+            } 
+            // Jika tidak pakai promo, kasih pesan info biasa warna biru
+            else {
+                return redirect()->route('payment.qris', $pendingTx->invoice_number)
+                    ->with('info', 'Silakan selesaikan pembayaran Anda.');
+            }
         }
 
-        // 2. Generate Data Unik
+        // --- 3. JIKA TIDAK ADA TAGIHAN PENDING (BUAT TRANSAKSI FRESH BARU) ---
         $invoiceNumber = 'INV-' . date('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(5));
-        $uniqueCode = rand(1, 199); // 3 digit unik
-        $totalAmount = $amount + $uniqueCode;
-        $expiredAt = now()->addHours(24); // Waktu kedaluwarsa 24 jam
+        $uniqueCode = rand(1, 199); 
+        
+        $hargaSetelahDiskon = max(0, $amount - $discountAmount);
+        $totalAmount = $hargaSetelahDiskon + $uniqueCode;
+        $expiredAt = now()->addHours(24); 
 
-        // 3. Simpan ke database
         $transaction = Transaction::create([
             'user_id'        => $userId,
             'tryout_id'      => $tryoutId,
             'order_id'       => $invoiceNumber,
             'invoice_number' => $invoiceNumber,
-            'amount'         => $amount,
-            'unique_code'    => $uniqueCode,
-            'total_amount'   => $totalAmount,
+            'promo_code_id'  => $promoCodeId,       
+            'amount'         => $amount,            
+            'discount_amount'=> $discountAmount,    
+            'unique_code'    => $uniqueCode,        
+            'total_amount'   => $totalAmount,       
             'payment_method' => 'qris',
             'status'         => 'pending',
             'expired_at'     => $expiredAt,
@@ -120,6 +155,19 @@ class TransactionController extends Controller
 
         // Kirim notifikasi menggunakan facade Notification Laravel
         Notification::route('mail', $adminEmails)->notify(new AdminPaymentNotification($transaction));
+    
+        // 1. Ambil email user yang sedang login (yang sedang upload bukti)
+        $currentUserEmail = Auth::user()->email;
+
+        // 2. Cek apakah user ini ADALAH akun ujicoba atau bukan
+        // Jika BUKAN fenthalari@gmail.com, maka jalankan pengiriman email
+        if ($currentUserEmail !== 'fenthalari@gmail.com') {
+            
+            $adminEmails = ['fenthalari@gmail.com','marsasefta02@gmail.com'];
+            
+            // Kirim notifikasi
+            Notification::route('mail', $adminEmails)->notify(new AdminPaymentNotification($transaction));
+        }
         // --- END NOTIFIKASI ---
 
         return redirect()->route('payment.pending')->with('success', 'Bukti transfer berhasil diunggah.');
@@ -198,4 +246,32 @@ class TransactionController extends Controller
 
         return response()->json(['status' => 'not_found'], 404);
     }
+
+    public function checkPromo(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string'
+        ]);
+
+        // Cari promo, abaikan huruf besar/kecil (strtoupper), dan WAJIB bersatus 'aktif'
+        $promo = PromoCode::where('code', strtoupper($request->code))
+                        ->where('status', 'aktif') // <--- INI KUNCI PERBAIKANNYA
+                        ->first();
+
+        // Jika kode tidak ada atau statusnya bukan 'aktif'
+        if (!$promo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kode promo tidak valid atau sudah kadaluarsa.'
+            ]);
+        }
+
+        // Jika sukses
+        return response()->json([
+            'success' => true,
+            'promo_id' => $promo->id,
+            'discount_amount' => $promo->discount_amount,
+            'message' => 'Kode promo berhasil diterapkan!'
+    ]);
+}
 }

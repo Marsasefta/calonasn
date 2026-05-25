@@ -329,6 +329,27 @@
                                 <h1 class="mb-0 display-3 fw-xl-bolder fw-bold text-dark lh-sm">
                                     Tryout CPNS 2026 & Simulasi CAT Terakurat
                                 </h1>
+
+                                <div
+                                    class="alert alert-warning border-0 shadow-sm py-2 px-3 mt-3 d-inline-flex align-items-center gap-2 flex-nowrap">
+                                    <span>🔥</span>
+
+                                    <div class="d-flex align-items-center gap-2 flex-nowrap">
+                                        <span class="text-nowrap">Gunakan kode promo</span>
+
+                                        <span
+                                            class="bg-white border border-2 border-warning rounded px-3 py-1 fw-bold text-dark shadow-sm text-nowrap"
+                                            style="border-style:dashed !important; letter-spacing:1px;">
+                                            ASN2026
+                                        </span>
+
+                                        <span class="text-nowrap">
+                                            potongan <strong>Rp 7.000</strong>
+                                        </span>
+                                    </div>
+                                </div>
+
+
                                 <p class="mb-0 text-muted fs-4 lh-base">
                                     Latih kesiapanmu dengan platform ujian yang dirancang 100% mirip dengan sistem asli.
                                     Rasakan atmosfer ujian riil, ukur skor Passing Grade secara instan, dan amankan NIP
@@ -373,12 +394,27 @@
                                 pembahasan lengkap.</p>
 
                             <div class="py-3 mb-4 bg-white rounded border">
+                                <span class="text-muted small text-decoration-line-through d-block mb-1">
+                                    Harga Promo: Rp 20.000
+                                </span>
+
+                                <p class="display-4 fw-bolder text-primary mb-0">
+                                    Rp 13.000
+                                    <span class="fs-4 text-muted fw-normal">/paket</span>
+                                </p>
+
+                                <span class="badge bg-success mt-2">
+                                    🎁 Setelah pakai kode ASN2026
+                                </span>
+                            </div>
+
+                            {{-- <div class="py-3 mb-4 bg-white rounded border">
                                 <span class="text-muted small text-decoration-line-through d-block mb-1">Harga Normal: Rp
                                     99.000</span>
                                 <!-- PERBAIKAN: Jangan gunakan H1 untuk harga. Ubah ke p atau div dengan class display-4 -->
                                 <p class="display-4 fw-bolder text-primary mb-0">Rp 20.000 <span
                                         class="fs-4 text-muted fw-normal">/paket</span></p>
-                            </div>
+                            </div> --}}
 
                             <ul class="list-unstyled text-start mx-auto my-4 d-flex flex-column gap-3 text-dark fw-medium"
                                 style="max-width: 380px;">

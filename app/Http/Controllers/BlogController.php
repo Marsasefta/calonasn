@@ -67,13 +67,14 @@ class BlogController extends Controller
         return view('admin.blog_edit', compact('post', 'categories'));
     }
 
-    // 2. Memproses Update Perubahan Artikel ke Database
     public function update(Request $request, $id)
     {
         $post = Post::findOrFail($id);
 
+        // Tambahkan 'slug' ke dalam aturan validasi
         $request->validate([
             'title' => 'required|max:255',
+            'slug' => 'nullable|string|max:255', // Validasi slug baru
             'content' => 'required',
             'blog_category_id' => 'required|exists:blog_categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -83,8 +84,15 @@ class BlogController extends Controller
 
         $data = $request->all();
         
-        // Buat slug baru jika judulnya diubah oleh user
-        $data['slug'] = Str::slug($request->title);
+        // LOGIKA SLUG BARU:
+        // Cek apakah user mengisi kolom slug di form
+        if ($request->filled('slug')) {
+            // Jika diisi, gunakan isian user dan pastikan formatnya benar (pakai strip)
+            $data['slug'] = Str::slug($request->slug);
+        } else {
+            // Jika dibiarkan kosong, otomatis buat dari judul artikel
+            $data['slug'] = Str::slug($request->title);
+        }
         
         // Atur waktu tayang ulang jika status berubah jadi published
         if ($request->status === 'published' && !$post->published_at) {
@@ -95,13 +103,11 @@ class BlogController extends Controller
 
         // Jika user mengunggah gambar utama baru
         if ($request->hasFile('image')) {
-            // Hapus gambar lama dari server jika ada untuk menghemat kapasitas storage
             if ($post->image_url) {
                 $oldPath = str_replace('/storage/', '', $post->image_url);
                 Storage::disk('public')->delete($oldPath);
             }
 
-            // Simpan gambar baru
             $file = $request->file('image');
             $path = $file->store('blog-images', 'public');
             $data['image_url'] = Storage::url($path);
