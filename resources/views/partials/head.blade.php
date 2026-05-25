@@ -1,23 +1,34 @@
+<title>@yield('title', 'Simulasi CAT CPNS 2026 Terakurat & Terbaru | CalonASN.id')</title>
+
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<meta name="description" content="@yield('meta_description', 'Simulasi CAT CPNS 2026 terakurat standar BKN. Sedia paket tryout online SKD (TWK, TIU, TKP) dengan soal HOTS terbaru & pembahasan cepat. Coba demo gratis!')">
 <meta name="robots" content="index, follow">
 <meta name="author" content="CalonASN.id">
 <link rel="canonical" href="{{ url()->current() }}">
 
-<meta property="og:type" content="website">
-<meta property="og:url" content="{{ url()->current() }}">
-<meta property="og:title" content="Simulasi CAT CPNS 2026 Terakurat & Terbaru | CalonASN.id">
-<meta property="og:description" content="Simulasi CAT CPNS 2026 terakurat standar BKN. Sedia paket tryout online SKD (TWK, TIU, TKP) dengan soal HOTS terbaru & pembahasan cepat. Coba demo gratis!">
-<meta property="og:image" content="{{ asset('image/og-image.jpg') }}">
+<!-- LOGIKA PINTAR LARAVEL UNTUK MENCEGAH DOBEL -->
+@hasSection('meta_tags')
+    {{-- Jika ini halaman artikel, ambil SEO dari artikel --}}
+    @yield('meta_tags')
+@else
+    {{-- Jika ini homepage/halaman lain, gunakan SEO default ini --}}
+    <meta name="description"
+        content="Simulasi CAT CPNS 2026 terakurat standar BKN. Sedia paket tryout online SKD (TWK, TIU, TKP) dengan soal HOTS terbaru & pembahasan cepat. Coba demo gratis!">
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Simulasi CAT CPNS 2026 Terakurat & Terbaru | CalonASN.id">
-<meta name="twitter:description" content="Simulasi CAT CPNS 2026 terakurat standar BKN. Sedia paket tryout online SKD (TWK, TIU, TKP) dengan soal HOTS terbaru & pembahasan cepat. Coba demo gratis!">
-<meta name="twitter:image" content="{{ asset('image/og-image.jpg') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="Simulasi CAT CPNS 2026 Terakurat & Terbaru | CalonASN.id">
+    <meta property="og:description"
+        content="Simulasi CAT CPNS 2026 terakurat standar BKN. Sedia paket tryout online SKD (TWK, TIU, TKP) dengan soal HOTS terbaru & pembahasan cepat. Coba demo gratis!">
+    <meta property="og:image" content="{{ asset('image/og-image.jpg') }}">
 
-@yield('meta_tags')
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Simulasi CAT CPNS 2026 Terakurat & Terbaru | CalonASN.id">
+    <meta name="twitter:description"
+        content="Simulasi CAT CPNS 2026 terakurat standar BKN. Sedia paket tryout online SKD (TWK, TIU, TKP) dengan soal HOTS terbaru & pembahasan cepat. Coba demo gratis!">
+    <meta name="twitter:image" content="{{ asset('image/og-image.jpg') }}">
+@endif
 
 <!-- Favicon untuk Mesin Pencari Google & Browser -->
 <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('image/logoasn-96.png') }}">
@@ -38,4 +49,4 @@
 <link href="/build/assets/css/vendors.min.css" rel="stylesheet" />
 
 <!-- Theme CSS -->
-<link href="/build/assets/css/theme.min.css" rel="stylesheet"/>
+<link href="/build/assets/css/theme.min.css" rel="stylesheet" />

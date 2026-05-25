@@ -3,11 +3,21 @@
 @section('title', $post->title . ' | CalonASN.id')
 
 @section('meta_tags')
+    <!-- Meta Google -->
+    <meta name="description" content="{{ $post->excerpt ?? Str::limit(strip_tags($post->content), 150) }}" />
+
+    <!-- Meta Facebook/WhatsApp (Open Graph) -->
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="{{ url()->current() }}" />
     <meta property="og:title" content="{{ $post->title }}" />
     <meta property="og:description" content="{{ $post->excerpt ?? Str::limit(strip_tags($post->content), 150) }}" />
     <meta property="og:image" content="{{ url($post->image_url ?? '/build/assets/images/course/default-blog.png') }}" />
-    <meta property="og:url" content="{{ url()->current() }}" />
-    <meta property="og:type" content="article" />
+
+    <!-- Meta Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $post->title }}">
+    <meta name="twitter:description" content="{{ $post->excerpt ?? Str::limit(strip_tags($post->content), 150) }}">
+    <meta name="twitter:image" content="{{ url($post->image_url ?? '/build/assets/images/course/default-blog.png') }}">
 @endsection
 
 @push('styles')
@@ -28,7 +38,7 @@
             height: auto;
             border-radius: 12px;
             margin: 1.5rem 0;
-            shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar-sticky {
@@ -39,6 +49,54 @@
         .text-justify {
             text-align: justify;
         }
+
+        /* Styling Daftar Isi Interaktif Anda yang Sangat Bagus */
+        #toc-list a {
+            display: block;
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: all .2s ease;
+            line-height: 1.35;
+        }
+
+        #toc-list a:hover {
+            background-color: #eff6ff;
+            color: #2563eb !important;
+            transform: translateX(3px);
+        }
+
+        #toc-list a.active {
+            background-color: #dbeafe;
+            color: #1d4ed8 !important;
+            font-weight: 700;
+        }
+
+        #toc-list li.toc-h2 a {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        #toc-list li.toc-h3 {
+            padding-left: 16px;
+        }
+
+        #toc-list li.toc-h3 a {
+            font-size: 0.95rem;
+            color: #475569;
+        }
+
+        #toc-list li.toc-h4 {
+            padding-left: 32px;
+        }
+
+        #toc-list li.toc-h4 a {
+            font-size: 0.88rem;
+            color: #64748b;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 @endpush
 
@@ -46,7 +104,6 @@
     <main class="py-8 bg-white border-top">
         <div class="container">
 
-            <!-- Breadcrumb Navigasi -->
             <div class="row mb-3">
                 <div class="col-lg-8 col-12">
                     <nav aria-label="breadcrumb">
@@ -54,18 +111,15 @@
                             <li class="breadcrumb-item">
                                 <a href="/" class="text-decoration-none text-muted">Home</a>
                             </li>
-
                             <li class="breadcrumb-item">
                                 <a href="{{ route('blog.index') }}" class="text-decoration-none text-muted">Blog</a>
                             </li>
-
                             <li class="breadcrumb-item active text-primary d-inline-block text-truncate" aria-current="page"
                                 style="max-width: 250px;">
                                 {{ $post->title }}
                             </li>
                         </ol>
                     </nav>
-                    <!-- Badge Kategori -->
                     <span class="badge bg-primary-soft text-primary fw-bold px-3 py-2 rounded-pill mb-2"
                         style="font-size: 0.85rem; background-color: #e0f2fe;">
                         <i class="fe fe-tag me-1"></i> {{ $post->category->name }}
@@ -73,14 +127,12 @@
                 </div>
             </div>
 
-            <!-- Judul Artikel (Tag H1 Mutlak untuk SEO Google) -->
             <div class="row mb-4">
                 <div class="col-lg-8 col-12">
                     <h1 class="fw-extrabolder text-dark lh-sm mb-3" style="font-size: 2.5rem; font-weight: 800;">
                         {{ $post->title }}
                     </h1>
 
-                    <!-- Info Penulis & Tanggal -->
                     <div class="d-flex align-items-center gap-3 text-muted pb-3 border-bottom small">
                         <span class="d-flex align-items-center gap-1">
                             <i class="fe fe-calendar"></i>
@@ -96,9 +148,7 @@
             </div>
 
             <div class="row g-5">
-                <!-- KOLOM KIRI: ISI ARTIKEL UTAMA -->
                 <div class="col-lg-8 col-12">
-                    <!-- Gambar Utama (Featured Image) -->
                     @if ($post->image_url)
                         <div class="mb-4 rounded-4 overflow-hidden shadow-sm" style="max-height: 420px; width: 100%;">
                             <img src="{{ $post->image_url }}" alt="{{ $post->title }}" class="w-100 h-100"
@@ -106,17 +156,33 @@
                         </div>
                     @endif
 
-                    <!-- Render Konten CKEditor Secara Aman -->
-                    <div class="blog-post-content text-justify">
+                    <div class="card shadow-sm mb-4 rounded-4 overflow-hidden border-0" id="toc-container"
+                        style="display:none; background:#eff6ff; border:1px solid #dbeafe;">
+                        <div class="card-header border-0 py-3" style="background:#dbeafe;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="fw-bold mb-0 d-flex align-items-center gap-2 text-primary">
+                                    <i class="fe fe-list"></i> Daftar Isi
+                                </h5>
+                                <button id="toc-toggle" class="btn btn-sm btn-light rounded-circle border-0 shadow-sm"
+                                    type="button" style="width:32px; height:32px;">
+                                    <span id="toc-icon" class="fw-bold fs-5">−</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body p-3 p-lg-4" id="toc-body">
+                            <ul id="toc-list" class="list-unstyled mb-0 d-flex flex-column gap-1">
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="blog-post-content text-justify" id="article-body">
                         {!! $post->content !!}
                     </div>
                 </div>
 
-                <!-- KOLOM KANAN: SIDEBAR REKOMENDASI -->
                 <div class="col-lg-4 col-12">
                     <div class="sidebar-sticky">
 
-                        <!-- Card Rekomendasi Tulisan Lain -->
                         <div class="card border-0 bg-light p-4 rounded-4 mb-4 shadow-sm">
                             <h4 class="fw-bold text-dark mb-4" style="font-size: 1.15rem;">Baca Artikel Lainnya</h4>
                             <div class="d-flex flex-column gap-3">
@@ -143,7 +209,6 @@
                             </div>
                         </div>
 
-                        <!-- Card Banner Promosi Tryout (Call to Action) -->
                         <div class="card border-0 text-white p-4 rounded-4 text-center shadow-sm"
                             style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);">
                             <div class="mb-3">
@@ -157,12 +222,93 @@
                                 Daftar Akun Gratis
                             </a>
                         </div>
-
                     </div>
                 </div>
             </div>
 
         </div>
     </main>
-
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const articleBody = document.getElementById('article-body');
+            const tocContainer = document.getElementById('toc-container');
+            const tocList = document.getElementById('toc-list');
+
+            if (!articleBody || !tocContainer || !tocList) return;
+
+            // Diperbaiki agar mendeteksi huruf kapital dari CKEditor yang bandel
+            const headings = articleBody.querySelectorAll('h2, h3, h4, H2, H3, H4');
+
+            if (headings.length === 0) return;
+
+            tocContainer.style.display = 'block';
+
+            headings.forEach((heading, index) => {
+                const text = heading.innerText.trim();
+                if (!text) return;
+
+                let id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                if (!id) id = 'section-' + index;
+
+                heading.id = id;
+
+                const li = document.createElement('li');
+                // class dinamis mengikuti jenis heading
+                li.classList.add('toc-' + heading.tagName.toLowerCase());
+
+                const a = document.createElement('a');
+                a.href = '#' + id;
+                a.innerText = text;
+                a.className = 'text-decoration-none';
+
+                li.appendChild(a);
+                tocList.appendChild(li);
+            });
+
+            // Active heading on scroll (Canggih!)
+            const tocLinks = tocList.querySelectorAll('a');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+
+                headings.forEach((heading) => {
+                    const sectionTop = heading.offsetTop - 140; // Offset untuk jarak navbar header
+                    if (window.scrollY >= sectionTop) {
+                        current = heading.id;
+                    }
+                });
+
+                tocLinks.forEach((link) => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + current) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+        });
+    </script>
+
+    <script>
+        // Logika Buka Tutup (Toggle) Daftar Isi
+        const tocToggle = document.getElementById('toc-toggle');
+        const tocBody = document.getElementById('toc-body');
+        const tocIcon = document.getElementById('toc-icon');
+
+        if (tocToggle && tocBody && tocIcon) {
+            tocToggle.addEventListener('click', function() {
+                if (tocBody.style.display === 'none') {
+                    tocBody.style.display = 'block';
+                    tocIcon.innerText = '−'; // Simbol Minus
+                } else {
+                    tocBody.style.display = 'none';
+                    tocIcon.innerText = '+'; // Simbol Plus
+                }
+            });
+        }
+    </script>
+@endpush

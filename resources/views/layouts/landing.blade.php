@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <html lang="id">
-  <head>
+
+<head>
     @include('partials.head')
 
-    <title>@yield('title', 'Simulasi CAT CPNS 2026 Terakurat & Terbaru | CalonASN.id')</title>
-
-
     @stack('styles')
-  </head>
-  <body class="bg-white">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body class="bg-white">
     @include('partials.navbar-default')
 
     @yield('content')
@@ -18,5 +18,6 @@
     @include('partials.btn-scroll-top')
     @include('partials.scripts')
     @stack('scripts')
-  </body>
+</body>
+
 </html>
