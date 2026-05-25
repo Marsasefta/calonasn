@@ -334,16 +334,16 @@
                                     class="alert alert-warning border-0 shadow-sm py-2 px-3 mt-3 d-inline-flex align-items-center gap-2 flex-nowrap">
                                     <span>🔥</span>
 
-                                    <div class="d-flex align-items-center gap-2 flex-nowrap">
-                                        <span class="text-nowrap">Gunakan kode promo</span>
+                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                        <span>Gunakan kode promo</span>
 
                                         <span
-                                            class="bg-white border border-2 border-warning rounded px-3 py-1 fw-bold text-dark shadow-sm text-nowrap"
+                                            class="bg-white border border-2 border-warning rounded px-3 py-1 fw-bold text-dark shadow-sm"
                                             style="border-style:dashed !important; letter-spacing:1px;">
                                             ASN2026
                                         </span>
 
-                                        <span class="text-nowrap">
+                                        <span>
                                             potongan <strong>Rp 7.000</strong>
                                         </span>
                                     </div>
