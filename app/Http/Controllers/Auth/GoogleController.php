@@ -38,7 +38,7 @@ class GoogleController extends Controller
                 Auth::login($newUser);
             }
 
-            return redirect()->intended('/dashboard'); // Alihkan ke halaman utama setelah login
+            return redirect('/dashboard')->with('login_success', 'Selamat Datang! Anda berhasil masuk menggunakan Google.'); // Alihkan ke halaman utama setelah login
 
         } catch (Exception $e) {
             return redirect()->route('login')->with('error', 'Gagal masuk menggunakan Google.');

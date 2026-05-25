@@ -259,3 +259,17 @@
 </body>
 
 </html>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@if(session('login_success'))
+<script>
+    // Pastikan SweetAlert2 sudah ter-include di halaman ini
+    Swal.fire({
+        icon: 'success',
+        title: 'Login Berhasil!',
+        text: "{{ session('login_success') }}",
+        timer: 2500, // Notifikasi menutup otomatis setelah 2.5 detik
+        showConfirmButton: false,
+        timerProgressBar: true
+    });
+</script>
+@endif
