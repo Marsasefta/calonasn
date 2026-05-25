@@ -11,6 +11,7 @@ use App\Http\Controllers\DemoController;
 use App\Http\Controllers\UjianController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PromoCodeController;
+use App\Http\Controllers\Auth\GoogleController;
 
 use App\Models\Post;
 
@@ -37,6 +38,10 @@ Route::get('/blog', [App\Http\Controllers\BlogController::class, 'index'])->name
 Route::get('/blog/{slug}', [App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
 
 Route::view('/demo-cat', 'demo')->name('demo.cat');
+
+// --- TAMBAHAN ROUTE GOOGLE AUTHENTICATION ---
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');    
