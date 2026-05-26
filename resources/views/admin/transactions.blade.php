@@ -68,7 +68,7 @@
                                                     {{ ucfirst($transaction->status) }}
                                                 </span>
                                             </td>
-                                            <td>{{ $transaction->created_at->format('d M Y H:i') }}</td>
+                                            {{-- <td>{{ $transaction->created_at->format('d M Y H:i') }}</td>                                             --}}
                                             <td class="text-end">
                                                 @if ($transaction->status === 'pending')
                                                     <form
