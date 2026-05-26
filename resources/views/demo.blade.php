@@ -401,38 +401,67 @@
                 <div
                     class="modal-header bg-primary text-white py-4 justify-content-center text-center border-bottom-0 position-relative">
                     <div>
-                        <h3 class="modal-title fw-bold text-white mb-1">🎉 Simulasi Demo Selesai!</h3>
-                        <p class="mb-0 text-white opacity-75 small">Hasil analisis kompetensi kelulusan instan kamu</p>
+                        <h3 class="modal-title fw-bold text-white mb-1">🎯 Ujian Selesai!</h3>
+                        <p class="mb-0 text-white opacity-75 small">Kerja bagus, simulasi pemanasan telah diselesaikan.</p>
                     </div>
                 </div>
+
                 <div class="modal-body p-4 p-md-5 text-center">
                     <div class="bg-light rounded-circle d-flex flex-column align-items-center justify-content-center mx-auto mb-4 border shadow-sm"
                         style="width: 140px; height: 140px;">
-                        <span class="text-muted small uppercase fw-semibold tracking-wider">SKOR KAMU</span>
+                        <span class="text-muted small text-uppercase fw-semibold tracking-wider">SKOR DEMO</span>
                         <h1 class="display-4 fw-bolder text-primary mb-0" id="modal-skor-akhir">0</h1>
                         <span class="text-muted small fw-medium">Max: 25</span>
                     </div>
 
-                    <h4 class="text-dark fw-bold mb-2">Ingin Melihat Kunci & Trik Pembahasan Cepat Soal Tadi?</h4>
+                    <h4 class="text-dark fw-bold mb-2">Yakin Skor Segini Sudah Aman untuk Lolos?</h4>
                     <p class="text-muted fs-5 mb-4">
-                        Jangan biarkan rasa penasaranmu hilang. Amankan <b>Paket Premium Mandiri</b> sekarang untuk mengunci
-                        nilai kamu, membuka rahasia pembahasan, plus mendapatkan bonus <b>110 Soal Prediksi CPNS 2026</b>
-                        terakurat!
+                        Jutaan pesaingmu sedang belajar mati-matian. Jangan berhenti di sini! Buka <b>Kunci Jawaban & Trik
+                            Cepat</b> soal tadi, dan hajar <b>110 Soal Prediksi HOTS CPNS 2026</b> di Paket Premium
+                        sekarang.
                     </p>
 
-                    <div class="p-3 bg-light rounded border mb-4 text-center">
-                        <span class="text-muted text-decoration-line-through small d-block mb-1">Harga Normal: Rp
-                            99.000</span>
-                        <h2 class="fw-xl-bolder fw-bold text-success mb-0">Hanya Rp 20.000 <span
-                                class="fs-5 text-muted fw-normal">/ Selamanya</span></h2>
+                    <div class="p-3 bg-light rounded border mb-4 text-center position-relative">
+                        <span
+                            class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-warning text-dark px-3 py-2 fw-bold shadow-sm">
+                            PROMO TERBATAS
+                        </span>
+                        <div class="mt-2">
+                            <span class="text-muted text-decoration-line-through small d-block mb-1">Harga Normal: Rp
+                                49.000</span>
+
+                            <h2 class="fw-xl-bolder fw-bold text-dark mb-0">Rp 20.000 <span
+                                    class="fs-5 text-muted fw-normal">/ Paket Tryout</span></h2>
+                            <span class="small text-muted d-block mb-2">*(1x Pengerjaan CAT + Akses Pembahasan
+                                Selamanya)*</span>
+
+                            <div
+                                class="bg-success bg-opacity-10 border border-success rounded p-3 pt-4 mt-4 text-center position-relative shadow-sm">
+
+                                <span
+                                    class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger text-white px-3 py-2 fw-bold shadow-sm">
+                                    LEBIH MURAH LAGI!
+                                </span>
+
+                                <span class="d-block fw-bolder text-dark fs-4 mb-2">CUKUP BAYAR Rp 13.000</span>
+
+                                <span class="small text-dark fw-medium d-block">
+                                    Masukkan kode
+                                    <strong
+                                        class="user-select-all text-danger bg-white border border-danger px-2 py-1 rounded mx-1 shadow-sm">ASN2026</strong>
+                                    saat checkout!
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="d-grid gap-2">
-                        <a href="{{ route('register') }}" class="btn btn-primary btn-lg py-3 fw-bold shadow">
-                            Daftar Akun & Buka Gembok Soal <i class="fe fe-arrow-right ms-2"></i>
+                        <a href="{{ route('register') }}"
+                            class="btn btn-primary btn-lg py-3 fw-bold shadow pulse-animation">
+                            Daftar & Amankan NIP Sekarang <i class="fe fe-arrow-right ms-2"></i>
                         </a>
-                        <a href="{{ url('/') }}" class="btn btn-link text-muted btn-sm">
-                            Kembali ke Beranda
+                        <a href="{{ url('/') }}" class="btn btn-link text-muted btn-sm mt-2">
+                            Nanti saja, saya rela digeser pesaing
                         </a>
                     </div>
                 </div>

@@ -650,7 +650,235 @@
                 </div>
             </div>
         </section>
+        <section class="py-xl-9 py-6 bg-white">
+            <div class="container py-xl-4">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-12">
+
+                        <div class="text-center mb-5">
+                            <span class="text-primary fw-semibold text-uppercase tracking-wider fs-6">F.A.Q</span>
+                            <h2 class="display-5 fw-bold text-dark mt-2">Pertanyaan yang Sering Diajukan</h2>
+                            <p class="text-muted fs-5">Masih ragu? Temukan jawaban seputar platform simulasi CAT
+                                CalonASN.id di bawah ini.</p>
+                        </div>
+
+                        <div class="accordion" id="faqAccordion">
+
+                            <div class="accordion-item mb-3 border-0 rounded-4 shadow-sm overflow-hidden"
+                                style="background-color: #f1f5f9 !important;">
+                                <h2 class="accordion-header" id="headingOne">
+                                    <button
+                                        class="accordion-button collapsed bg-transparent shadow-none fw-bold text-dark fs-5 py-4"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                                        aria-expanded="false" aria-controls="collapseOne">
+                                        Apakah harus install aplikasi di HP/Laptop?
+                                    </button>
+                                </h2>
+                                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                                    data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body text-dark pb-4 pt-0">
+                                        <strong>Tentu saja tidak!</strong> CalonASN.id berbasis 100% Web (Cloud). Kamu bisa
+                                        langsung mengerjakan Tryout dari <i>browser</i> (Chrome/Safari) di HP, Tablet,
+                                        maupun Laptop kapan saja dan di mana saja.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item mb-3 border-0 rounded-4 shadow-sm overflow-hidden"
+                                style="background-color: #f1f5f9 !important;">
+                                <h2 class="accordion-header" id="headingTwo">
+                                    <button
+                                        class="accordion-button collapsed bg-transparent shadow-none fw-bold text-dark fs-5 py-4"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                                        aria-expanded="false" aria-controls="collapseTwo">
+                                        Apakah soalnya sudah disesuaikan dengan kisi-kisi 2026?
+                                    </button>
+                                </h2>
+                                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                                    data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body text-dark pb-4 pt-0">
+                                        Ya. Kami memiliki tim penyusun bank soal yang selalu mengikuti <i>update</i>
+                                        peraturan dan kisi-kisi resmi dari BKN. Soal Tryout kami mencakup porsi yang presisi
+                                        untuk TWK (Tes Wawasan Kebangsaan), TIU (Tes Intelegensia Umum), dan TKP (Tes
+                                        Karakteristik Pribadi) dengan format <strong>HOTS (Higher Order Thinking
+                                            Skills)</strong>.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item mb-3 border-0 rounded-4 shadow-sm overflow-hidden"
+                                style="background-color: #f1f5f9 !important;">
+                                <h2 class="accordion-header" id="headingThree">
+                                    <button
+                                        class="accordion-button collapsed bg-transparent shadow-none fw-bold text-dark fs-5 py-4"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree"
+                                        aria-expanded="false" aria-controls="collapseThree">
+                                        Berapa kali saya bisa mengerjakan Tryout Premium?
+                                    </button>
+                                </h2>
+                                <div id="collapseThree" class="accordion-collapse collapse"
+                                    aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body text-dark pb-4 pt-0">
+                                        Sistem kami sangat fleksibel, <strong>beli sesuai kebutuhan!</strong> Satu kali
+                                        pembayaran berlaku untuk pengerjaan <strong>satu paket Tryout penuh (110
+                                            soal)</strong> tanpa sistem langganan bulanan yang mahal.
+                                        <br><br>
+                                        Menariknya, setelah selesai ujian, akses ke <strong>Skor, Kunci Jawaban, dan Trik
+                                            Pembahasan</strong> untuk paket tersebut akan terbuka selamanya. Jadi kamu bisa
+                                        <i>review</i> materi kapan saja. Jika butuh tantangan soal yang baru, kamu tinggal
+                                        membeli paket Tryout lainnya dengan harga promo yang super terjangkau!
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item mb-3 border-0 rounded-4 shadow-sm overflow-hidden"
+                                style="background-color: #f1f5f9 !important;">
+                                <h2 class="accordion-header" id="headingFour">
+                                    <button
+                                        class="accordion-button collapsed bg-transparent shadow-none fw-bold text-dark fs-5 py-4"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour"
+                                        aria-expanded="false" aria-controls="collapseFour">
+                                        Bagaimana sistem penilaian dan pembahasannya?
+                                    </button>
+                                </h2>
+                                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
+                                    data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body text-dark pb-4 pt-0">
+                                        Begitu <i>timer</i> ujian habis atau kamu menekan tombol "Selesai", sistem akan
+                                        langsung menghitung skormu secara <i>real-time</i> dan menunjukkan apakah kamu lolos
+                                        <i>Passing Grade</i> atau belum. Kunci jawaban dan trik pembahasan cepat juga akan
+                                        langsung terbuka untuk kamu pelajari.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item mb-3 border-0 rounded-4 shadow-sm overflow-hidden"
+                                style="background-color: #f1f5f9 !important;">
+                                <h2 class="accordion-header" id="headingFive">
+                                    <button
+                                        class="accordion-button collapsed bg-transparent shadow-none fw-bold text-dark fs-5 py-4"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive"
+                                        aria-expanded="false" aria-controls="collapseFive">
+                                        Metode pembayaran apa saja yang diterima?
+                                    </button>
+                                </h2>
+                                <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive"
+                                    data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body text-dark pb-4 pt-0">
+                                        Kami menggunakan sistem otomatis. Kamu bisa membayar dengan mudah melalui
+                                        <strong>QRIS</strong> menggunakan m-Banking (BCA, Mandiri, BRI, dll) atau e-Wallet
+                                        kesayanganmu (GoPay, OVO, Dana, ShopeePay). Pembayaran akan diverifikasi secepatnya
+                                        oleh admin dan aksesmu langsung terbuka. Jangan lupa gunakan kode promo
+                                        <strong>ASN2026</strong> ya!
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="text-center mt-5">
+                            <p class="text-muted mb-2">Punya pertanyaan lain yang belum terjawab?</p>
+                            <a href="mailto:admincalonasn@gmail.com?subject=Pertanyaan%20seputar%20Tryout%20CalonASN"
+                                class="btn btn-outline-primary rounded-pill px-4 fw-medium bg-white">
+                                <i class="fe fe-mail me-1"></i> Hubungi Admin via Email
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
+    <div class="toast-container position-fixed bottom-0 start-0 p-3" style="z-index: 1055;">
+        <div id="liveSalesToast"
+            class="toast align-items-center text-bg-white border-0 shadow-lg rounded-4 overflow-hidden" role="alert"
+            aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center gap-3 py-3 px-3">
+                    <div class="bg-success rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+                        style="width: 45px; height: 45px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#ffffff"
+                            viewBox="0 0 16 16">
+                            <path
+                                d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="mb-0 text-dark fw-bold fs-6" id="toast-title">Budi dari Semarang</p>
+                        <p class="mb-1 text-muted small lh-sm" id="toast-desc" style="max-width: 220px;">Baru saja
+                            membeli Paket Premium</p>
+                        <p class="mb-0 text-primary small fw-semibold" style="font-size: 0.70rem;" id="toast-time">
+                            Beberapa detik yang lalu</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close me-3 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toastEl = document.getElementById('liveSalesToast');
+            if (!toastEl) return; // Mencegah error jika elemen tidak ada
+
+            // Inisialisasi Toast Bootstrap
+            const toast = new bootstrap.Toast(toastEl);
+
+            // Data Dummy yang diracik untuk FOMO
+            const salesData = [{
+                    name: "Rizky",
+                    city: "Yogyakarta",
+                    action: "baru saja membeli <b>Paket Premium</b> 🚀",
+                    time: "Baru saja"
+                },
+                {
+                    name: "Siti",
+                    city: "Makassar",
+                    action: "berhasil lolos <i>Passing Grade</i> simulasi CAT!",
+                    time: "2 menit yang lalu"
+                },
+                {
+                    name: "Andi",
+                    city: "Jakarta",
+                    action: "mendaftar dan memakai kode promo <b>ASN2026</b> 🔥",
+                    time: "1 menit yang lalu"
+                },
+                {
+                    name: "Budi",
+                    city: "Surabaya",
+                    action: "baru saja membeli <b>Paket Tryout</b>",
+                    time: "5 menit yang lalu"
+                },
+                {
+                    name: "Ayu",
+                    city: "Medan",
+                    action: "sedang mengerjakan <i>Tryout Gratis</i>",
+                    time: "Baru saja"
+                }
+            ];
+
+            function showRandomToast() {
+                // Pilih 1 data secara acak dari array
+                const randomItem = salesData[Math.floor(Math.random() * salesData.length)];
+
+                // Suntikkan data tersebut ke dalam HTML Toast
+                document.getElementById('toast-title').innerText = `${randomItem.name} dari ${randomItem.city}`;
+                document.getElementById('toast-desc').innerHTML = randomItem.action;
+                document.getElementById('toast-time').innerText = randomItem.time;
+
+                // Tampilkan Toast-nya
+                toast.show();
+
+                // Atur waktu acak untuk memunculkan notifikasi berikutnya (antara 8 sampai 15 detik)
+                const nextTime = Math.floor(Math.random() * (15000 - 8000 + 1) + 8000);
+                setTimeout(showRandomToast, nextTime);
+            }
+
+            // Tunda kemunculan pertama selama 5 detik agar pengunjung tidak kaget saat baru buka web
+            setTimeout(showRandomToast, 5000);
+        });
+    </script>
 @endsection
 
 @push('scripts')
