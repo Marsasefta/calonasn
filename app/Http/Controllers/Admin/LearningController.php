@@ -41,6 +41,35 @@ class LearningController extends Controller
         return redirect()->route('admin.learning.index')->with('success', 'Kategori materi berhasil disimpan.');
     }
 
+    public function editCategory($slug)
+    {
+        $category = LearningCategory::where('slug', $slug)->firstOrFail();
+        return view('admin.learning.edit_category', compact('category'));
+    }
+
+    public function updateCategory(Request $request, $slug)
+    {
+        $category = LearningCategory::where('slug', $slug)->firstOrFail();
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:learning_categories,slug,' . $category->id,
+            'description' => 'nullable|string',
+            'icon' => 'nullable|string|max:255',
+            'color_theme' => 'nullable|string|max:100'
+        ]);
+
+        $category->update($data);
+        return redirect()->route('admin.learning.index')->with('success', 'Kategori materi berhasil diperbarui.');
+    }
+
+    public function destroyCategory($slug)
+    {
+        $category = LearningCategory::where('slug', $slug)->firstOrFail();
+        $category->delete();
+
+        return redirect()->route('admin.learning.index')->with('success', 'Kategori materi berhasil dihapus.');
+    }
+
     public function createChapter($slug)
     {
         $category = LearningCategory::where('slug', $slug)->firstOrFail();
@@ -80,5 +109,38 @@ class LearningController extends Controller
         $data['is_locked'] = $request->has('is_locked') ? 1 : 0;
         LearningMaterial::create($data);
         return redirect()->route('admin.learning.category.show', $slug)->with('success','Materi berhasil ditambahkan');
+    }
+
+    public function editMaterial($slug, $chapterId, $materialId)
+    {
+        $category = LearningCategory::where('slug', $slug)->firstOrFail();
+        $chapter = LearningChapter::findOrFail($chapterId);
+        $material = LearningMaterial::where('id', $materialId)->where('learning_chapter_id', $chapter->id)->firstOrFail();
+        return view('admin.learning.edit_material', compact('category', 'chapter', 'material'));
+    }
+
+    public function updateMaterial(Request $request, $slug, $chapterId, $materialId)
+    {
+        $chapter = LearningChapter::findOrFail($chapterId);
+        $material = LearningMaterial::where('id', $materialId)->where('learning_chapter_id', $chapter->id)->firstOrFail();
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:learning_materials,slug,' . $material->id,
+            'content' => 'nullable|string',
+            'order_number' => 'nullable|integer',
+            'is_locked' => 'nullable|boolean'
+        ]);
+        $data['learning_chapter_id'] = $chapter->id;
+        $data['is_locked'] = $request->has('is_locked') ? 1 : 0;
+        $material->update($data);
+        return redirect()->route('admin.learning.category.show', $slug)->with('success','Materi berhasil diperbarui');
+    }
+
+    public function destroyMaterial($slug, $chapterId, $materialId)
+    {
+        $chapter = LearningChapter::findOrFail($chapterId);
+        $material = LearningMaterial::where('id', $materialId)->where('learning_chapter_id', $chapter->id)->firstOrFail();
+        $material->delete();
+        return redirect()->route('admin.learning.category.show', $slug)->with('success','Materi berhasil dihapus');
     }
 }

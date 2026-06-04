@@ -177,10 +177,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/learning/create', [App\Http\Controllers\Admin\LearningController::class, 'createCategory'])->name('learning.create');
         Route::post('/learning/store', [App\Http\Controllers\Admin\LearningController::class, 'storeCategory'])->name('learning.store');
         Route::get('/learning/{slug}', [App\Http\Controllers\Admin\LearningController::class, 'showCategory'])->name('learning.category.show');
+        Route::get('/learning/{slug}/edit', [App\Http\Controllers\Admin\LearningController::class, 'editCategory'])->name('learning.category.edit');
+        Route::put('/learning/{slug}/update', [App\Http\Controllers\Admin\LearningController::class, 'updateCategory'])->name('learning.category.update');
+        Route::delete('/learning/{slug}/delete', [App\Http\Controllers\Admin\LearningController::class, 'destroyCategory'])->name('learning.category.destroy');
         Route::get('/learning/{slug}/create-chapter', [App\Http\Controllers\Admin\LearningController::class, 'createChapter'])->name('learning.chapter.create');
         Route::post('/learning/{slug}/store-chapter', [App\Http\Controllers\Admin\LearningController::class, 'storeChapter'])->name('learning.chapter.store');
         Route::get('/learning/{slug}/chapters/{chapter}/create-material', [App\Http\Controllers\Admin\LearningController::class, 'createMaterial'])->name('learning.material.create');
         Route::post('/learning/{slug}/chapters/{chapter}/store-material', [App\Http\Controllers\Admin\LearningController::class, 'storeMaterial'])->name('learning.material.store');
+        Route::get('/learning/{slug}/chapters/{chapter}/materials/{material}/edit', [App\Http\Controllers\Admin\LearningController::class, 'editMaterial'])->name('learning.material.edit');
+        Route::put('/learning/{slug}/chapters/{chapter}/materials/{material}/update', [App\Http\Controllers\Admin\LearningController::class, 'updateMaterial'])->name('learning.material.update');
+        Route::delete('/learning/{slug}/chapters/{chapter}/materials/{material}/delete', [App\Http\Controllers\Admin\LearningController::class, 'destroyMaterial'])->name('learning.material.destroy');
     
 
         Route::get('promo-codes', [PromoCodeController::class, 'index'])->name('promo.index');
