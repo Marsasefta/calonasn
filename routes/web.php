@@ -159,6 +159,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Tambahkan ini di dalam grup Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () { ... })
 
         Route::get('/blog/{id}', [App\Http\Controllers\BlogController::class, 'showAdmin'])->name('blog.show');
+        
+        // Admin: Learning / Materi Pembelajaran (Lobby, bab, materi)
+        Route::get('/learning', [App\Http\Controllers\Admin\LearningController::class, 'index'])->name('learning.index');
+        Route::get('/learning/create', [App\Http\Controllers\Admin\LearningController::class, 'createCategory'])->name('learning.create');
+        Route::post('/learning/store', [App\Http\Controllers\Admin\LearningController::class, 'storeCategory'])->name('learning.store');
+        Route::get('/learning/{slug}', [App\Http\Controllers\Admin\LearningController::class, 'showCategory'])->name('learning.category.show');
+        Route::get('/learning/{slug}/create-chapter', [App\Http\Controllers\Admin\LearningController::class, 'createChapter'])->name('learning.chapter.create');
+        Route::post('/learning/{slug}/store-chapter', [App\Http\Controllers\Admin\LearningController::class, 'storeChapter'])->name('learning.chapter.store');
+        Route::get('/learning/{slug}/chapters/{chapter}/create-material', [App\Http\Controllers\Admin\LearningController::class, 'createMaterial'])->name('learning.material.create');
+        Route::post('/learning/{slug}/chapters/{chapter}/store-material', [App\Http\Controllers\Admin\LearningController::class, 'storeMaterial'])->name('learning.material.store');
     
 
         Route::get('promo-codes', [PromoCodeController::class, 'index'])->name('promo.index');

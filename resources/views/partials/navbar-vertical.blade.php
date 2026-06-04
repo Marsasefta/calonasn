@@ -75,6 +75,14 @@
         </li>
 
         <li class="nav-item">
+          <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.learning.*') ? 'active' : '' }}" href="{{ route('admin.learning.index') }}">
+            <i class="fe fe-book-open me-2"></i>
+            <span>Materi Pembelajaran</span>
+          </a>
+        </li>
+
+
+        <li class="nav-item">
           <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.transactions.*') ? 'active' : '' }}" href="{{ route('admin.transactions.index') }}">
             <i class="fe fe-credit-card me-2"></i>
             <span>Transaksi & Keuangan</span>
