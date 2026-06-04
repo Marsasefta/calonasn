@@ -51,7 +51,10 @@
 
     <div class="db-content text-dark">
         <div class="container-fluid py-4">
-
+            <span
+                class="badge bg-{{ $category->color_theme ?? 'primary' }}-soft text-{{ $category->color_theme ?? 'primary' }} border border-{{ $category->color_theme ?? 'primary' }} px-3 py-2 rounded-pill mb-3 fw-bold">
+                <i class="bi bi-journal-bookmark-fill me-1"></i> Materi {{ $category->name }}
+            </span>
             <div class="row g-4">
 
                 <div class="col-lg-3">
@@ -101,6 +104,8 @@
                 <div class="col-lg-6">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-4 p-md-5">
+
+
                             <h2 class="fw-bold mb-4">{{ $currentMaterial->title }}</h2>
                             <div class="reading-area">
                                 {!! $currentMaterial->content !!}
