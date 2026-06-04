@@ -15,4 +15,10 @@ class LearningCategory extends Model
     {
         return $this->hasMany(LearningChapter::class);
     }
+
+    public function materials()
+    {
+        // Kategori punya banyak Materi melalui Bab
+        return $this->hasManyThrough(LearningMaterial::class, LearningChapter::class);
+    }
 }

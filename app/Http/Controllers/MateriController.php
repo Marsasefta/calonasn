@@ -4,72 +4,57 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Models\LearningCategory;
+use App\Models\LearningMaterial;
+use App\Models\LearningChapter;
+
 class MateriController extends Controller
 {
     // Method untuk halaman Lobby (Menampilkan 3 Kategori)
     public function index()
     {
-        // DATA DUMMY KATEGORI (Meniru tabel learning_categories)
-        $categories = [
-            [
-                'id' => 1,
-                'name' => 'Tes Wawasan Kebangsaan (TWK)',
-                'slug' => 'twk',
-                'description' => 'Kuasai Sejarah Indonesia, Pancasila, UUD 1945, dan Nasionalisme.',
-                'icon' => 'bi-book',
-                'color_theme' => 'danger', // Merah
-                'total_pages' => 79 // Bonus info untuk UI
-            ],
-            [
-                'id' => 2,
-                'name' => 'Tes Inteligensia Umum (TIU)',
-                'slug' => 'tiu',
-                'description' => 'Taklukkan Logika, Deret Angka, Silogisme, dan Analogi Kata.',
-                'icon' => 'bi-calculator',
-                'color_theme' => 'primary', // Biru
-                'total_pages' => 54
-            ],
-            [
-                'id' => 3,
-                'name' => 'Tes Karakteristik Pribadi (TKP)',
-                'slug' => 'tkp',
-                'description' => 'Pahami Karakter, Pelayanan Publik, dan Profesionalisme Kerja.',
-                'icon' => 'bi-people',
-                'color_theme' => 'success', // Hijau
-                'total_pages' => 62
-            ]
-        ];
+        // Mengambil semua data kategori dari database
+        // Kita juga bisa sekalian menghitung total materi jika ingin (opsional)
+        $categories = LearningCategory::withCount('materials')->get();
 
-        // Lempar data dummy ke view lobby
         return view('user.materi.index', compact('categories'));
     }
 
     // Method untuk halaman Micro-Learning (Saat salah satu kategori diklik)
-    public function show($slug)
+    public function show($categorySlug, $materialSlug = null)
     {
-        // 1. Nama Kategori (Hanya untuk display dummy)
-        $categoryName = strtoupper($slug);
+        $category = LearningCategory::where('slug', $categorySlug)->firstOrFail();
+        $chapters = $category->chapters()->with('materials')->orderBy('order_number')->get();
 
-        // 2. Data Dummy Bab & Materi (Meniru Relasi Database)
-        $chapters = [
-            [
-                'id' => 1,
-                'title' => 'Bab 1: Pancasila',
-                'materials' => [
-                    ['id' => 101, 'title' => 'Sejarah Lahirnya Pancasila', 'is_locked' => false, 'active' => true],
-                    ['id' => 102, 'title' => 'Kedudukan & Fungsi Pancasila', 'is_locked' => false, 'active' => false],
-                ]
-            ],
-            [
-                'id' => 2,
-                'title' => 'Bab 2: UUD 1945',
-                'materials' => [
-                    ['id' => 201, 'title' => 'Sejarah Amandemen', 'is_locked' => true, 'active' => false],
-                    ['id' => 202, 'title' => 'Pasal-pasal Krusial', 'is_locked' => true, 'active' => false],
-                ]
-            ]
-        ];
+        // 1. Tentukan materi aktif
+        if ($materialSlug) {
+            $currentMaterial = LearningMaterial::where('slug', $materialSlug)->firstOrFail();
+        } else {
+            $currentMaterial = $category->chapters->first()->materials->first();
+        }
 
-        return view('user.materi.show', compact('slug', 'categoryName', 'chapters'));
+        // 2. LOGIKA PINTAR: Cari materi berikutnya
+        // A. Coba cari materi selanjutnya di bab yang sama
+        $nextMaterial = LearningMaterial::where('learning_chapter_id', $currentMaterial->learning_chapter_id)
+            ->where('order_number', '>', $currentMaterial->order_number)
+            ->orderBy('order_number', 'asc')
+            ->first();
+
+        // B. Jika di bab yang sama tidak ada (berarti sudah di akhir bab), 
+        // cari bab selanjutnya lalu ambil materi pertama di bab tersebut
+        if (!$nextMaterial) {
+            $currentChapter = LearningChapter::find($currentMaterial->learning_chapter_id);
+            
+            $nextChapter = LearningChapter::where('learning_category_id', $category->id)
+                ->where('order_number', '>', $currentChapter->order_number)
+                ->orderBy('order_number', 'asc')
+                ->first();
+
+            if ($nextChapter) {
+                $nextMaterial = $nextChapter->materials()->orderBy('order_number', 'asc')->first();
+            }
+        }
+
+        return view('user.materi.show', compact('category', 'chapters', 'currentMaterial', 'nextMaterial'));
     }
 }

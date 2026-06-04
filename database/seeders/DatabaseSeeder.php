@@ -23,5 +23,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([\Database\Seeders\ExamBankSeeder::class]);
+        $this->call([LearningSeeder::class,]);
     }
 }

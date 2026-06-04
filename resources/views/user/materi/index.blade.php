@@ -51,29 +51,29 @@
                             <div class="card-body p-4 p-xl-5 d-flex flex-column">
 
                                 <div class="d-flex align-items-center mb-4">
-                                    <div class="bg-{{ $category['color_theme'] }} text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3 shadow-sm"
+                                    <div class="bg-{{ $category->color_theme }} text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3 shadow-sm"
                                         style="width: 60px; height: 60px;">
 
-                                        <i class="{{ $category['icon'] }} fs-2"></i>
+                                        <i class="{{ $category->icon }} fs-2"></i>
 
                                     </div>
 
                                     <div>
                                         <span
-                                            class="badge bg-{{ $category['color_theme'] }}-subtle text-{{ $category['color_theme'] }} fw-semibold mb-2 border border-{{ $category['color_theme'] }}">
-                                            {{ $category['total_pages'] }} Halaman Materi
+                                            class="badge bg-{{ $category->color_theme }}-subtle text-{{ $category->color_theme }} fw-semibold mb-2 border border-{{ $category->color_theme }}">
+                                            {{ $category->materials_count }} Materi
                                         </span>
-                                        <h4 class="fw-bold mb-0 text-dark">{{ $category['name'] }}</h4>
+                                        <h4 class="fw-bold mb-0 text-dark">{{ $category->name }}</h4>
                                     </div>
                                 </div>
 
                                 <p class="text-muted mb-4 flex-grow-1 fs-5">
-                                    {{ $category['description'] }}
+                                    {{ $category->description }}
                                 </p>
 
                                 <div class="mt-auto">
-                                    <a href="{{ route('materi.show', $category['slug']) }}"
-                                        class="btn btn-outline-{{ $category['color_theme'] }} w-100 rounded-pill fw-bold py-2 d-flex align-items-center justify-content-center">
+                                    <a href="{{ route('materi.show', $category->slug) }}"
+                                        class="btn btn-outline-{{ $category->color_theme }} w-100 rounded-pill fw-bold py-2 d-flex align-items-center justify-content-center">
                                         Mulai Belajar
                                         <i class="bi bi-play-circle-fill ms-2 fs-5"></i>
                                     </a>

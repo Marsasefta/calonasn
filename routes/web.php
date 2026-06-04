@@ -12,6 +12,7 @@ use App\Http\Controllers\UjianController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PromoCodeController;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\MateriController;
 
 use App\Models\Post;
 
@@ -93,13 +94,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/ujian/sertifikat/{id}', [UjianController::class, 'sertifikat'])->name('ujian.sertifikat');
     Route::get('/riwayat-sertifikat', [UjianController::class, 'riwayatSertifikat'])->name('sertifikat.riwayat');
 
+   
     // ==========================================
-    // ROUTE MATERI BELAJAR (DUMMY FRONTEND)
+    // ROUTE MATERI BELAJAR
     // ==========================================
-    Route::get('/materi-belajar', [\App\Http\Controllers\MateriController::class, 'index'])->name('materi.index');
-    Route::get('/materi-belajar/{slug}', [\App\Http\Controllers\MateriController::class, 'show'])->name('materi.show');
 
-    
+    // Halaman Lobby Kategori
+    Route::get('/materi-belajar', [MateriController::class, 'index'])->name('materi.index');
+    Route::get('/materi-belajar/{categorySlug}/{materialSlug?}', [MateriController::class, 'show'])
+        ->name('materi.show'); // Ini untuk akses awal (Lobby)
+
+    Route::get('/materi-belajar/{categorySlug}/{materialSlug}', [MateriController::class, 'show'])
+        ->name('materi.detail'); // Ini alias tambahan supaya error-nya hilang
 
 
     // Admin routes with /admin/ prefix and admin middleware
