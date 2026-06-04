@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Question;
-use App\Models\Transaction;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
+
+use App\Models\Question;
+use App\Models\Transaction;
+use App\Models\User;
+use App\Models\Tryout;
+use App\Http\Controllers\UjianController;
 
 class DashboardController extends Controller
 {
@@ -43,7 +46,23 @@ class DashboardController extends Controller
             return view('admin.dashboard', compact('totalUsers', 'totalQuestions', 'revenueThisMonth', 'onlineUsers'));
         }
 
-        // Show user dashboard for regular users
-        return view('user.dashboard');
+        // ==========================================
+        // LOGIKA DASHBOARD UNTUK USER BIASA
+        // ==========================================
+        
+        // 1. Ambil data tryout premium (Contoh: mengambil Tryout ID 1, atau fallback ke tryout pertama)
+        $tryout = Tryout::find(1) ?? Tryout::first();
+
+        // 2. Siapkan variabel access default
+        $access = ['status' => 'locked', 'message' => 'Silakan beli paket premium.'];
+
+        // 3. Jika data tryout ditemukan, cek aksesnya menggunakan fungsi dari UjianController
+        if ($tryout) {
+            $ujianController = app(UjianController::class);
+            $access = $ujianController->checkUserAccess($tryout->id);
+        }
+
+        // 4. Lempar variabel ke view dashboard user
+        return view('user.dashboard', compact('tryout', 'access'));
     }
 }
