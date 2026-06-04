@@ -23,6 +23,19 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {{ request()->is('materi*') ? 'active' : '' }}"
+                            href="{{ url('/materi-belajar') }}">
+                            <div class="d-flex align-items-center justify-content-between w-100">
+                                <div class="d-flex align-items-center">
+                                    <i class="fe fe-book-open nav-icon me-2"></i>
+                                    <span class="nav-link-text">Materi Belajar</span>
+                                </div>
+                                <span class="badge bg-danger rounded-pill shadow-sm"
+                                    style="font-size: 0.65rem;">GRATIS</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('demo.*') ? 'active' : '' }}"
                             href="{{ route('demo.index') }}">
                             <i class="fe fe-unlock nav-icon"></i> Ujicoba Gratis
@@ -33,7 +46,7 @@
                             href="{{ route('ujian.persiapan', 1) }}">
                             <i class="fe fe-edit nav-icon"></i> Mulai Tryout
                         </a>
-                    </li>                    
+                    </li>
                 </ul>
 
                 <div class="d-flex flex-column gap-1 mt-2">
