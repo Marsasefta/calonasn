@@ -24,7 +24,7 @@
                 </div>
                 <div class="mb-3">
                   <label class="form-label">Konten (HTML)</label>
-                  <textarea name="content" class="form-control" rows="8"></textarea>
+                  <textarea name="content" id="content" class="form-control" rows="8"></textarea>
                 </div>
                 <div class="mb-3 form-check">
                   <input type="checkbox" name="is_locked" class="form-check-input" id="is_locked">
@@ -42,5 +42,15 @@
       </main>
     </div>
     @include('partials.scripts')
+    <script src="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#content'), {
+                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', 'undo', 'redo']
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
   </body>
   </html>
