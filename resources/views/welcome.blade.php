@@ -891,7 +891,7 @@
             // Inisialisasi Toast Bootstrap
             const toast = new bootstrap.Toast(toastEl);
 
-            // Data Dummy yang diracik untuk FOMO
+            // Data Dummy yang diracik untuk FOMO (30 Data)
             const salesData = [{
                     name: "Rizky",
                     city: "Yogyakarta",
@@ -921,20 +921,191 @@
                     city: "Medan",
                     action: "sedang mengerjakan <i>Tryout Gratis</i>",
                     time: "Baru saja"
+                },
+                {
+                    name: "Dimas",
+                    city: "Bandung",
+                    action: "baru saja bergabung menjadi member <b>CalonASN.id</b> 🤝",
+                    time: "Beberapa detik yang lalu"
+                },
+                {
+                    name: "Putri",
+                    city: "Semarang",
+                    action: "sedang membaca materi <b>TWK Gratis</b> 📖",
+                    time: "3 menit yang lalu"
+                },
+                {
+                    name: "Hendra",
+                    city: "Palembang",
+                    action: "membeli <b>Paket Mandiri Premium</b> via QRIS 💸",
+                    time: "Baru saja"
+                },
+                {
+                    name: "Cut Nisa",
+                    city: "Banda Aceh",
+                    action: "berhasil lolos <i>Passing Grade</i> dengan skor tinggi! 🏆",
+                    time: "4 menit yang lalu"
+                },
+                {
+                    name: "Wayan",
+                    city: "Denpasar",
+                    action: "sedang latihan soal <b>TKP HOTS 2026</b> 🧠",
+                    time: "1 menit yang lalu"
+                },
+                {
+                    name: "Fajar",
+                    city: "Balikpapan",
+                    action: "mendaftar dan memakai kode promo <b>ASN2026</b> 🔥",
+                    time: "Baru saja"
+                },
+                {
+                    name: "Lestari",
+                    city: "Pontianak",
+                    action: "baru saja menyelesaikan Tryout SKD ke-3 hari ini 📈",
+                    time: "6 menit yang lalu"
+                },
+                {
+                    name: "Kevin",
+                    city: "Manado",
+                    action: "baru saja membeli <b>Paket Premium</b> 🚀",
+                    time: "2 menit yang lalu"
+                },
+                {
+                    name: "Ratna",
+                    city: "Malang",
+                    action: "sedang membaca materi <b>TIU Gratis</b> 📖",
+                    time: "Baru saja"
+                },
+                {
+                    name: "Ilham",
+                    city: "Padang",
+                    action: "berhasil menaklukkan soal deret angka TIU! 🎯",
+                    time: "3 menit yang lalu"
+                },
+                {
+                    name: "Eko",
+                    city: "Solo",
+                    action: "baru saja bergabung menjadi member <b>CalonASN.id</b> 🤝",
+                    time: "10 detik yang lalu"
+                },
+                {
+                    name: "Maya",
+                    city: "Banjarmasin",
+                    action: "membeli <b>Paket Tryout</b> untuk persiapan ujian 📚",
+                    time: "4 menit yang lalu"
+                },
+                {
+                    name: "Rina",
+                    city: "Pekanbaru",
+                    action: "sedang mengerjakan <i>Tryout Gratis</i>",
+                    time: "Baru saja"
+                },
+                {
+                    name: "Samuel",
+                    city: "Jayapura",
+                    action: "berhasil lolos <i>Passing Grade</i> simulasi CAT!",
+                    time: "5 menit yang lalu"
+                },
+                {
+                    name: "Dewi",
+                    city: "Mataram",
+                    action: "mendaftar dan memakai kode promo <b>ASN2026</b> 🔥",
+                    time: "1 menit yang lalu"
+                },
+                {
+                    name: "Ahmad",
+                    city: "Bogor",
+                    action: "baru saja membeli <b>Paket Mandiri Premium</b> 🚀",
+                    time: "Baru saja"
+                },
+                {
+                    name: "Siska",
+                    city: "Samarinda",
+                    action: "sedang latihan soal <b>TWK HOTS 2026</b> 🧠",
+                    time: "2 menit yang lalu"
+                },
+                {
+                    name: "Reza",
+                    city: "Tangerang",
+                    action: "berhasil mencapai skor tertinggi di sesi hari ini! 🏆",
+                    time: "7 menit yang lalu"
+                },
+                {
+                    name: "Nadia",
+                    city: "Batam",
+                    action: "baru saja bergabung dan langsung mengakses materi 📖",
+                    time: "Baru saja"
+                },
+                {
+                    name: "Yusuf",
+                    city: "Ambon",
+                    action: "membeli <b>Paket Premium</b> via Transfer Bank 💳",
+                    time: "3 menit yang lalu"
+                },
+                {
+                    name: "Dita",
+                    city: "Madiun",
+                    action: "baru saja menyelesaikan simulasi ujian CAT ⏱️",
+                    time: "4 menit yang lalu"
+                },
+                {
+                    name: "Anton",
+                    city: "Cirebon",
+                    action: "mendaftar dan memakai kode promo <b>ASN2026</b> 🔥",
+                    time: "Baru saja"
+                },
+                {
+                    name: "Fira",
+                    city: "Jambi",
+                    action: "sedang mengerjakan <i>Tryout Gratis</i>",
+                    time: "1 menit yang lalu"
+                },
+                {
+                    name: "Bagus",
+                    city: "Kediri",
+                    action: "berhasil lolos <i>Passing Grade</i> TKP! 🎉",
+                    time: "2 menit yang lalu"
+                },
+                {
+                    name: "Vina",
+                    city: "Gorontalo",
+                    action: "baru saja membeli <b>Paket Premium</b> 🚀",
+                    time: "Baru saja"
                 }
             ];
 
+            // Fungsi untuk mengacak array (Fisher-Yates Shuffle)
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            // Acak data saat halaman pertama kali dimuat
+            shuffleArray(salesData);
+            let currentIndex = 0; // Mulai dari urutan pertama hasil acakan
+
             function showRandomToast() {
-                // Pilih 1 data secara acak dari array
-                const randomItem = salesData[Math.floor(Math.random() * salesData.length)];
+                // Ambil item berdasarkan index saat ini
+                const currentItem = salesData[currentIndex];
 
                 // Suntikkan data tersebut ke dalam HTML Toast
-                document.getElementById('toast-title').innerText = `${randomItem.name} dari ${randomItem.city}`;
-                document.getElementById('toast-desc').innerHTML = randomItem.action;
-                document.getElementById('toast-time').innerText = randomItem.time;
+                document.getElementById('toast-title').innerText = `${currentItem.name} dari ${currentItem.city}`;
+                document.getElementById('toast-desc').innerHTML = currentItem.action;
+                document.getElementById('toast-time').innerText = currentItem.time;
 
                 // Tampilkan Toast-nya
                 toast.show();
+
+                // Lanjut ke index berikutnya
+                currentIndex++;
+
+                // Jika semua data sudah ditampilkan, acak ulang dan kembali ke index 0
+                if (currentIndex >= salesData.length) {
+                    shuffleArray(salesData);
+                    currentIndex = 0;
+                }
 
                 // Atur waktu acak untuk memunculkan notifikasi berikutnya (antara 8 sampai 15 detik)
                 const nextTime = Math.floor(Math.random() * (15000 - 8000 + 1) + 8000);
