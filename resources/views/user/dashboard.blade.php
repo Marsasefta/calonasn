@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    @include('partials.head')   
+    @include('partials.head')
     <title>Dashboard Peserta</title>
 </head>
 
@@ -116,95 +116,107 @@
                 </div>
 
                 <div class="col-lg-6 col-12">
-    <div class="card border-0 shadow-lg rounded-4 h-100 overflow-hidden position-relative hover-card-premium">
-        
-        @if (isset($access) && $access['status'] == 'unlocked')
-        <div class="position-absolute top-0 end-0">
-            <div class="bg-warning text-dark fw-bold px-4 py-2 shadow-sm" style="border-bottom-left-radius:16px;">
-                ✅ PREMIUM AKTIF
-            </div>
-        </div>
+                    <div
+                        class="card border-0 shadow-lg rounded-4 h-100 overflow-hidden position-relative hover-card-premium">
 
-        <div class="card-body p-4 p-xl-5 d-flex flex-column">
-            <div class="d-flex align-items-center mb-4">
-                <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3 shadow-sm" style="width:60px;height:60px;">
-                    <i class="bi bi-unlock-fill fs-3"></i>
-                </div>
-                <div>
-                    <span class="badge bg-warning-subtle text-dark fw-semibold mb-2 border border-warning">
-                        AKSES TERBUKA
-                    </span>
-                    <h3 class="fw-bold mb-0 text-dark">
-                        Siap Ujian!
-                    </h3>
-                </div>
-            </div>
+                        @if (isset($access) && $access['status'] == 'unlocked')
+                            <div class="position-absolute top-0 end-0">
+                                <div class="bg-warning text-dark fw-bold px-4 py-2 shadow-sm"
+                                    style="border-bottom-left-radius:16px;">
+                                    ✅ PREMIUM AKTIF
+                                </div>
+                            </div>
 
-            <p class="text-dark fs-5 mb-4">
-                Pembayaran berhasil diverifikasi. Anda memiliki <strong>satu kesempatan</strong> untuk mengerjakan tryout ini sekarang.
-            </p>
+                            <div class="card-body p-4 p-xl-5 d-flex flex-column">
+                                <div class="d-flex align-items-center mb-4">
+                                    <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3 shadow-sm"
+                                        style="width:60px;height:60px;">
+                                        <i class="bi bi-unlock-fill fs-3"></i>
+                                    </div>
+                                    <div>
+                                        <span
+                                            class="badge bg-warning-subtle text-dark fw-semibold mb-2 border border-warning">
+                                            AKSES TERBUKA
+                                        </span>
+                                        <h3 class="fw-bold mb-0 text-dark">
+                                            Siap Ujian!
+                                        </h3>
+                                    </div>
+                                </div>
 
-            <div class="alert alert-info border-0 rounded-4 py-3 px-4 mb-4 shadow-sm">
-                <ul class="text-start mb-0 small fw-medium ps-3">
-                    <li class="mb-1">Pastikan koneksi internet stabil.</li>
-                    <li class="mb-1">Ujian akan otomatis berhenti jika waktu habis.</li>
-                    <li>Satu kali klik "Selesai", akses akan terkunci kembali.</li>
-                </ul>
-            </div>
+                                <p class="text-dark fs-5 mb-4">
+                                    Pembayaran berhasil diverifikasi. Anda memiliki <strong>satu kesempatan</strong>
+                                    untuk mengerjakan tryout ini sekarang.
+                                </p>
 
-            <div class="mt-auto">
-                <a href="{{ route('ujian.mulai', $tryout->id ?? 1) }}" class="btn btn-warning text-dark btn-lg rounded-pill fw-bold px-4 py-3 shadow-sm w-100">
-                    Mulai Ujian Sekarang
-                    <i class="fe fe-play ms-2"></i>
-                </a>
-            </div>
-        </div>
+                                <div class="alert alert-info border-0 rounded-4 py-3 px-4 mb-4 shadow-sm">
+                                    <ul class="text-start mb-0 small fw-medium ps-3">
+                                        <li class="mb-1">Pastikan koneksi internet stabil.</li>
+                                        <li class="mb-1">Ujian akan otomatis berhenti jika waktu habis.</li>
+                                        <li>Satu kali klik "Selesai", akses akan terkunci kembali.</li>
+                                    </ul>
+                                </div>
 
-        @else
-            <div class="position-absolute top-0 end-0">
-                <div class="bg-danger text-white fw-bold px-4 py-2 shadow-sm" style="border-bottom-left-radius:16px;">
-                    🔥 PALING LARIS
-                </div>
-            </div>
+                                <div class="mt-auto">
+                                    <a href="{{ route('ujian.mulai', $tryout->id ?? 1) }}"
+                                        class="btn btn-warning text-dark btn-lg rounded-pill fw-bold px-4 py-3 shadow-sm w-100">
+                                        Mulai Ujian Sekarang
+                                        <i class="fe fe-play ms-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        @else
+                            <div class="position-absolute top-0 end-0">
+                                <div class="bg-danger text-white fw-bold px-4 py-2 shadow-sm"
+                                    style="border-bottom-left-radius:16px;">
+                                    🔥 PALING LARIS
+                                </div>
+                            </div>
 
-            <div class="card-body p-4 p-xl-5 d-flex flex-column">
-                <div class="d-flex align-items-center mb-4">
-                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3 shadow-sm" style="width:60px;height:60px;">
-                        <i class="bi bi-award-fill fs-3"></i>
+                            <div class="card-body p-4 p-xl-5 d-flex flex-column">
+                                <div class="d-flex align-items-center mb-4">
+                                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3 shadow-sm"
+                                        style="width:60px;height:60px;">
+                                        <i class="bi bi-award-fill fs-3"></i>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-success-subtle text-success fw-semibold mb-2">
+                                            PREMIUM HOTS
+                                        </span>
+                                        <h3 class="fw-bold mb-0 text-success">
+                                            Langsung Tempur!
+                                        </h3>
+                                    </div>
+                                </div>
+
+                                <p class="text-dark fs-5 mb-4">
+                                    Akses <strong>110 soal HOTS terbaru</strong>, pembahasan lengkap, dan simulasi CAT
+                                    paling mirip ujian asli BKN.
+                                </p>
+
+                                <div
+                                    class="alert alert-warning border-0 rounded-4 d-inline-flex flex-wrap align-items-center gap-2 py-2 px-3 mb-4 shadow-sm">
+                                    <span class="fw-semibold">Gunakan kode</span>
+                                    <span
+                                        class="bg-white border border-warning rounded px-3 py-1 fw-bold text-dark shadow-sm"
+                                        style="letter-spacing:1px;">
+                                        ASN2026
+                                    </span>
+                                    <span>hemat <strong>Rp 7.000</strong></span>
+                                </div>
+
+                                <div class="mt-auto">
+                                    <a href="{{ route('checkout', $tryout->id ?? 1) }}"
+                                        class="btn btn-success btn-lg rounded-pill fw-bold px-4 py-3 shadow-sm w-100">
+                                        Beli Paket Premium
+                                        <i class="fe fe-zap ms-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
+
                     </div>
-                    <div>
-                        <span class="badge bg-success-subtle text-success fw-semibold mb-2">
-                            PREMIUM HOTS
-                        </span>
-                        <h3 class="fw-bold mb-0 text-success">
-                            Langsung Tempur!
-                        </h3>
-                    </div>
                 </div>
-
-                <p class="text-dark fs-5 mb-4">
-                    Akses <strong>110 soal HOTS terbaru</strong>, pembahasan lengkap, dan simulasi CAT paling mirip ujian asli BKN.
-                </p>
-
-                <div class="alert alert-warning border-0 rounded-4 d-inline-flex flex-wrap align-items-center gap-2 py-2 px-3 mb-4 shadow-sm">
-                    <span class="fw-semibold">Gunakan kode</span>
-                    <span class="bg-white border border-warning rounded px-3 py-1 fw-bold text-dark shadow-sm" style="letter-spacing:1px;">
-                        ASN2026
-                    </span>
-                    <span>hemat <strong>Rp 7.000</strong></span>
-                </div>
-
-                <div class="mt-auto">
-                    <a href="{{ route('checkout', $tryout->id ?? 1) }}" class="btn btn-success btn-lg rounded-pill fw-bold px-4 py-3 shadow-sm w-100">
-                        Beli Paket Premium
-                        <i class="fe fe-zap ms-2"></i>
-                    </a>
-                </div>
-            </div>
-        @endif
-        
-    </div>
-</div>
 
             </div>
 
@@ -264,7 +276,8 @@
                                         <div class="icon-shape icon-sm bg-light-warning text-warning rounded-circle"><i
                                                 class="fe fe-pie-chart"></i></div>
                                     </div>
-                                    <h2 class="fw-bold mb-0">0% <span class="fs-6 text-muted fw-normal">Lulus PG</span>
+                                    <h2 class="fw-bold mb-0">0% <span class="fs-6 text-muted fw-normal">Lulus
+                                            PG</span>
                                     </h2>
                                 </div>
                             </div>

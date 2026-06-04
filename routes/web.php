@@ -93,6 +93,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/ujian/sertifikat/{id}', [UjianController::class, 'sertifikat'])->name('ujian.sertifikat');
     Route::get('/riwayat-sertifikat', [UjianController::class, 'riwayatSertifikat'])->name('sertifikat.riwayat');
 
+    // ==========================================
+    // ROUTE MATERI BELAJAR (DUMMY FRONTEND)
+    // ==========================================
+    Route::get('/materi-belajar', [\App\Http\Controllers\MateriController::class, 'index'])->name('materi.index');
+    Route::get('/materi-belajar/{slug}', [\App\Http\Controllers\MateriController::class, 'show'])->name('materi.show');
+
     
 
 
@@ -174,8 +180,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('promo-codes', [PromoCodeController::class, 'index'])->name('promo.index');
         Route::post('promo-codes', [PromoCodeController::class, 'store'])->name('promo.store');
         Route::put('promo-codes/{id}', [PromoCodeController::class, 'update'])->name('promo.update');
-        Route::delete('promo-codes/{id}', [PromoCodeController::class, 'destroy'])->name('promo.destroy');
-        });
+        Route::delete('promo-codes/{id}', [PromoCodeController::class, 'destroy'])->name('promo.destroy');   
+       
+    });
 });
 
 Route::middleware('auth')->group(function () {
