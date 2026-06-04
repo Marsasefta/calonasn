@@ -306,12 +306,18 @@
                 margin-bottom: 1rem;
             }
         }
+
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
     </style>
 @endpush
 
 @section('content')
     <main>
-        <section class="py-xl-9 py-6 bg-white">
+        <section class="py-xl-9 py-6" style="background-color: #f7f9fb;">
             <div class="container py-xl-4">
                 <div class="row align-items-center gy-6 gy-xl-0">
                     <div class="col-lg-6 col-12">
@@ -451,6 +457,66 @@
                             @endguest
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-xl-8 py-6 bg-white">
+            <div class="container">
+                <!-- HEADER SECTION: Fokus ke Copywriting yang "Menampar" -->
+                <div class="row justify-content-center text-center mb-5">
+                    <div class="col-lg-8">
+                        <!-- Badge ditekankan dengan ikon hadiah dan nama brand -->
+                        <span
+                            class="badge bg-danger text-white px-4 py-2 fw-bold text-uppercase rounded-pill mb-3 fs-6 animate__animated animate__pulse animate__infinite shadow-sm">
+                            <i class="bi bi-gift-fill me-1"></i> SPESIAL DARI CALONASN.ID: 100% GRATIS!
+                        </span>
+
+                        <h2 class="display-4 fw-bold text-dark mb-3">Taklukkan SKD CPNS 2026 Tanpa Keluar Biaya!</h2>
+
+                        <p class="lead text-muted px-md-4">
+                            Kabar gembira buat pejuang NIP! Di <strong>calonasn.id</strong>, seluruh materi rahasia TWK,
+                            TIU, dan TKP bisa kamu nikmati secara <span class="text-danger fw-bold">GRATIS TIS TIS</span>.
+                            <br><br>
+                            Gak perlu mikir biaya. <strong>Cukup buat akun gratis dalam 1 menit</strong>, dan semua materi
+                            di bawah ini otomatis terbuka untukmu!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- KARTU MATERI -->
+                <div class="row g-4">
+                    @foreach ($categories as $category)
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 border-2 border-success shadow-sm rounded-4 overflow-hidden hover-lift">
+                                <div class="card-body p-4 text-center">
+
+                                    <!-- Icon Kategori -->
+                                    <div class="bg-{{ $category->color_theme }} text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 shadow-sm"
+                                        style="width: 70px; height: 70px;">
+                                        <i class="{{ $category->icon }} fs-2"></i>
+                                    </div>
+
+                                    <h3 class="fw-bold mb-2">{{ $category->name }}</h3>
+
+                                    <!-- Deskripsi Materi -->
+                                    <p class="text-muted mb-4">{{ $category->description }}</p>
+
+                                    <!-- Tombol Call to Action (Ajakan Daftar) -->
+                                    <!-- Menggunakan outline-dark sesuai selera eleganmu, tapi text-nya lebih agresif -->
+                                    <a href="{{ route('register') }}"
+                                        class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold w-100">
+                                        <i class="bi bi-unlock me-1"></i> Daftar & Buka Aksesnya
+                                    </a>
+
+                                    <!-- Teks garansi kecil di bawah tombol untuk meyakinkan lagi -->
+                                    <p class="small text-danger fw-semibold mt-3 mb-0">
+                                        <i class="bi bi-check-circle-fill me-1"></i> Bebas Akses Selamanya
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </section>

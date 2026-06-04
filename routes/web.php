@@ -15,6 +15,7 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\MateriController;
 
 use App\Models\Post;
+use App\Models\LearningCategory;
 
 use App\Http\Controllers\UserTypeController;
 use Illuminate\Support\Facades\Route;
@@ -24,14 +25,18 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::get('/', function () {
-    // Mengambil 3 artikel terbaru yang berstatus published beserta kategorinya
+    // 1. Ambil artikel (untuk blog)
     $latestPosts = Post::with('category')
                         ->where('status', 'published')
                         ->latest()
                         ->take(3)
                         ->get();
 
-    return view('welcome', compact('latestPosts')); // Sesuaikan dengan nama file blade kamu (welcome atau welcome_new)
+    // 2. Ambil kategori untuk etalase pembelajaran
+    $categories = LearningCategory::withCount('materials')->get();
+
+    // 3. Kirim keduanya ke welcome.blade.php
+    return view('welcome', compact('latestPosts', 'categories'));
 });
 
 // Di area publik (luar middleware admin)
