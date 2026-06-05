@@ -331,55 +331,40 @@
                             </div>
 
                             <div class="d-flex flex-column gap-3">
-                                <!-- PERBAIKAN: H1 dioptimasi dengan keyword utama pencarian -->
-                                <h1 class="mb-0 display-3 fw-xl-bolder fw-bold text-dark lh-sm">
-                                    Tryout CPNS 2026 & Simulasi CAT Terakurat
+                                <h1 class="mb-0 display-4 fw-xl-bolder fw-bold text-dark lh-sm">
+                                    Taklukkan SKD CPNS 2026: <span class="text-primary">Belajar GRATIS</span> & Tryout CAT
                                 </h1>
 
-                                <div
-                                    class="alert alert-warning border-0 shadow-sm py-2 px-3 mt-3 d-inline-flex align-items-center gap-2 flex-nowrap">
-                                    <span>🔥</span>
-
+                                <div class="alert alert-success border-0 shadow-sm py-2 px-3 mt-3 d-inline-flex align-items-center gap-2 flex-nowrap">
+                                    <span>🎁</span>
                                     <div class="d-flex flex-wrap align-items-center gap-2">
-                                        <span>Gunakan kode promo</span>
-
-                                        <span
-                                            class="bg-white border border-2 border-warning rounded px-3 py-1 fw-bold text-dark shadow-sm"
-                                            style="border-style:dashed !important; letter-spacing:1px;">
-                                            ASN2026
-                                        </span>
-
-                                        <span>
-                                            potongan <strong>Rp 7.000</strong>
-                                        </span>
+                                        <span>Daftar sekarang, dapatkan akses</span>
+                                        <span class="fw-bold text-dark">Materi TWK, TIU, TKP 100% GRATIS!</span>
                                     </div>
                                 </div>
 
-
-                                <p class="mb-0 text-muted fs-4 lh-base">
-                                    Latih kesiapanmu dengan platform ujian yang dirancang 100% mirip dengan sistem asli.
-                                    Rasakan atmosfer ujian riil, ukur skor Passing Grade secara instan, dan amankan NIP
-                                    impianmu.
+                                <p class="mb-0 text-muted fs-5 lh-base">
+                                    Jangan buang waktu mencari materi yang berceceran. Pelajari rangkuman materi terlengkap secara cuma-cuma, lalu latih kesiapanmu dengan platform CAT BKN terakurat.
                                 </p>
                             </div>
 
-                            <div class="d-flex flex-wrap gap-3 mt-2">
-                                {{-- Tombol Demo: Magnet Paling Ampuh --}}
-                                <a href="{{ route('demo.cat') }}"
-                                    class="btn btn-success btn-lg px-4 py-3 border-0 shadow-sm text-white fw-bold">
-                                    <i class="fe fe-play-circle me-2 fs-4 align-middle"></i> Coba Demo Gratis (5 Soal)
-                                </a>
-
+                            <div class="d-flex flex-wrap gap-3 mt-4">
                                 @guest
-                                    <a href="{{ route('register') }}" class="btn btn-outline-primary btn-lg px-4 py-3 fw-bold">
-                                        Daftar Akun Baru <i class="fe fe-arrow-right ms-2"></i>
+                                    <a href="{{ route('register') }}" class="btn btn-primary btn-lg px-4 py-3 fw-bold shadow-sm">
+                                        <i class="fe fe-unlock ms-1"></i> Daftar & Buka Materi Gratis 
+                                    </a>
+                                    <a href="{{ route('demo.cat') }}" class="btn btn-outline-dark btn-lg px-4 py-3 fw-bold">
+                                        Coba Demo CAT
                                     </a>
                                 @else
-                                    <a href="{{ route('checkout') }}" class="btn btn-primary btn-lg px-4 py-3 fw-bold">
-                                        Beli Paket Premium <i class="fe fe-shopping-cart ms-2"></i>
+                                    <a href="{{ route('materi.index') }}" class="btn btn-primary btn-lg px-4 py-3 fw-bold shadow-sm">
+                                        Lanjut Belajar <i class="fe fe-book-open ms-2"></i>
+                                    </a>
+                                    <a href="{{ route('checkout') }}" class="btn btn-success btn-lg px-4 py-3 fw-bold">
+                                        Beli Paket Tryout <i class="fe fe-shopping-cart ms-2"></i>
                                     </a>
                                 @endguest
-                            </div>
+                            </div>                          
 
                             <div class="d-flex flex-row gap-4 align-items-center mt-2 text-muted small">
                                 <span><i class="fe fe-check text-success me-1"></i> Tanpa Install Aplikasi</span>
@@ -461,6 +446,8 @@
             </div>
         </section>
 
+        
+
         <section class="py-xl-8 py-6 bg-white">
             <div class="container">
                 <!-- HEADER SECTION: Fokus ke Copywriting yang "Menampar" -->
@@ -472,14 +459,10 @@
                             <i class="bi bi-gift-fill me-1"></i> SPESIAL DARI CALONASN.ID: 100% GRATIS!
                         </span>
 
-                        <h2 class="display-4 fw-bold text-dark mb-3">Taklukkan SKD CPNS 2026 Tanpa Keluar Biaya!</h2>
+                        <h2 class="display-4 fw-bold text-dark mb-3">Akses Ratusan Materi Rahasia Tanpa Biaya</h2>
 
                         <p class="lead text-muted px-md-4">
-                            Kabar gembira buat pejuang NIP! Di <strong>calonasn.id</strong>, seluruh materi rahasia TWK,
-                            TIU, dan TKP bisa kamu nikmati secara <span class="text-danger fw-bold">GRATIS TIS TIS</span>.
-                            <br><br>
-                            Gak perlu mikir biaya. <strong>Cukup buat akun gratis dalam 1 menit</strong>, dan semua materi
-                            di bawah ini otomatis terbuka untukmu!
+                            Gak perlu mikir biaya. Cukup buat akun gratis dalam 1 menit, dan materi terstruktur TWK, TIU, dan TKP ini otomatis terbuka untukmu selamanya!
                         </p>
                     </div>
                 </div>
@@ -598,27 +581,24 @@
                             <span class="d-block display-3 fw-bold text-primary-soft mb-2 opacity-50"
                                 style="color: #cbdffa;">01</span>
                             <!-- PERBAIKAN: H4 jadi H3 -->
-                            <h3 class="h4 fw-bold text-dark">Registrasi & QRIS</h3>
-                            <p class="text-muted small mx-auto" style="max-width: 280px;">Buat akun barumu secara instan,
-                                lakukan pembayaran murah aman via scan kode QRIS otomatis.</p>
+                            <h3 class="h4 fw-bold text-dark">Daftar Akun Gratis</h3>
+                            <p class="text-muted small mx-auto" style="max-width: 280px;">Buat akun barumu secara instan dalam hitungan detik. Akses ke ratusan materi SKD akan langsung terbuka.</p>
                         </div>
                     </div>
                     <div class="col-md-4 col-12">
                         <div class="p-3">
                             <span class="d-block display-3 fw-bold text-primary-soft mb-2 opacity-50"
                                 style="color: #cbdffa;">02</span>
-                            <h3 class="h4 fw-bold text-dark">Simulasi Ujian</h3>
-                            <p class="text-muted small mx-auto" style="max-width: 280px;">Kerjakan simulasi CAT mandiri
-                                berdurasi penuh kapan saja dari laptop atau handphone-mu.</p>
+                            <h3 class="h4 fw-bold text-dark">Pahami Materinya</h3>
+                            <p class="text-muted small mx-auto" style="max-width: 280px;">Pelajari rangkuman materi TWK, TIU, dan TKP secara terstruktur. Pahami konsep dasar dan trik cepatnya.</p>
                         </div>
                     </div>
                     <div class="col-md-4 col-12">
                         <div class="p-3">
                             <span class="d-block display-3 fw-bold text-primary-soft mb-2 opacity-50"
                                 style="color: #cbdffa;">03</span>
-                            <h3 class="h4 fw-bold text-dark">Evaluasi Kelulusan</h3>
-                            <p class="text-muted small mx-auto" style="max-width: 280px;">Buka lembar riwayat evaluasi
-                                nilai, pelajari trik materi yang salah, dan ulangi hingga paham.</p>
+                            <h3 class="h4 fw-bold text-dark">Uji dengan Tryout CAT</h3>
+                            <p class="text-muted small mx-auto" style="max-width: 280px;">Setelah yakin, beli paket Tryout Premium yang super murah untuk mengukur seberapa jauh kesiapanmu dengan sistem CAT asli.</p>
                         </div>
                     </div>
                 </div>
