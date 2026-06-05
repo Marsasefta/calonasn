@@ -187,6 +187,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/learning/{slug}/delete', [App\Http\Controllers\Admin\LearningController::class, 'destroyCategory'])->name('learning.category.destroy');
         Route::get('/learning/{slug}/create-chapter', [App\Http\Controllers\Admin\LearningController::class, 'createChapter'])->name('learning.chapter.create');
         Route::post('/learning/{slug}/store-chapter', [App\Http\Controllers\Admin\LearningController::class, 'storeChapter'])->name('learning.chapter.store');
+        Route::get('/learning/{slug}/chapters/{chapter}/edit', [App\Http\Controllers\Admin\LearningController::class, 'editChapter'])->name('learning.chapter.edit');
+        Route::put('/learning/{slug}/chapters/{chapter}/update', [App\Http\Controllers\Admin\LearningController::class, 'updateChapter'])->name('learning.chapter.update');
+        Route::delete('/learning/{slug}/chapters/{chapter}/delete', [App\Http\Controllers\Admin\LearningController::class, 'destroyChapter'])->name('learning.chapter.destroy');
         Route::get('/learning/{slug}/chapters/{chapter}/create-material', [App\Http\Controllers\Admin\LearningController::class, 'createMaterial'])->name('learning.material.create');
         Route::post('/learning/{slug}/chapters/{chapter}/store-material', [App\Http\Controllers\Admin\LearningController::class, 'storeMaterial'])->name('learning.material.store');
         Route::get('/learning/{slug}/chapters/{chapter}/materials/{material}/edit', [App\Http\Controllers\Admin\LearningController::class, 'editMaterial'])->name('learning.material.edit');

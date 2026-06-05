@@ -54,10 +54,20 @@
                         <span class="text-muted small fw-semibold tracking-wide text-uppercase">Bab {{ $chapter->order_number }}</span>
                         <h5 class="fw-bold text-dark mb-0 mt-1">{{ $chapter->title }}</h5>
                       </div>
-                      <div>
+                      <div class="d-flex gap-2">
                         <a href="{{ route('admin.learning.material.create', [$category->slug, $chapter->id]) }}" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" title="Tambah Materi">
                           <i class="bi bi-file-earmark-plus"></i> <span>Tambah Materi</span>
                         </a>
+                        <a href="{{ route('admin.learning.chapter.edit', [$category->slug, $chapter->id]) }}" class="btn btn-sm btn-white border shadow-sm text-secondary px-2" title="Edit Bab">
+                          <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <form action="{{ route('admin.learning.chapter.destroy', [$category->slug, $chapter->id]) }}" method="POST" onsubmit="return confirm('Hapus bab ini? Semua materi di dalamnya juga akan dihapus.');" class="d-inline">
+                          @csrf
+                          @method('DELETE')
+                          <button type="submit" class="btn btn-sm btn-white border shadow-sm text-danger px-2" title="Hapus Bab">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </form>
                       </div>
                     </div>
 
