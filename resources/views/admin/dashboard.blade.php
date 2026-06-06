@@ -87,12 +87,12 @@
               <div class="card stat-card shadow-sm h-100">
                 <div class="card-body d-flex gap-3 align-items-center">
                   <div class="icon-wrapper icon-bg-teal">
-                    <span class="fe fe-circle fs-4"></span>
+                    <span class="fe fe-user-plus fs-4"></span>
                   </div>
                   <div>
-                    <small class="text-uppercase text-muted">User Sedang Online</small>
-                    <h3 class="mb-0 fw-bold">{{ $onlineUsers }}</h3>
-                    <small class="text-muted">Aktif dalam 15 menit terakhir</small>
+                    <small class="text-uppercase text-muted">Pendaftar Tryout Bulan Ini</small>
+                    <h3 class="mb-0 fw-bold">{{ $registrationsThisMonth }}</h3>
+                    <small class="text-muted">Sudah bayar: {{ $paidRegistrationsThisMonth }}</small>
                   </div>
                 </div>
               </div>
