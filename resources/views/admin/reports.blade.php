@@ -36,9 +36,9 @@
                                     <th>#</th>
                                     <th>Peserta</th>
                                     <th>Tryout</th>
-                                    <th>TWK</th>
-                                    <th>TIU</th>
-                                    <th>TKP</th>
+                                    <th>TWK <br> (PG: 65)</th>
+                                    <th>TIU <br> (PG: 80)</th>
+                                    <th>TKP <br> (PG: 166)</th>
                                     <th>Total Skor</th>
                                     <th>Mulai</th>
                                     <th>Selesai</th>
@@ -47,19 +47,40 @@
                             </thead>
                             <tbody>
                                 @forelse($reports as $report)
+                                    @php
+                                        // Ambil nilai masing-masing pilar
+                                        $twk = $report->score_twk ?? 0;
+                                        $tiu = $report->score_tiu ?? 0;
+                                        $tkp = $report->score_tkp ?? 0;
+
+                                        // Cek apakah ada nilai yang di bawah Passing Grade
+                                        $isTwkFailed = $twk < 65;
+                                        $isTiuFailed = $tiu < 80;
+                                        $isTkpFailed = $tkp < 166;
+
+                                        // Jika salah satu saja gagal, maka status kelulusan total adalah gagal (merah)
+                                        $isTotalFailed = $isTwkFailed || $isTiuFailed || $isTkpFailed;
+                                    @endphp
                                     <tr>
                                         <td>{{ $loop->iteration + ($reports->currentPage() - 1) * $reports->perPage() }}</td>
                                         <td>{{ $report->user->name ?? '-' }}</td>
                                         <td>{{ $report->tryout->title ?? '-' }}</td>
                                         
-                                        {{-- Kolom Pecahan Skor SKD --}}
-                                        <td>{{ $report->score_twk ?? 0 }}</td>
-                                        <td>{{ $report->score_tiu ?? 0 }}</td>
-                                        <td>{{ $report->score_tkp ?? 0 }}</td>
+                                        {{-- Kolom Pecahan Skor SKD dengan validasi warna komponen merah jika di bawah PG --}}
+                                        <td class="{{ $isTwkFailed ? 'text-danger fw-bold' : '' }}">{{ $twk }}</td>
+                                        <td class="{{ $isTiuFailed ? 'text-danger fw-bold' : '' }}">{{ $tiu }}</td>
+                                        <td class="{{ $isTkpFailed ? 'text-danger fw-bold' : '' }}">{{ $tkp }}</td>
                                         
-                                        <td><span class="fw-bold text-dark">{{ $report->total_score }}</span></td>
+                                        {{-- Total skor otomatis berwarna merah jika ada satu komponen yang gagal PG --}}
+                                        <td>
+                                            <span class="fw-bold {{ $isTotalFailed ? 'text-danger' : 'text-success' }}">
+                                                {{ $report->total_score }} 
+                                                <small class="d-block fw-normal" style="font-size: 0.75rem;">
+                                                    {{ $isTotalFailed ? '(TL)' : '(L)' }}
+                                                </small>
+                                            </span>
+                                        </td>
                                         
-                                        {{-- Menggunakan locale('id') dan isoFormat agar bulan otomatis berbahasa Indonesia --}}
                                         <td>{{ $report->start_time ? $report->start_time->locale('id')->isoFormat('DD MMMM YYYY HH:mm:ss') : '-' }}</td>
                                         <td>{{ $report->end_time ? $report->end_time->locale('id')->isoFormat('DD MMMM YYYY HH:mm:ss') : '-' }}</td>
                                         
@@ -77,7 +98,7 @@
                                                     $seconds = $totalSeconds % 60;
                                                 @endphp
 
-                                                {{-- Output rapi Menit:Detik (misal 76:31 atau 2:14) --}}
+                                                {{-- Output rapi Menit:Detik --}}
                                                 {{ $minutes }}:{{ str_pad($seconds, 2, '0', STR_PAD_LEFT) }}
                                             @else
                                                 -
@@ -86,7 +107,6 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        {{-- Colspan disesuaikan menjadi 10 karena jumlah kolom bertambah --}}
                                         <td colspan="10" class="text-center py-5">
                                             <div class="text-muted">
                                                 <i class="fe fe-inbox fs-3 mb-2 d-block"></i>
