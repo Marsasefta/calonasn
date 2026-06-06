@@ -36,6 +36,9 @@
                                     <th>#</th>
                                     <th>Peserta</th>
                                     <th>Tryout</th>
+                                    <th>TWK</th>
+                                    <th>TIU</th>
+                                    <th>TKP</th>
                                     <th>Total Skor</th>
                                     <th>Mulai</th>
                                     <th>Selesai</th>
@@ -45,23 +48,37 @@
                             <tbody>
                                 @forelse($reports as $report)
                                     <tr>
-                                        <td>{{ $loop->iteration + ($reports->currentPage() - 1) * $reports->perPage() }}
-                                        </td>
+                                        <td>{{ $loop->iteration + ($reports->currentPage() - 1) * $reports->perPage() }}</td>
                                         <td>{{ $report->user->name ?? '-' }}</td>
                                         <td>{{ $report->tryout->title ?? '-' }}</td>
-                                        <td>{{ $report->total_score }}</td>
-                                        <td>{{ $report->start_time?->format('d M Y H:i') ?? '-' }}</td>
-                                        <td>{{ $report->end_time?->format('d M Y H:i') ?? '-' }}</td>
+                                        
+                                        {{-- Kolom Pecahan Skor SKD --}}
+                                        <td>{{ $report->score_twk ?? 0 }}</td>
+                                        <td>{{ $report->score_tiu ?? 0 }}</td>
+                                        <td>{{ $report->score_tkp ?? 0 }}</td>
+                                        
+                                        <td><span class="fw-bold text-dark">{{ $report->total_score }}</span></td>
+                                        
+                                        {{-- Menggunakan locale('id') dan isoFormat agar bulan otomatis berbahasa Indonesia --}}
+                                        <td>{{ $report->start_time ? $report->start_time->locale('id')->isoFormat('DD MMMM YYYY HH:mm:ss') : '-' }}</td>
+                                        <td>{{ $report->end_time ? $report->end_time->locale('id')->isoFormat('DD MMMM YYYY HH:mm:ss') : '-' }}</td>
+                                        
                                         <td>
                                             @if ($report->start_time && $report->end_time)
                                                 @php
-                                                    // Menghitung selisih waktu
-                                                    $diff = $report->start_time->diff($report->end_time);
+                                                    $start = \Carbon\Carbon::parse($report->start_time);
+                                                    $end = \Carbon\Carbon::parse($report->end_time);
+
+                                                    // Hitung total detik keseluruhan
+                                                    $totalSeconds = $start->diffInSeconds($end);
+
+                                                    // Konversi ke format akumulasi menit dan sisa detik
+                                                    $minutes = floor($totalSeconds / 60);
+                                                    $seconds = $totalSeconds % 60;
                                                 @endphp
 
-                                                {{-- Tampilkan Jam jika ada, Menit, dan Detik --}}
-                                                {{ $diff->h > 0 ? $diff->h . ' jam ' : '' }}
-                                                {{ $diff->i }}:{{ $diff->s }} 
+                                                {{-- Output rapi Menit:Detik (misal 76:31 atau 2:14) --}}
+                                                {{ $minutes }}:{{ str_pad($seconds, 2, '0', STR_PAD_LEFT) }}
                                             @else
                                                 -
                                             @endif
@@ -69,7 +86,8 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center py-5">
+                                        {{-- Colspan disesuaikan menjadi 10 karena jumlah kolom bertambah --}}
+                                        <td colspan="10" class="text-center py-5">
                                             <div class="text-muted">
                                                 <i class="fe fe-inbox fs-3 mb-2 d-block"></i>
                                                 Belum ada data laporan.
