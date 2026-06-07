@@ -88,6 +88,33 @@ class LearningController extends Controller
         return redirect()->route('admin.learning.category.show', $category->slug)->with('success','Bab berhasil ditambahkan');
     }
 
+    public function editChapter($slug, $chapterId)
+    {
+        $category = LearningCategory::where('slug', $slug)->firstOrFail();
+        $chapter = LearningChapter::where('id', $chapterId)->where('learning_category_id', $category->id)->firstOrFail();
+        return view('admin.learning.edit_chapter', compact('category', 'chapter'));
+    }
+
+    public function updateChapter(Request $request, $slug, $chapterId)
+    {
+        $category = LearningCategory::where('slug', $slug)->firstOrFail();
+        $chapter = LearningChapter::where('id', $chapterId)->where('learning_category_id', $category->id)->firstOrFail();
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'order_number' => 'nullable|integer'
+        ]);
+        $chapter->update($data);
+        return redirect()->route('admin.learning.category.show', $slug)->with('success', 'Bab berhasil diperbarui');
+    }
+
+    public function destroyChapter($slug, $chapterId)
+    {
+        $category = LearningCategory::where('slug', $slug)->firstOrFail();
+        $chapter = LearningChapter::where('id', $chapterId)->where('learning_category_id', $category->id)->firstOrFail();
+        $chapter->delete();
+        return redirect()->route('admin.learning.category.show', $slug)->with('success', 'Bab berhasil dihapus');
+    }
+
     public function createMaterial($slug, $chapterId)
     {
         $category = LearningCategory::where('slug', $slug)->firstOrFail();

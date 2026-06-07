@@ -35,15 +35,25 @@ class DashboardController extends Controller
         if ($user->isAdmin()) {
             $totalUsers = User::count();
             $totalQuestions = Question::count();
+            $registrationsThisMonth = Transaction::whereYear('created_at', Carbon::now()->year)
+                ->whereMonth('created_at', Carbon::now()->month)
+                ->count();
+            $paidRegistrationsThisMonth = Transaction::whereYear('created_at', Carbon::now()->year)
+                ->whereMonth('created_at', Carbon::now()->month)
+                ->where('status', 'success')
+                ->count();
             $revenueThisMonth = Transaction::whereYear('created_at', Carbon::now()->year)
                 ->whereMonth('created_at', Carbon::now()->month)
                 ->where('status', 'success')
-                ->sum('amount');
-            $onlineUsers = DB::table('sessions')
-                ->where('last_activity', '>=', Carbon::now()->subMinutes(15)->getTimestamp())
-                ->count();
+                ->sum('total_amount');
 
-            return view('admin.dashboard', compact('totalUsers', 'totalQuestions', 'revenueThisMonth', 'onlineUsers'));
+            return view('admin.dashboard', compact(
+                'totalUsers',
+                'totalQuestions',
+                'registrationsThisMonth',
+                'paidRegistrationsThisMonth',
+                'revenueThisMonth'
+            ));
         }
 
        // 1. Cek semua status paket secara independen
