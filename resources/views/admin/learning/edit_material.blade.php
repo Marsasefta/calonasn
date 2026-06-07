@@ -37,7 +37,7 @@
                   <textarea name="content" id="content" class="form-control" rows="8">{{ old('content', $material->content) }}</textarea>
                 </div>
                 <div class="mb-3 form-check">
-                  <input type="checkbox" name="is_locked" class="form-check-input" id="is_locked" {{ old('is_locked', $material->is_locked) ? 'checked' : '' }}>
+                  <input type="checkbox" name="is_locked" value="1" class="form-check-input" id="is_locked" {{ old('is_locked', $material->is_locked) ? 'checked' : '' }}>
                   <label class="form-check-label" for="is_locked">Kunci (Premium)</label>
                 </div>
                 <div class="mb-3">
