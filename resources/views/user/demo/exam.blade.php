@@ -13,28 +13,35 @@
     <!-- Sidebar -->
     @include('partials.navbar-student')
 
-    <div class="db-content text-dark p-2 p-md-4" id="areaUjian" style="background-color: #f4f6f9; overflow-y: auto;">
-    <div class="container-fluid mb-4">
+    <div class="db-content text-dark" id="areaUjian" style="background-color: #f4f6f9; overflow-y: auto;">
+        <div class="container-fluid py-4">
 
-        <div class="row align-items-center mb-4 bg-white p-3 shadow-sm rounded">
-            <div class="col-md-6 col-12 mb-3 mb-md-0">
-                <h4 class="mb-0 fw-bold text-primary">Ujicoba Gratis CalonASN.id</h4>
-                <p class="mb-0 text-muted small">Total: {{ count($questions) }} Soal (TWK, TIU, TKP)</p>
-            </div>
-            
-            <div class="col-md-6 col-12 d-flex justify-content-md-end justify-content-between align-items-center gap-4">
-                
-                <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center" id="btnFullscreen" title="Layar Penuh">
-                    <i class="fe fe-maximize me-md-2" id="iconFullscreen"></i> 
-                    <span id="textFullscreen" class="d-none d-md-inline">Fokus / Fullscreen</span>
-                </button>
+            <div class="row align-items-center mb-4 bg-white p-3 shadow-sm rounded mx-0">
+                <div class="col-md-6 col-12 mb-3 mb-md-0 d-flex align-items-center">
+                    <div class="bg-primary text-white rounded p-2 me-3 shadow-sm d-flex align-items-center justify-content-center"
+                        style="width: 45px; height: 45px;">
+                        <i class="fe fe-monitor fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold text-dark mb-0">Ujicoba Gratis CalonASN.id</h4>
+                        <p class="text-muted small mb-0">Total: {{ count($questions) }} Soal (TWK, TIU, TKP)</p>
+                    </div>
+                </div>
 
-                <div class="text-end">
-                    <h3 id="timerDisplay" class="mb-0 fw-bold text-danger lh-1">00:00</h3>
-                    <span class="small text-muted">Sisa Waktu</span>
+                <div
+                    class="col-md-6 col-12 d-flex justify-content-md-end justify-content-between align-items-center gap-4">
+                    <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center"
+                        id="btnFullscreen" title="Layar Penuh">
+                        <i class="fe fe-maximize me-md-2" id="iconFullscreen"></i>
+                        <span id="textFullscreen" class="d-none d-md-inline">Fokus / Fullscreen</span>
+                    </button>
+
+                    <div class="text-end">
+                        <h3 id="timerDisplay" class="mb-0 fw-bold text-danger lh-1">00:00</h3>
+                        <span class="small text-muted">Sisa Waktu</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
             <form action="{{ route('demo.selesai') }}" method="POST" id="formUjian">
                 @csrf
