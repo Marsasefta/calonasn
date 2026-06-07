@@ -317,7 +317,7 @@
 
 @section('content')
     <main>
-        <section class="py-xl-9 py-6" style="background-color: #f7f9fb;">
+        <section class="py-xl-9 py-6" bg-white>
             <div class="container py-xl-4">
                 <div class="row align-items-center gy-6 gy-xl-0">
                     <div class="col-lg-6 col-12">
@@ -335,7 +335,8 @@
                                     Taklukkan SKD CPNS 2026: <span class="text-primary">Belajar GRATIS</span> & Tryout CAT
                                 </h1>
 
-                                <div class="alert alert-success border-0 shadow-sm py-2 px-3 mt-3 d-inline-flex align-items-center gap-2 flex-nowrap">
+                                <div
+                                    class="alert alert-success border-0 shadow-sm py-2 px-3 mt-3 d-inline-flex align-items-center gap-2 flex-nowrap">
                                     <span>🎁</span>
                                     <div class="d-flex flex-wrap align-items-center gap-2">
                                         <span>Daftar sekarang, dapatkan akses</span>
@@ -344,27 +345,30 @@
                                 </div>
 
                                 <p class="mb-0 text-muted fs-5 lh-base">
-                                    Jangan buang waktu mencari materi yang berceceran. Pelajari rangkuman materi terlengkap secara cuma-cuma, lalu latih kesiapanmu dengan platform CAT BKN terakurat.
+                                    Jangan buang waktu mencari materi yang berceceran. Pelajari rangkuman materi terlengkap
+                                    secara cuma-cuma, lalu latih kesiapanmu dengan platform CAT BKN terakurat.
                                 </p>
                             </div>
 
                             <div class="d-flex flex-wrap gap-3 mt-4">
                                 @guest
-                                    <a href="{{ route('register') }}" class="btn btn-primary btn-lg px-4 py-3 fw-bold shadow-sm">
-                                        <i class="fe fe-unlock ms-1"></i> Daftar & Buka Materi Gratis 
-                                    </a>
+                                    {{-- <a href="{{ route('register') }}"
+                                        class="btn btn-primary btn-lg px-4 py-3 fw-bold shadow-sm">
+                                        <i class="fe fe-unlock ms-1"></i> Daftar & Buka Materi Gratis
+                                    </a> --}}
                                     <a href="{{ route('demo.cat') }}" class="btn btn-outline-dark btn-lg px-4 py-3 fw-bold">
                                         Coba Demo CAT
                                     </a>
                                 @else
-                                    <a href="{{ route('materi.index') }}" class="btn btn-primary btn-lg px-4 py-3 fw-bold shadow-sm">
+                                    {{-- <a href="{{ route('materi.index') }}"
+                                        class="btn btn-primary btn-lg px-4 py-3 fw-bold shadow-sm">
                                         Lanjut Belajar <i class="fe fe-book-open ms-2"></i>
-                                    </a>
+                                    </a> --}}
                                     <a href="{{ route('checkout') }}" class="btn btn-success btn-lg px-4 py-3 fw-bold">
                                         Beli Paket Tryout <i class="fe fe-shopping-cart ms-2"></i>
                                     </a>
                                 @endguest
-                            </div>                          
+                            </div>
 
                             <div class="d-flex flex-row gap-4 align-items-center mt-2 text-muted small">
                                 <span><i class="fe fe-check text-success me-1"></i> Tanpa Install Aplikasi</span>
@@ -374,6 +378,66 @@
                     </div>
 
                     <div class="col-lg-6 col-12 text-center">
+                        <div
+                            class="bg-white p-4 p-md-5 rounded-4 border border-2 border-primary shadow-lg position-relative overflow-hidden">
+                            <div class="position-absolute top-0 end-0 bg-danger text-white px-4 py-1 small fw-bold"
+                                style="border-bottom-left-radius: 12px;">
+                                TERBATAS!
+                            </div>
+
+                            <div
+                                class="badge bg-success-soft text-success mb-3 px-3 py-2 fw-bold text-uppercase tracking-wider">
+                                🎁 Spesial Pendaftar Hari Ini
+                            </div>
+
+                            <h2 class="h3 text-dark fw-bold mb-2">Akses Ratusan Materi CPNS</h2>
+                            <p class="text-muted small mb-4">Buat akun sekarang dan dapatkan akses langsung ke rangkuman
+                                materi TWK, TIU, dan TKP.</p>
+
+                            <div class="py-3 mb-4 bg-light rounded border border-success border-opacity-25">
+                                <span class="text-muted small d-block mb-1">
+                                    Biaya Pendaftaran:
+                                </span>
+                                <p class="display-4 fw-bolder text-success mb-0">
+                                    100% GRATIS
+                                </p>
+                            </div>
+
+                            <ul class="list-unstyled text-start mx-auto my-4 d-flex flex-column gap-3 text-dark fw-medium"
+                                style="max-width: 380px;">
+                                <li class="d-flex align-items-start">
+                                    <i class="fe fe-check-circle text-primary me-3 mt-1 fs-5"></i>
+                                    <span>Buka Akses <strong>Materi Rahasia SKD</strong></span>
+                                </li>
+                                <li class="d-flex align-items-start">
+                                    <i class="fe fe-check-circle text-primary me-3 mt-1 fs-5"></i>
+                                    <span>Trik Cepat Jawab Soal Kurang dari 1 Menit</span>
+                                </li>
+                                <li class="d-flex align-items-start">
+                                    <i class="fe fe-check-circle text-primary me-3 mt-1 fs-5"></i>
+                                    <span>Coba Sistem Simulasi CAT BKN Asli</span>
+                                </li>
+                            </ul>
+
+                            @guest
+                                <div class="d-grid mt-4">
+                                    <a href="{{ route('register') }}" class="btn btn-primary btn-lg py-3 fw-bold shadow-sm">
+                                        Buat Akun Gratis Sekarang <i class="fe fe-arrow-right ms-2"></i>
+                                    </a>
+                                </div>
+                                <p class="text-muted small mt-3 mb-0"><i class="fe fe-clock me-1"></i> Proses daftar cuma butuh
+                                    1 menit.</p>
+                            @else
+                                <div class="d-grid mt-4">
+                                    <a href="{{ route('materi.index') }}" class="btn btn-primary btn-lg py-3 fw-bold shadow-sm">
+                                        Buka Dashboard Materi Saya <i class="fe fe-arrow-right ms-2"></i>
+                                    </a>
+                                </div>
+                            @endguest
+                        </div>
+                    </div>
+
+                    {{-- <div class="col-lg-6 col-12 text-center">
                         <div class="bg-light p-4 p-md-5 rounded-4 border shadow-sm">
                             <div
                                 class="badge bg-danger-soft text-danger mb-3 px-3 py-2 fw-bold text-uppercase tracking-wider">
@@ -397,15 +461,7 @@
                                 <span class="badge bg-success mt-2">
                                     🎁 Setelah pakai kode ASN2026
                                 </span>
-                            </div>
-
-                            {{-- <div class="py-3 mb-4 bg-white rounded border">
-                                <span class="text-muted small text-decoration-line-through d-block mb-1">Harga Normal: Rp
-                                    99.000</span>
-                                <!-- PERBAIKAN: Jangan gunakan H1 untuk harga. Ubah ke p atau div dengan class display-4 -->
-                                <p class="display-4 fw-bolder text-primary mb-0">Rp 20.000 <span
-                                        class="fs-4 text-muted fw-normal">/paket</span></p>
-                            </div> --}}
+                            </div>                           
 
                             <ul class="list-unstyled text-start mx-auto my-4 d-flex flex-column gap-3 text-dark fw-medium"
                                 style="max-width: 380px;">
@@ -441,14 +497,178 @@
                                 </div>
                             @endguest
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </section>
 
-        
+        <section class="py-xl-8 py-6" style="background-color: #f7f9fb;">
+            <div class="container">
+                <div class="row justify-content-center text-center mb-5">
+                    <div class="col-lg-7">
+                        <span
+                            class="badge bg-primary-soft text-primary px-3 py-2 fw-bold text-uppercase rounded-pill mb-3 shadow-sm">
+                            <i class="bi bi-tags-fill me-1"></i> Investasi Sekali Bayar
+                        </span>
+                        <h2 class="display-5 fw-bold text-dark mb-3">Pilih Senjata Tempurmu Menuju NIP 2026</h2>
+                        <p class="lead text-muted">Akses selamanya tanpa biaya langganan bulanan. Semakin cepat kamu mulai,
+                            semakin besar peluangmu lulus.</p>
 
-        <section class="py-xl-8 py-6 bg-white">
+                        <div class="alert alert-success d-inline-block px-4 py-2 mt-2 shadow-sm border border-success"
+                            role="alert">
+                            <i class="bi bi-ticket-perforated-fill me-2 fs-5"></i>
+                            Gunakan kode promo <strong class="fs-5 ms-1">ASN2026</strong> untuk potongan ekstra <strong>Rp
+                                7.000</strong>!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 justify-content-center align-items-stretch">
+
+                    <div class="col-lg-5 col-md-6 d-flex">
+                        <div
+                            class="card w-100 border-0 shadow-sm rounded-4 p-4 p-md-5 d-flex flex-column bg-white transition-hover">
+                            <div class="mb-4">
+                                <span class="badge bg-secondary px-3 py-1 rounded-pill mb-2 fw-semibold">
+                                    Paket Latihan
+                                </span>
+                                <h3 class="fw-bold text-dark mb-1">Tryout Mandiri</h3>
+                                <p class="text-muted small">Fokus latih manajemen waktu dengan simulasi CAT.</p>
+
+                                <div class="mt-4 p-3 bg-light rounded-3 border">
+                                    <p class="text-muted small mb-1">Investasi Normal:</p>
+                                    <p class="display-5 fw-bolder text-dark mb-0">
+                                        Rp 20.000 <span class="fs-6 text-muted fw-normal">/selamanya</span>
+                                    </p>
+                                    <div class="mt-2 pt-2 border-top border-secondary border-opacity-25">
+                                        <span class="badge bg-success text-white px-2 py-1 small">
+                                            <i class="bi bi-tag-fill me-1"></i> + Kode ASN2026 jadi: <strong
+                                                class="fs-6">Rp 13.000</strong>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <ul class="list-unstyled d-flex flex-column gap-3 text-dark fw-medium mb-5">
+                                <li class="d-flex align-items-start small">
+                                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                    <span>110 Soal Standar <strong>HOTS Terbaru 2026</strong></span>
+                                </li>
+                                <li class="d-flex align-items-start small">
+                                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                    <span>Skor Real-Time Kelulusan (TWK, TIU, TKP)</span>
+                                </li>
+                                <li class="d-flex align-items-start small">
+                                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                    <span>Kunci Jawaban & Pembahasan</span>
+                                </li>
+                                <li class="d-flex align-items-start small text-muted">
+                                    <i class="bi bi-x-circle-fill text-danger opacity-50 me-2 mt-1"></i>
+                                    <span class="text-decoration-line-through">Akses Ratusan Materi Micro-Learning</span>
+                                </li>
+                                <li class="d-flex align-items-start small text-muted">
+                                    <i class="bi bi-x-circle-fill text-danger opacity-50 me-2 mt-1"></i>
+                                    <span class="text-decoration-line-through">Trik Rahasia Jawab Cepat</span>
+                                </li>
+                            </ul>
+
+                            <div class="mt-auto">
+                                @guest
+                                    <a href="{{ route('register', ['package' => 'tryout-only']) }}"
+                                        class="btn btn-outline-dark rounded-pill py-3 fw-bold w-100">
+                                        Pilih Paket Latihan
+                                    </a>
+                                @else
+                                    <a href="{{ route('checkout', ['package' => 'tryout-only']) }}"
+                                        class="btn btn-outline-dark rounded-pill py-3 fw-bold w-100">
+                                        Lanjut Pembayaran
+                                    </a>
+                                @endguest
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5 col-md-6 d-flex">
+                        <div class="card w-100 border-2 border-primary shadow-lg rounded-4 p-4 p-md-5 d-flex flex-column bg-white position-relative overflow-hidden hover-lift"
+                            style="transform: scale(1.02); z-index: 10;">
+
+                            <div class="position-absolute top-0 end-0 bg-primary text-white px-4 py-2 small fw-bold shadow-sm"
+                                style="border-bottom-left-radius: 16px;">
+                                ⭐ PALING BANYAK DIPILIH
+                            </div>
+
+                            <div class="mb-4 mt-2">
+                                <span class="badge bg-primary-soft text-primary px-3 py-1 rounded-pill mb-2 fw-bold">
+                                    Paket Super Lengkap
+                                </span>
+                                <h3 class="fw-bold text-dark mb-1">Tryout + Materi Full</h3>
+                                <p class="text-muted small">Solusi instan: Paham materinya, taklukkan simulasinya.</p>
+
+                                <div class="mt-4 p-3 bg-primary-soft rounded-3 border border-primary border-opacity-25">
+                                    <p class="text-primary small mb-1 fw-semibold">Investasi Normal:</p>
+                                    <p class="display-5 fw-bolder text-primary mb-0">
+                                        Rp 49.000 <span class="fs-6 text-muted fw-normal">/selamanya</span>
+                                    </p>
+                                    <div class="mt-2 pt-2 border-top border-primary border-opacity-25">
+                                        <span class="badge bg-primary text-white px-2 py-1 small shadow-sm">
+                                            <i class="bi bi-tag-fill me-1"></i> + Kode ASN2026 jadi: <strong
+                                                class="fs-6 text-warning">Rp 42.000</strong>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <ul class="list-unstyled d-flex flex-column gap-3 text-dark fw-medium mb-5">
+                                <li class="d-flex align-items-start small">
+                                    <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
+                                    <span><strong>Semua Fitur Paket Tryout Mandiri</strong></span>
+                                </li>
+                                <li
+                                    class="d-flex align-items-start small p-2 bg-white rounded-3 shadow-sm border border-primary border-opacity-10">
+                                    <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
+                                    <span class="text-primary"><strong>Akses Penuh Materi Pembelajaran
+                                            (Micro-Learning)</strong></span>
+                                </li>
+                                <li class="d-flex align-items-start small">
+                                    <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
+                                    <span>Update Kisi-Kisi CPNS BKN 2026</span>
+                                </li>
+                                <li class="d-flex align-items-start small">
+                                    <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
+                                    <span>Trik Rahasia Jawab Soal Kurang dari 1 Menit</span>
+                                </li>
+                                <li class="d-flex align-items-start small">
+                                    <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
+                                    <span>Akses Fleksibel via HP/Laptop Kapan Saja</span>
+                                </li>
+                            </ul>
+
+                            <div class="mt-auto">
+                                @guest
+                                    <a href="{{ route('register', ['package' => 'tryout-pdf']) }}"
+                                        class="btn btn-primary rounded-pill py-3 fw-bold w-100 shadow">
+                                        Amankan Paket Lengkap <i class="bi bi-arrow-right ms-2"></i>
+                                    </a>
+                                @else
+                                    <a href="{{ route('checkout', ['package' => 'tryout-pdf']) }}"
+                                        class="btn btn-primary rounded-pill py-3 fw-bold w-100 shadow">
+                                        Beli via QRIS / Transfer <i class="bi bi-arrow-right ms-2"></i>
+                                    </a>
+                                @endguest
+                                <p class="text-center text-muted small mt-3 mb-0"><i
+                                        class="bi bi-shield-check text-success me-1"></i> Garansi akses langsung aktif
+                                    setelah bayar.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+
+        {{-- <section class="py-xl-8 py-6 bg-white">
             <div class="container">
                 <!-- HEADER SECTION: Fokus ke Copywriting yang "Menampar" -->
                 <div class="row justify-content-center text-center mb-5">
@@ -462,7 +682,8 @@
                         <h2 class="display-4 fw-bold text-dark mb-3">Akses Ratusan Materi Rahasia Tanpa Biaya</h2>
 
                         <p class="lead text-muted px-md-4">
-                            Gak perlu mikir biaya. Cukup buat akun gratis dalam 1 menit, dan materi terstruktur TWK, TIU, dan TKP ini otomatis terbuka untukmu selamanya!
+                            Gak perlu mikir biaya. Cukup buat akun gratis dalam 1 menit, dan materi terstruktur TWK, TIU,
+                            dan TKP ini otomatis terbuka untukmu selamanya!
                         </p>
                     </div>
                 </div>
@@ -502,7 +723,7 @@
                     @endforeach
                 </div>
             </div>
-        </section>
+        </section>         --}}
 
         <section class="py-xl-8 py-6 bg-light border-top border-bottom">
             <div class="container">
@@ -582,7 +803,8 @@
                                 style="color: #cbdffa;">01</span>
                             <!-- PERBAIKAN: H4 jadi H3 -->
                             <h3 class="h4 fw-bold text-dark">Daftar Akun Gratis</h3>
-                            <p class="text-muted small mx-auto" style="max-width: 280px;">Buat akun barumu secara instan dalam hitungan detik. Akses ke ratusan materi SKD akan langsung terbuka.</p>
+                            <p class="text-muted small mx-auto" style="max-width: 280px;">Buat akun barumu secara instan
+                                dalam hitungan detik. Akses ke ratusan materi SKD akan langsung terbuka.</p>
                         </div>
                     </div>
                     <div class="col-md-4 col-12">
@@ -590,7 +812,8 @@
                             <span class="d-block display-3 fw-bold text-primary-soft mb-2 opacity-50"
                                 style="color: #cbdffa;">02</span>
                             <h3 class="h4 fw-bold text-dark">Pahami Materinya</h3>
-                            <p class="text-muted small mx-auto" style="max-width: 280px;">Pelajari rangkuman materi TWK, TIU, dan TKP secara terstruktur. Pahami konsep dasar dan trik cepatnya.</p>
+                            <p class="text-muted small mx-auto" style="max-width: 280px;">Pelajari rangkuman materi TWK,
+                                TIU, dan TKP secara terstruktur. Pahami konsep dasar dan trik cepatnya.</p>
                         </div>
                     </div>
                     <div class="col-md-4 col-12">
@@ -598,7 +821,8 @@
                             <span class="d-block display-3 fw-bold text-primary-soft mb-2 opacity-50"
                                 style="color: #cbdffa;">03</span>
                             <h3 class="h4 fw-bold text-dark">Uji dengan Tryout CAT</h3>
-                            <p class="text-muted small mx-auto" style="max-width: 280px;">Setelah yakin, beli paket Tryout Premium yang super murah untuk mengukur seberapa jauh kesiapanmu dengan sistem CAT asli.</p>
+                            <p class="text-muted small mx-auto" style="max-width: 280px;">Setelah yakin, beli paket Tryout
+                                Premium yang super murah untuk mengukur seberapa jauh kesiapanmu dengan sistem CAT asli.</p>
                         </div>
                     </div>
                 </div>

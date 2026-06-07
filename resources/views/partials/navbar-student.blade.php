@@ -71,8 +71,8 @@
                     <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Transaksi</span>
                     <ul class="list-unstyled mb-0">
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('checkout') ? 'active' : '' }}"
-                                href="{{ route('checkout') }}">
+                            <a class="nav-link {{ request()->routeIs('user.pilih-paket') ? 'active' : '' }}"
+                                href="{{ route('user.pilih-paket') }}">
                                 <i class="fe fe-shopping-cart nav-icon"></i> Beli Paket Premium
                             </a>
                         </li>

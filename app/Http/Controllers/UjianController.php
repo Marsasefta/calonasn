@@ -14,42 +14,74 @@ use App\Models\ExamSession;
 class UjianController extends Controller
 {
 
-    // Logika Inti Lock & Unlock
+    // Logika Inti Lock & Unlock (Mendukung Multi-Paket & Retry Ujian)
     public function checkUserAccess($tryoutId)
     {
         $userId = auth()->id();
 
-        // 1. Cari transaksi sukses terbaru
-        $lastSuccess = \App\Models\Transaction::where('user_id', $userId)
-            ->where('tryout_id', $tryoutId)
-            ->where('status', 'success')
-            ->latest()
-            ->first();
+        // 1. Ambil transaksi sukses terbaru untuk MASING-MASING ID paket
+        // Menggunakan LOWER agar aman dari salah ketik 'Success' atau 'success' di database
+        $trx1 = Transaction::where('user_id', $userId)->where('tryout_id', 1)->whereRaw('LOWER(status) = ?', ['success'])->latest()->first();
+        $trx2 = Transaction::where('user_id', $userId)->where('tryout_id', 2)->whereRaw('LOWER(status) = ?', ['success'])->latest()->first();
+        $trx3 = Transaction::where('user_id', $userId)->where('tryout_id', 3)->whereRaw('LOWER(status) = ?', ['success'])->latest()->first();
 
-        if (!$lastSuccess) {
-            return ['status' => 'locked', 'message' => 'Silakan beli paket ini terlebih dahulu.'];
+        $hasAccess = false;
+        $lastTransactionTime = null;
+
+        // 2. Tentukan Hak Akses & Ambil Waktu Pembelian Terakhir
+        if ($tryoutId == 1) {
+            // Tryout 1 TERBUKA jika punya Paket 1 ATAU Paket 2 (Premium)
+            if ($trx2) {
+                $hasAccess = true;
+                $lastTransactionTime = $trx2->updated_at;
+            }
+            // Jika trx1 lebih baru dari trx2 (misal dia beli paket 1 lagi untuk ngulang), gunakan waktu trx1
+            if ($trx1 && (!$lastTransactionTime || $trx1->updated_at > $lastTransactionTime)) {
+                $hasAccess = true;
+                $lastTransactionTime = $trx1->updated_at;
+            }
+        } elseif ($tryoutId == 2) {
+            // Tryout 2 TERBUKA jika punya Paket 2 ATAU hasil Upgrade (Paket 1 + Paket 3)
+            if ($trx2) {
+                $hasAccess = true;
+                $lastTransactionTime = $trx2->updated_at;
+            }
+            if ($trx1 && $trx3) {
+                $hasAccess = true;
+                // Waktu efektif adalah waktu saat dia melakukan upgrade (trx3)
+                $upgradeTime = $trx3->updated_at > $trx1->updated_at ? $trx3->updated_at : $trx1->updated_at;
+                if (!$lastTransactionTime || $upgradeTime > $lastTransactionTime) {
+                    $lastTransactionTime = $upgradeTime;
+                }
+            }
         }
 
-        // 2. Cari sesi ujian terbaru yang SUDAH SELESAI
-        $lastFinishedSession = \App\Models\ExamSession::where('user_id', $userId)
+        // Jika setelah dicek ternyata tidak punya akses sama sekali
+        if (!$hasAccess) {
+            return ['status' => 'locked', 'message' => 'Silakan miliki paket yang sesuai terlebih dahulu.'];
+        }
+
+        // 3. Cari sesi ujian terbaru yang SUDAH SELESAI (berdasarkan tryout yang mau diakses)
+        $lastFinishedSession = ExamSession::where('user_id', $userId)
             ->where('tryout_id', $tryoutId)
             ->whereNotNull('end_time') // Harus yang sudah ada waktu selesainya
             ->latest()
             ->first();
 
-        // --- LOGIKA KUNCI ---
-        // Jika belum pernah selesai ujian, akses TERBUKA.
+        // --- LOGIKA KUNCI (RETRY EXAM) ---
+        // Jika belum pernah selesai ujian ini sama sekali, akses TERBUKA.
         if (!$lastFinishedSession) {
             return ['status' => 'unlocked'];
         }
 
-        // Jika transaksi sukses lebih baru daripada waktu selesai ujian terakhir, akses TERBUKA.
-        if ($lastSuccess->updated_at > $lastFinishedSession->end_time) {
+        // Jika waktu pembelian paket (yang valid) LEBIH BARU daripada waktu selesai ujian terakhir, 
+        // berarti dia sudah "Beli Lagi", maka akses TERBUKA.
+        if ($lastTransactionTime > $lastFinishedSession->end_time) {
             return ['status' => 'unlocked'];
         }
 
-        // Selain itu, akses TERKUNCI (Berarti transaksi lama sudah "dipakai" ujian).
-        return ['status' => 'locked', 'message' => 'Sesi ujian telah selesai. Beli lagi untuk mencoba ulang.'];
+        // Selain itu, akses TERKUNCI (Berarti kuota transaksi sudah "dipakai" / hangus).
+        return ['status' => 'locked', 'message' => 'Sesi ujian telah selesai. Beli lagi paket ini untuk mencoba ulang.'];
     }
 
     // Halaman "Gerbang" sebelum masuk ke soal

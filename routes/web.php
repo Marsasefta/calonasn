@@ -52,8 +52,12 @@ Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallba
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');    
 
+    
+    // Rute halaman Pilih Paket
+    Route::get('/pilih-paket', [TransactionController::class, 'pilihPaket'])->name('user.pilih-paket');
+
     // Transaksi dan pembayaran
-    Route::get('/checkout', [TransactionController::class, 'checkout'])->name('checkout');
+    Route::get('/checkout/{id?}', [TransactionController::class, 'checkout'])->name('checkout');
     Route::post('/transaction/check-promo', [App\Http\Controllers\TransactionController::class, 'checkPromo'])->name('transaction.checkPromo');
     Route::post('/checkout/process', [TransactionController::class, 'process'])->name('checkout.process');
     // --- TAMBAHKAN DUA BARIS BARU INI ---

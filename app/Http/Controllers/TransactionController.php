@@ -6,22 +6,39 @@ use App\Models\PromoCode; // Pastikan model PromoCode di-import di paling atas
 use App\Notifications\AdminPaymentNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Models\Transaction;
+use App\Models\Tryout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 
 class TransactionController extends Controller
 {
-    // Menampilkan halaman detail paket dan tombol beli
-    public function checkout()
+    public function checkout(Request $request, $id = null)
     {
-        // Ganti dengan mengambil data dari tabel Tryout jika sudah ada
-        $tryout = (object) [
-            'id' => 1,
-            'title' => 'Paket Tryout CPNS Premium',
-            'price' => 20000
-        ];
+        // 1. Prioritas Utama: Jika ada ID (Contoh: /checkout/3)
+        if ($id) {
+            // findOrFail akan otomatis menampilkan halaman 404 
+            // jika user sengaja mengubah URL ke ID yang tidak ada di database
+            $tryout = Tryout::findOrFail($id);
+        } 
+        // 2. Jika tidak ada ID, cek query string (Contoh: /checkout?package=tryout-pdf)
+        elseif ($request->has('package')) {
+            $package = $request->query('package');
 
+            if ($package === 'tryout-pdf') {
+                $tryout = Tryout::findOrFail(2);
+            } elseif ($package === 'upgrade') { // Opsional: jika kamu mau akses ID 3 via ?package=upgrade
+                $tryout = Tryout::findOrFail(3);
+            } else {
+                $tryout = Tryout::findOrFail(1);
+            }
+        } 
+        // 3. Jika nyasar tanpa parameter
+        else {
+            $tryout = Tryout::findOrFail(1); 
+        }
+
+        // Jika tryout ditemukan, lempar ke view
         return view('user.payment.checkout', compact('tryout'));
     }
 
@@ -272,6 +289,21 @@ class TransactionController extends Controller
             'promo_id' => $promo->id,
             'discount_amount' => $promo->discount_amount,
             'message' => 'Kode promo berhasil diterapkan!'
-    ]);
-}
+        ]);
+    }
+
+    public function pilihPaket()
+    {
+        $user = auth()->user();
+
+        // Cek status kepemilikan paket
+        $hasPaket1 = Transaction::where('user_id', $user->id)->where('tryout_id', 1)->where('status', 'Success')->exists();
+        $hasPaket3 = Transaction::where('user_id', $user->id)->where('tryout_id', 3)->where('status', 'Success')->exists();
+        $hasPaketLengkap = Transaction::where('user_id', $user->id)->where('tryout_id', 2)->where('status', 'Success')->exists();
+
+        // User dianggap sudah punya Paket Lengkap jika beli langsung (ID 2) atau hasil upgrade (ID 1 + 3)
+        $isLengkap = $hasPaketLengkap || ($hasPaket1 && $hasPaket3);
+
+        return view('user.payment.pilih-paket', compact('hasPaket1', 'isLengkap'));
+    }
 }

@@ -46,23 +46,28 @@ class DashboardController extends Controller
             return view('admin.dashboard', compact('totalUsers', 'totalQuestions', 'revenueThisMonth', 'onlineUsers'));
         }
 
-        // ==========================================
-        // LOGIKA DASHBOARD UNTUK USER BIASA
-        // ==========================================
+       // 1. Cek semua status paket secara independen
+        $hasPaket1 = Transaction::where('user_id', $user->id)->where('tryout_id', 1)->where('status', 'Success')->exists();
+        $hasPaket2 = Transaction::where('user_id', $user->id)->where('tryout_id', 2)->where('status', 'Success')->exists();
+        $hasPaket3 = Transaction::where('user_id', $user->id)->where('tryout_id', 3)->where('status', 'Success')->exists();
+
+        // 2. Tentukan status badge berdasarkan kombinasi
+        // Lengkap jika: Beli Paket 2 (Langsung) OR (Beli Paket 1 AND Beli Paket 3)
+        $isPaketLengkapPdf = $hasPaket2 || ($hasPaket1 && $hasPaket3);
         
-        // 1. Ambil data tryout premium (Contoh: mengambil Tryout ID 1, atau fallback ke tryout pertama)
+        // Mandiri jika: Beli Paket 1 AND BELUM punya Paket 3 AND BELUM punya Paket 2
+        $isPaketTryoutSaja = $hasPaket1 && !$hasPaket3 && !$hasPaket2;
+
+        // B. Data Tryout
         $tryout = Tryout::find(1) ?? Tryout::first();
 
-        // 2. Siapkan variabel access default
+        // C. Cek Akses Ujian
         $access = ['status' => 'locked', 'message' => 'Silakan beli paket premium.'];
-
-        // 3. Jika data tryout ditemukan, cek aksesnya menggunakan fungsi dari UjianController
         if ($tryout) {
             $ujianController = app(UjianController::class);
             $access = $ujianController->checkUserAccess($tryout->id);
         }
 
-        // 4. Lempar variabel ke view dashboard user
-        return view('user.dashboard', compact('tryout', 'access'));
+        return view('user.dashboard', compact('tryout', 'access', 'isPaketTryoutSaja', 'isPaketLengkapPdf'));
     }
 }

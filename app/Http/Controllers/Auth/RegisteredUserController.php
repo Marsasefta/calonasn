@@ -18,8 +18,13 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(Request $request)
     {
+        // Jika ada parameter 'package' di URL, simpan ke dalam session
+        if ($request->has('package')) {
+            session(['selected_package' => $request->package]);
+        }
+
         return view('auth.register');
     }
 
@@ -56,8 +61,21 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
+        // Proses registrasi user baru selesai...
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // CEK APAKAH USER SEBELUMNYA MEMILIH PAKET
+        if (session()->has('selected_package')) {
+            $package = session('selected_package');
+            
+            // Hapus session agar tidak tersimpan terus menerus
+            session()->forget('selected_package'); 
+
+            // Alihkan langsung ke halaman checkout sesuai paket pilihan mereka
+            return redirect()->route('checkout', ['package' => $package]);
+        }
+
+        // Jika mendaftar biasa tanpa pilih paket dari homepage, arahkan ke dashboard/materi gratis
+        return redirect()->route('dashboard');
     }
 }
