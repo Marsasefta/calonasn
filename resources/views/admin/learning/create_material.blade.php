@@ -27,7 +27,7 @@
                   <textarea name="content" id="content" class="form-control" rows="8"></textarea>
                 </div>
                 <div class="mb-3 form-check">
-                  <input type="checkbox" name="is_locked" class="form-check-input" id="is_locked">
+                  <input type="checkbox" name="is_locked" value="1" class="form-check-input" id="is_locked">
                   <label class="form-check-label" for="is_locked">Kunci (Premium)</label>
                 </div>
                 <div class="mb-3">
