@@ -36,13 +36,21 @@
                         <div class="mb-4">
                             <span class="badge bg-secondary px-3 py-1 rounded-pill mb-2 fw-semibold">Paket
                                 Latihan</span>
-                            <h3 class="fw-bold text-dark mb-1">Tryout Mandiri</h3>
+
+                            <h3 class="fw-bold text-dark mb-1">{{ $tryoutMandiri->title ?? 'Tryout Mandiri' }}</h3>
                             <p class="text-muted small">Fokus latih manajemen waktu dengan simulasi CAT.</p>
 
-                            <div class="mt-4">
+                            <div class="mt-4 p-3 bg-light rounded-3 border">
+                                <p class="text-muted small mb-1">Investasi Normal:</p>
                                 <p class="display-5 fw-bolder text-dark mb-0">
                                     Rp 20.000 <span class="fs-6 text-muted fw-normal">/selamanya</span>
                                 </p>
+                                <div class="mt-2 pt-2 border-top border-secondary border-opacity-25">
+                                    <span class="badge bg-success text-white px-2 py-1 small">
+                                        <i class="bi bi-tag-fill me-1"></i> + Kode ASN2026 jadi: <strong
+                                            class="fs-6">Rp 13.000</strong>
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -89,22 +97,36 @@
                         <div class="mb-4 mt-2">
                             <span class="badge bg-primary-soft text-primary px-3 py-1 rounded-pill mb-2 fw-bold">Paket
                                 Super Lengkap</span>
-                            <h3 class="fw-bold text-dark mb-1">Tryout + Materi Full</h3>
+
+                            <h3 class="fw-bold text-dark mb-1">{{ $tryoutLengkap->title ?? 'Tryout + Materi Full' }}
+                            </h3>
                             <p class="text-muted small">Solusi instan: Paham materinya, taklukkan simulasinya.</p>
 
                             <div class="mt-4">
                                 @if ($hasPaket1 && !$isLengkap)
-                                    <span class="text-muted small text-decoration-line-through d-block mb-1">Rp
-                                        49.000</span>
-                                    <p class="display-5 fw-bolder text-primary mb-0">
-                                        Rp 29.000 <span class="fs-6 text-muted fw-normal">/selamanya</span>
-                                    </p>
-                                    <span class="badge bg-warning text-dark mt-2"><i
-                                            class="bi bi-lightning-charge-fill"></i> Harga Khusus Upgrade</span>
+                                    <div
+                                        class="p-3 bg-warning bg-opacity-10 rounded-3 border border-warning border-opacity-25">
+                                        <p class="text-muted small mb-1">Harga Normal: Rp 49.000</p>
+                                        <p class="display-5 fw-bolder text-dark mb-0">
+                                            Rp 29.000 <span class="fs-6 text-muted fw-normal">/selamanya</span>
+                                        </p>
+                                        <span class="badge bg-warning text-dark mt-2 shadow-sm">
+                                            <i class="bi bi-lightning-charge-fill"></i> Harga Khusus Upgrade
+                                        </span>
+                                    </div>
                                 @else
-                                    <p class="display-5 fw-bolder text-primary mb-0">
-                                        Rp 49.000 <span class="fs-6 text-muted fw-normal">/selamanya</span>
-                                    </p>
+                                    <div class="p-3 bg-primary-soft rounded-3 border border-primary border-opacity-25">
+                                        <p class="text-primary small mb-1 fw-semibold">Investasi Normal:</p>
+                                        <p class="display-5 fw-bolder text-primary mb-0">
+                                            Rp 49.000 <span class="fs-6 text-muted fw-normal">/selamanya</span>
+                                        </p>
+                                        <div class="mt-2 pt-2 border-top border-primary border-opacity-25">
+                                            <span class="badge bg-primary text-white px-2 py-1 small shadow-sm">
+                                                <i class="bi bi-tag-fill me-1"></i> + Kode ASN2026 jadi: <strong
+                                                    class="fs-6 text-warning">Rp 42.000</strong>
+                                            </span>
+                                        </div>
+                                    </div>
                                 @endif
                             </div>
                         </div>

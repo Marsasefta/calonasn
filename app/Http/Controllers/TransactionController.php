@@ -296,7 +296,7 @@ class TransactionController extends Controller
     {
         $user = auth()->user();
 
-        // Cek status kepemilikan paket
+        // 1. Cek status kepemilikan paket
         $hasPaket1 = Transaction::where('user_id', $user->id)->where('tryout_id', 1)->where('status', 'Success')->exists();
         $hasPaket3 = Transaction::where('user_id', $user->id)->where('tryout_id', 3)->where('status', 'Success')->exists();
         $hasPaketLengkap = Transaction::where('user_id', $user->id)->where('tryout_id', 2)->where('status', 'Success')->exists();
@@ -304,6 +304,17 @@ class TransactionController extends Controller
         // User dianggap sudah punya Paket Lengkap jika beli langsung (ID 2) atau hasil upgrade (ID 1 + 3)
         $isLengkap = $hasPaketLengkap || ($hasPaket1 && $hasPaket3);
 
-        return view('user.payment.pilih-paket', compact('hasPaket1', 'isLengkap'));
+        // 2. Ambil Data Judul Paket dari Database
+        // Menggunakan path lengkap \App\Models\Tryout untuk berjaga-jaga jika kamu belum menambahkan 'use App\Models\Tryout;' di atas
+        $tryoutMandiri = Tryout::find(1);
+        $tryoutLengkap = Tryout::find(2);
+
+        // 3. Lempar semua variabel ke view
+        return view('user.payment.pilih-paket', compact(
+            'hasPaket1', 
+            'isLengkap', 
+            'tryoutMandiri', 
+            'tryoutLengkap'
+        ));
     }
 }

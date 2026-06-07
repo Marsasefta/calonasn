@@ -62,26 +62,28 @@
                                     <p class="text-muted">{{ $access['message'] }}</p>
                                 </div>
 
-                                @if (str_contains($access['message'], 'beli'))
+                                {{-- PERBAIKAN LOGIKA: Cek kata 'ulang' atau 'selesai' untuk mendeteksi user yang mau retry --}}
+                                @if (str_contains(strtolower($access['message']), 'ulang') || str_contains(strtolower($access['message']), 'selesai'))
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ route('checkout', $tryout->id) }}" class="btn btn-outline-primary">
+                                            <i class="fe fe-refresh-cw me-1"></i> Beli Kuota Baru (Mengulang)
+                                        </a>
+                                        <a href="{{ route('dashboard') }}" class="btn btn-link text-muted">
+                                            Kembali ke Dashboard
+                                        </a>
+                                    </div>
+                                @else
+                                    {{-- Jika tidak ada kata 'ulang', berarti dia user baru yang belum pernah beli paket ini --}}
                                     <div class="bg-light p-3 rounded mb-4">
-                                        <span class="text-muted d-block small">Harga Paket:</span>
+                                        <span class="text-muted d-block small">Investasi Paket:</span>
                                         <h4 class="fw-bold text-primary mb-0">Rp
                                             {{ number_format($tryout->price, 0, ',', '.') }}</h4>
                                     </div>
 
                                     <a href="{{ route('checkout', $tryout->id) }}"
                                         class="btn btn-primary btn-lg w-100 shadow-sm">
-                                        <i class="fe fe-shopping-cart me-2"></i> Beli Akses Sekarang
+                                        <i class="fe fe-shopping-cart me-2"></i> Amankan Akses Sekarang
                                     </a>
-                                @else
-                                    <div class="d-grid gap-2">
-                                        <a href="{{ route('checkout', $tryout->id) }}" class="btn btn-outline-primary">
-                                            Beli Lagi untuk Mengulang
-                                        </a>
-                                        <a href="{{ route('dashboard') }}" class="btn btn-link text-muted">
-                                            Kembali ke Dashboard
-                                        </a>
-                                    </div>
                                 @endif
                             @endif
 
