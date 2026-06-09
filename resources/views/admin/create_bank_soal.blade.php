@@ -123,6 +123,17 @@
                                         </div>
                                     </div>
 
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Pilihan E</label>
+                                            <input type="text" name="option_e" class="form-control" value="{{ old('option_e') }}" required />
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Point E</label>
+                                            <input type="number" name="point_e" class="form-control" value="{{ old('point_e', 0) }}" min="0" max="5" required />
+                                        </div>
+                                    </div>
+
                                     <button type="submit" class="btn btn-primary" @if($tryouts->isEmpty() || $categories->isEmpty()) disabled @endif>Simpan Bank Soal</button>
                                 </div>
                             </div>

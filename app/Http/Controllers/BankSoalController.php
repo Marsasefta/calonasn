@@ -37,6 +37,8 @@ class BankSoalController extends Controller
             'point_c' => 'required|integer|min:0|max:5',
             'option_d' => 'required|string',
             'point_d' => 'required|integer|min:0|max:5',
+            'option_e' => 'required|string',
+            'point_e' => 'required|integer|min:0|max:5',
         ]);
 
         $question = Question::create([
@@ -65,6 +67,11 @@ class BankSoalController extends Controller
             'question_id' => $question->id,
             'option_text' => $validated['option_d'],
             'point' => $validated['point_d'],
+        ]);
+        QuestionOption::create([
+            'question_id' => $question->id,
+            'option_text' => $validated['option_e'],
+            'point' => $validated['point_e'],
         ]);
 
         return back()->with('success', 'Bank soal berhasil disimpan.');
@@ -108,6 +115,8 @@ class BankSoalController extends Controller
             'point_c' => 'required|integer|min:0|max:5',
             'option_d' => 'required|string',
             'point_d' => 'required|integer|min:0|max:5',
+            'option_e' => 'required|string',
+            'point_e' => 'required|integer|min:0|max:5',
         ]);
 
         $question = Question::findOrFail($id);
@@ -120,11 +129,17 @@ class BankSoalController extends Controller
         ]);
 
         $options = $question->options()->get();
-        $optionLetters = ['a', 'b', 'c', 'd'];
+        $optionLetters = ['a', 'b', 'c', 'd', 'e'];
         
         foreach ($optionLetters as $index => $letter) {
             if (isset($options[$index])) {
                 $options[$index]->update([
+                    'option_text' => $validated['option_' . $letter],
+                    'point' => $validated['point_' . $letter],
+                ]);
+            } else {
+                QuestionOption::create([
+                    'question_id' => $question->id,
                     'option_text' => $validated['option_' . $letter],
                     'point' => $validated['point_' . $letter],
                 ]);
