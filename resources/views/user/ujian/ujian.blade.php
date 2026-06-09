@@ -57,27 +57,59 @@
                                     @php $nomor = $index + 1; @endphp
                                     <div class="soal-container" id="soal-{{ $nomor }}"
                                         style="{{ $index == 0 ? 'display:block;' : 'display:none;' }}">
+
                                         <div class="d-flex justify-content-between mb-3">
                                             <span
                                                 class="badge bg-primary fs-6">{{ $q->category->name ?? 'Kategori' }}</span>
                                             <span class="fw-bold">Soal Ke-{{ $nomor }}</span>
                                         </div>
 
-                                        <h5 class="mb-4 lh-base">{{ $q->question_text }}</h5>
+                                        @if ($q->question_text)
+                                            <h5 class="mb-4 lh-base">{{ $q->question_text }}</h5>
+                                        @endif
+
+                                        @if ($q->question_image)
+                                            <div class="mb-4 text-center">
+                                                <img src="{{ asset('storage/' . $q->question_image) }}"
+                                                    class="img-fluid rounded shadow-sm border" alt="Gambar Soal"
+                                                    style="max-height: 250px;">
+                                            </div>
+                                        @endif
 
                                         <div class="options">
                                             @foreach ($q->options as $optIndex => $opt)
                                                 <div class="form-check mb-3">
-                                                    <input class="form-check-input opsi-radio" type="radio"
+                                                    <input class="form-check-input opsi-radio mt-3" type="radio"
                                                         name="jawaban[{{ $q->id }}]" value="{{ $opt->id }}"
                                                         id="opt-{{ $q->id }}-{{ $opt->id }}"
                                                         data-ui-nomor="{{ $nomor }}"
                                                         data-db-id="{{ $q->id }}"
                                                         {{ isset($tempAnswers[$q->id]) && $tempAnswers[$q->id] == $opt->id ? 'checked' : '' }}>
-                                                    <label class="form-check-label w-100 p-2 border rounded"
-                                                        style="cursor: pointer;"
+
+                                                    <label
+                                                        class="form-check-label w-100 p-3 border rounded shadow-sm hover-bg-light"
+                                                        style="cursor: pointer; transition: 0.2s;"
                                                         for="opt-{{ $q->id }}-{{ $opt->id }}">
-                                                        {{ chr(65 + $optIndex) }}. {{ $opt->option_text }}
+
+                                                        <div class="d-flex align-items-start">
+                                                            <span
+                                                                class="me-3 fw-bold fs-5">{{ chr(65 + $optIndex) }}.</span>
+                                                            <div class="flex-grow-1 mt-1">
+                                                                @if ($opt->option_text)
+                                                                    <div class="lh-base">{{ $opt->option_text }}</div>
+                                                                @endif
+
+                                                                @if ($opt->option_image)
+                                                                    <div class="mt-2">
+                                                                        <img src="{{ asset('storage/' . $opt->option_image) }}"
+                                                                            class="img-fluid rounded border"
+                                                                            alt="Opsi Jawaban"
+                                                                            style="max-height: 150px;">
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+
                                                     </label>
                                                 </div>
                                             @endforeach

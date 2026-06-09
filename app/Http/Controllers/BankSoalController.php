@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Imports\SoalImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 use App\Models\Category;
 use App\Models\Question;
@@ -24,57 +25,62 @@ class BankSoalController extends Controller
 
     public function storeBankSoal(Request $request)
     {
+        // 1. Validasi Input
         $validated = $request->validate([
-            'tryout_id' => 'required|exists:tryouts,id',
-            'category_id' => 'required|exists:categories,id',
-            'question_text' => 'required|string',
-            'discussion' => 'nullable|string',
-            'option_a' => 'required|string',
-            'point_a' => 'required|integer|min:0|max:5',
-            'option_b' => 'required|string',
-            'point_b' => 'required|integer|min:0|max:5',
-            'option_c' => 'required|string',
-            'point_c' => 'required|integer|min:0|max:5',
-            'option_d' => 'required|string',
-            'point_d' => 'required|integer|min:0|max:5',
-            'option_e' => 'required|string',
-            'point_e' => 'required|integer|min:0|max:5',
+            'tryout_id'      => 'required|exists:tryouts,id',
+            'category_id'    => 'required|exists:categories,id',
+            
+            // UBAH: question_text jadi nullable agar bisa soal murni gambar
+            'question_text'  => 'nullable|string', 
+            'question_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
+            'discussion'     => 'nullable|string',
+            
+            // Validasi Opsi (Teks nullable, point tetap required)
+            'option_a' => 'nullable|string', 'image_a' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 'point_a' => 'required|integer|min:0|max:5',
+            'option_b' => 'nullable|string', 'image_b' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 'point_b' => 'required|integer|min:0|max:5',
+            'option_c' => 'nullable|string', 'image_c' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 'point_c' => 'required|integer|min:0|max:5',
+            'option_d' => 'nullable|string', 'image_d' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 'point_d' => 'required|integer|min:0|max:5',
+            'option_e' => 'nullable|string', 'image_e' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 'point_e' => 'required|integer|min:0|max:5',
         ]);
 
+        // 2. Proses Upload Gambar Soal Utama (Jika ada)
+        $questionImagePath = null;
+        if ($request->hasFile('question_image')) {
+            $questionImagePath = $request->file('question_image')->store('soal_images', 'public');
+        }
+
+        // 3. Simpan Soal ke Database
         $question = Question::create([
-            'tryout_id' => $validated['tryout_id'],
-            'category_id' => $validated['category_id'],
-            'question_text' => $validated['question_text'],
-            'discussion' => $validated['discussion'] ?? null,
+            'tryout_id'      => $validated['tryout_id'],
+            'category_id'    => $validated['category_id'],
+            // PERBAIKAN: Gunakan ?? '' agar jika null, tersimpan sebagai string kosong
+            'question_text'  => $validated['question_text'] ?? '', 
+            'question_image' => $questionImagePath,
+            'discussion'     => $validated['discussion'] ?? null,
         ]);
 
-        QuestionOption::create([
-            'question_id' => $question->id,
-            'option_text' => $validated['option_a'],
-            'point' => $validated['point_a'],
-        ]);
-        QuestionOption::create([
-            'question_id' => $question->id,
-            'option_text' => $validated['option_b'],
-            'point' => $validated['point_b'],
-        ]);
-        QuestionOption::create([
-            'question_id' => $question->id,
-            'option_text' => $validated['option_c'],
-            'point' => $validated['point_c'],
-        ]);
-        QuestionOption::create([
-            'question_id' => $question->id,
-            'option_text' => $validated['option_d'],
-            'point' => $validated['point_d'],
-        ]);
-        QuestionOption::create([
-            'question_id' => $question->id,
-            'option_text' => $validated['option_e'],
-            'point' => $validated['point_e'],
-        ]);
+        // 4. Simpan Opsi Jawaban menggunakan Looping
+        $options = ['a', 'b', 'c', 'd', 'e'];
 
-        return back()->with('success', 'Bank soal berhasil disimpan.');
+        foreach ($options as $opt) {
+            $optionImagePath = null;
+
+            // Proses Upload Gambar Opsi (Jika ada)
+            if ($request->hasFile("image_{$opt}")) {
+                $optionImagePath = $request->file("image_{$opt}")->store('opsi_images', 'public');
+            }
+
+            // Simpan ke tabel QuestionOption
+            QuestionOption::create([
+                'question_id'  => $question->id,
+                // PERBAIKAN: Gunakan ?? '' agar tidak error NOT NULL di database
+                'option_text'  => $validated["option_{$opt}"] ?? '', 
+                'option_image' => $optionImagePath,
+                'point'        => $validated["point_{$opt}"],
+            ]);
+        }
+
+        return back()->with('success', 'Bank soal beserta gambar berhasil disimpan.');
     }
 
     public function listBankSoal()
@@ -102,51 +108,81 @@ class BankSoalController extends Controller
 
     public function updateBankSoal(Request $request, $id)
     {
+        // 1. Validasi Input
         $validated = $request->validate([
-            'tryout_id' => 'required|exists:tryouts,id',
-            'category_id' => 'required|exists:categories,id',
-            'question_text' => 'required|string',
-            'discussion' => 'nullable|string',
-            'option_a' => 'required|string',
-            'point_a' => 'required|integer|min:0|max:5',
-            'option_b' => 'required|string',
-            'point_b' => 'required|integer|min:0|max:5',
-            'option_c' => 'required|string',
-            'point_c' => 'required|integer|min:0|max:5',
-            'option_d' => 'required|string',
-            'point_d' => 'required|integer|min:0|max:5',
-            'option_e' => 'required|string',
-            'point_e' => 'required|integer|min:0|max:5',
+            'tryout_id'      => 'required|exists:tryouts,id',
+            'category_id'    => 'required|exists:categories,id',
+            'question_text'  => 'nullable|string',
+            'question_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'discussion'     => 'nullable|string',
+            
+            // Teks dibuat nullable, point wajib
+            'option_a' => 'nullable|string', 'image_a' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 'point_a' => 'required|integer|min:0|max:5',
+            'option_b' => 'nullable|string', 'image_b' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 'point_b' => 'required|integer|min:0|max:5',
+            'option_c' => 'nullable|string', 'image_c' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 'point_c' => 'required|integer|min:0|max:5',
+            'option_d' => 'nullable|string', 'image_d' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 'point_d' => 'required|integer|min:0|max:5',
+            'option_e' => 'nullable|string', 'image_e' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 'point_e' => 'required|integer|min:0|max:5',
         ]);
 
         $question = Question::findOrFail($id);
-        
+
+        // 2. Cek & Update Gambar Soal Utama
+        $questionImagePath = $question->question_image; // Bawaan path lama
+
+        if ($request->hasFile('question_image')) {
+            // Jika ada gambar baru, hapus gambar lama dari storage biar nggak nyampah
+            if ($question->question_image) {
+                Storage::disk('public')->delete($question->question_image);
+            }
+            // Simpan gambar baru
+            $questionImagePath = $request->file('question_image')->store('soal_images', 'public');
+        }
+
+        // 3. Update Soal di Database
         $question->update([
-            'tryout_id' => $validated['tryout_id'],
-            'category_id' => $validated['category_id'],
-            'question_text' => $validated['question_text'],
-            'discussion' => $validated['discussion'] ?? null,
+            'tryout_id'      => $validated['tryout_id'],
+            'category_id'    => $validated['category_id'],
+            'question_text'  => $validated['question_text'] ?? '',
+            'question_image' => $questionImagePath,
+            'discussion'     => $validated['discussion'] ?? null,
         ]);
 
-        $options = $question->options()->get();
+        // 4. Update Opsi Jawaban
+        $options = $question->options()->orderBy('id')->get();
         $optionLetters = ['a', 'b', 'c', 'd', 'e'];
         
         foreach ($optionLetters as $index => $letter) {
-            if (isset($options[$index])) {
-                $options[$index]->update([
-                    'option_text' => $validated['option_' . $letter],
-                    'point' => $validated['point_' . $letter],
+            $option = $options[$index] ?? null;
+            $optionImagePath = $option ? $option->option_image : null; // Path lama
+
+            // Cek jika ada upload gambar baru untuk opsi ini
+            if ($request->hasFile("image_{$letter}")) {
+                // Hapus gambar lama jika ada
+                if ($option && $option->option_image) {
+                    Storage::disk('public')->delete($option->option_image);
+                }
+                // Simpan gambar baru
+                $optionImagePath = $request->file("image_{$letter}")->store('opsi_images', 'public');
+            }
+
+            // Update jika opsi sudah ada, Create jika belum ada
+            if ($option) {
+                $option->update([
+                    'option_text'  => $validated['option_' . $letter] ?? '',
+                    'option_image' => $optionImagePath,
+                    'point'        => $validated['point_' . $letter],
                 ]);
             } else {
                 QuestionOption::create([
-                    'question_id' => $question->id,
-                    'option_text' => $validated['option_' . $letter],
-                    'point' => $validated['point_' . $letter],
+                    'question_id'  => $question->id,
+                    'option_text'  => $validated['option_' . $letter] ?? '',
+                    'option_image' => $optionImagePath,
+                    'point'        => $validated['point_' . $letter],
                 ]);
             }
         }
 
-        return redirect()->route('admin.list-bank-soal')->with('success', 'Bank soal berhasil diperbarui.');
+        return redirect()->route('admin.list-bank-soal')->with('success', 'Bank soal beserta gambar berhasil diperbarui.');
     }
 
     public function destroyBankSoal($id)
@@ -199,163 +235,5 @@ class BankSoalController extends Controller
             // Menangkap error jika file rusak atau sistem down
             return back()->withErrors(['file' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
         }
-    }
-
-
-    // private function importFromCsv($file, $tryout_id, $category_id, &$errors)
-    // {
-    //     $imported = 0;
-    //     $handle = fopen($file->getRealPath(), 'r');
-    //     $header = fgetcsv($handle);
-    //     $row = 1;
-
-    //     while (($data = fgetcsv($handle)) !== false) {
-    //         $row++;
-
-    //         if (count($data) < 10) {
-    //             $errors[] = "Baris $row: Kolom tidak lengkap (diperlukan minimal 10 kolom: pertanyaan, 4 pilihan, 4 poin, pembahasan)";
-    //             continue;
-    //         }
-
-    //         try {
-    //             $category = Category::find($category_id);
-    //             $isTkp = $category && strtolower($category->name) === 'tkp';
-
-    //             // Ambil poin pilihan terlebih dahulu dan validasi
-    //             $optionPoints = [];
-    //             for ($i = 0; $i < 4; $i++) {
-    //                 $p = (int)($data[$i + 5] ?? 0);
-    //                 $optionPoints[] = $p;
-    //             }
-
-    //             if ($isTkp) {
-    //                 foreach ($optionPoints as $p) {
-    //                     if ($p < 1 || $p > 5) {
-    //                         $errors[] = "Baris $row: Untuk kategori TKP, bobot setiap pilihan harus antara 1 dan 5.";
-    //                         continue 2;
-    //                     }
-    //                 }
-    //             } else {
-    //                 foreach ($optionPoints as $p) {
-    //                     if ($p < 0 || $p > 5) {
-    //                         $errors[] = "Baris $row: Point setiap pilihan harus antara 0 dan 5.";
-    //                         continue 2;
-    //                     }
-    //                 }
-    //             }
-
-    //             $question = Question::create([
-    //                 'tryout_id' => $tryout_id,
-    //                 'category_id' => $category_id,
-    //                 'question_text' => trim($data[0]),
-    //                 'discussion' => !empty($data[9]) ? trim($data[9]) : null,
-    //             ]);
-
-    //             for ($i = 0; $i < 4; $i++) {
-    //                 QuestionOption::create([
-    //                     'question_id' => $question->id,
-    //                     'option_text' => trim($data[$i + 1]),
-    //                     'point' => $optionPoints[$i],
-    //                 ]);
-    //             }
-
-    //             $imported++;
-    //         } catch (\Exception $e) {
-    //             $errors[] = "Baris $row: " . $e->getMessage();
-    //         }
-    //     }
-
-    //     fclose($handle);
-    //     return $imported;
-    // }
-
-    // private function importFromExcel($file, $tryout_id, $category_id, &$errors)
-    // {
-    //     $imported = 0;
-        
-    //     try {
-    //         // Simple Excel reading using native PHP
-    //         require_once storage_path('app/vendor/autoload.php');
-            
-    //         // Alternative: read xlsx as zip and parse XML
-    //         $zip = new \ZipArchive();
-    //         if ($zip->open($file->getRealPath()) === true) {
-    //             $xml = $zip->getFromName('xl/worksheets/sheet1.xml');
-    //             $zip->close();
-                
-    //             // Parse XML and extract data
-    //             $xmlObject = simplexml_load_string($xml);
-                
-    //             $row = 0;
-    //             foreach ($xmlObject->sheetData->row as $rowElement) {
-    //                 $row++;
-                    
-    //                 if ($row === 1) continue; // Skip header
-                    
-    //                 $cells = [];
-    //                 foreach ($rowElement->c as $cell) {
-    //                     $value = (string)$cell->v;
-    //                     $cells[] = $value;
-    //                 }
-
-    //                 if (count($cells) < 10) {
-    //                     $errors[] = "Baris $row: Kolom tidak lengkap (diperlukan minimal 10 kolom: pertanyaan, 4 pilihan, 4 poin, pembahasan)";
-    //                     continue;
-    //                 }
-
-    //                 try {
-    //                     $category = Category::find($category_id);
-    //                     $isTkp = $category && strtolower($category->name) === 'tkp';
-
-    //                     // Ambil poin pilihan terlebih dahulu dan validasi
-    //                     $optionPoints = [];
-    //                     for ($i = 0; $i < 4; $i++) {
-    //                         $p = (int)($cells[$i + 5] ?? 0);
-    //                         $optionPoints[] = $p;
-    //                     }
-
-    //                     if ($isTkp) {
-    //                         foreach ($optionPoints as $p) {
-    //                             if ($p < 1 || $p > 5) {
-    //                                 $errors[] = "Baris $row: Untuk kategori TKP, bobot setiap pilihan harus antara 1 dan 5.";
-    //                                 continue 2;
-    //                             }
-    //                         }
-    //                     } else {
-    //                         foreach ($optionPoints as $p) {
-    //                             if ($p < 0 || $p > 5) {
-    //                                 $errors[] = "Baris $row: Point setiap pilihan harus antara 0 dan 5.";
-    //                                 continue 2;
-    //                             }
-    //                         }
-    //                     }
-
-    //                     $question = Question::create([
-    //                         'tryout_id' => $tryout_id,
-    //                         'category_id' => $category_id,
-    //                         'question_text' => trim($cells[0]),
-    //                         'discussion' => !empty($cells[9]) ? trim($cells[9]) : null,
-    //                     ]);
-
-    //                     for ($i = 0; $i < 4; $i++) {
-    //                         QuestionOption::create([
-    //                             'question_id' => $question->id,
-    //                             'option_text' => trim($cells[$i + 1]),
-    //                             'point' => $optionPoints[$i],
-    //                         ]);
-    //                     }
-
-    //                     $imported++;
-    //                 } catch (\Exception $e) {
-    //                     $errors[] = "Baris $row: " . $e->getMessage();
-    //                 }
-    //             }
-    //         }
-    //     } catch (\Exception $e) {
-    //         // Fallback: treat as CSV
-    //         return $this->importFromCsv($file, $tryout_id, $category_id, $errors);
-    //     }
-
-    //     return $imported;
-    // }
+    }    
 }

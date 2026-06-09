@@ -126,11 +126,44 @@ class UjianController extends Controller
             $catTiu = Category::where('name', 'TIU')->value('id');
             $catTkp = Category::where('name', 'TKP')->value('id');
 
-            // Tarik Soal Acak per Kategori
+            // Tarik Soal Acak TWK (30) & TKP (45) seperti biasa
             $twkQuestions = Question::with(['options', 'category'])->where('category_id', $catTwk)->inRandomOrder()->limit(30)->get();
-            $tiuQuestions = Question::with(['options', 'category'])->where('category_id', $catTiu)->inRandomOrder()->limit(35)->get();
             $tkpQuestions = Question::with(['options', 'category'])->where('category_id', $catTkp)->inRandomOrder()->limit(45)->get();
 
+            // ==========================================
+            // LOGIKA KHUSUS TIU (MAX 5 GAMBAR)
+            // ==========================================
+            
+            // Tahap 1: Tarik Soal Gambar TIU (Maksimal 5)
+            $tiuImageQuestions = Question::with(['options', 'category'])
+                ->where('category_id', $catTiu)
+                ->where(function($query) {
+                    $query->whereNotNull('question_image')->where('question_image', '!=', '');
+                })
+                ->inRandomOrder()
+                ->limit(5)
+                ->get();
+
+            // Tahap 2: Hitung kekurangan kuota untuk pas 35 soal
+            $imageCount = $tiuImageQuestions->count();
+            $textNeeded = 35 - $imageCount;
+
+            // Tahap 3: Tarik Soal Teks TIU murni sesuai sisa kuota
+            $tiuTextQuestions = Question::with(['options', 'category'])
+                ->where('category_id', $catTiu)
+                ->where(function($query) {
+                    $query->whereNull('question_image')->orWhere('question_image', '');
+                })
+                ->inRandomOrder()
+                ->limit($textNeeded)
+                ->get();
+
+            // Tahap 4: Gabungkan gambar & teks, lalu ACAK ULANG (shuffle) agar posisinya natural
+            $tiuQuestions = $tiuImageQuestions->merge($tiuTextQuestions)->shuffle();
+            
+            // ==========================================
+
+            // Gabungkan Semua Kategori (TWK -> TIU -> TKP)
             $allQuestions = $twkQuestions->merge($tiuQuestions)->merge($tkpQuestions);
             $questionSequence = $allQuestions->pluck('id')->toArray();
             $questions = $allQuestions; 
@@ -151,8 +184,7 @@ class UjianController extends Controller
             Redis::expire($redisTimerKey, ($tryout->duration_minutes + 10) * 60);
 
         } else {
-            // --- LANJUTKAN SESI LAMA (Biar gak ganti soal kalau di-refresh) ---
-            
+            // --- LANJUTKAN SESI LAMA ---
             $sequenceJson = Redis::get($redisSequenceKey);
             $questionSequence = json_decode($sequenceJson, true);
 
@@ -171,13 +203,9 @@ class UjianController extends Controller
                 })->values();
         }
 
-        // Ambil sisa waktu dari Redis
+        // Ambil sisa waktu & state dari Redis
         $durationInSeconds = Redis::get($redisTimerKey) ?? ($tryout->duration_minutes * 60);
-
-        // Ambil jawaban sementara dari Redis
         $tempAnswers = Redis::hgetAll($redisAnswersKey) ?? [];
-
-        // Ambil status ragu-ragu dari Redis
         $tempRagu = Redis::hgetAll($redisRaguKey) ?? [];
 
         return view('user.ujian.ujian', compact('questions', 'durationInSeconds', 'tryout', 'tempAnswers', 'tempRagu'));

@@ -13,6 +13,7 @@ class Question extends Model
         'tryout_id',
         'category_id',
         'question_text',
+        'question_image',
         'discussion',
     ];
 

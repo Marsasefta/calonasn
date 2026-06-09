@@ -71,7 +71,17 @@
                                     </div>
                                 </div>
 
-                                <h5 class="lh-base mb-3">{{ $q->question_text }}</h5>
+                                @if ($q->question_text)
+                                    <h5 class="lh-base mb-3">{{ $q->question_text }}</h5>
+                                @endif
+
+                                @if ($q->question_image)
+                                    <div class="mb-4 text-center">
+                                        <img src="{{ asset('storage/' . $q->question_image) }}"
+                                            class="img-fluid rounded shadow-sm border" alt="Gambar Soal"
+                                            style="max-height: 250px;">
+                                    </div>
+                                @endif
 
                                 <div class="mb-4">
                                     @foreach ($q->options as $optIndex => $opt)
@@ -101,17 +111,36 @@
                                                         '<i class="fe fe-check-circle float-end text-white mt-1"></i>';
                                                 } elseif ($opt->id == $dijawab && !$isBenar) {
                                                     // Jawaban User yang Salah (Warna Merah Dicoret)
-                                                    $bgColor =
-                                                        'bg-danger text-white text-decoration-line-through border-danger';
+                                                    // Menghilangkan text-decoration-line-through agar gambar tidak ikut tercoret, diganti opacity
+                                                    $bgColor = 'bg-danger text-white border-danger opacity-75';
                                                     $icon = '<i class="fe fe-x-circle float-end text-white mt-1"></i>';
                                                 }
                                             }
                                         @endphp
 
-                                        <div class="p-2 border rounded mb-2 {{ $bgColor }}">
-                                            {{ chr(65 + $optIndex) }}. {{ $opt->option_text }}
-                                            {!! $poinLabel !!}
+                                        <div class="p-3 border rounded mb-2 {{ $bgColor }} clearfix">
                                             {!! $icon !!}
+                                            {!! $poinLabel !!}
+
+                                            <div class="d-flex align-items-start">
+                                                <span class="me-3 fw-bold">{{ chr(65 + $optIndex) }}.</span>
+                                                <div>
+                                                    @if ($opt->option_text)
+                                                        <div
+                                                            class="lh-base {{ $opt->id == $dijawab && !$isBenar && !$isTkp ? 'text-decoration-line-through' : '' }}">
+                                                            {{ $opt->option_text }}</div>
+                                                    @endif
+
+                                                    @if ($opt->option_image)
+                                                        <div class="mt-2">
+                                                            <img src="{{ asset('storage/' . $opt->option_image) }}"
+                                                                class="img-fluid rounded border bg-white p-1"
+                                                                alt="Opsi {{ chr(65 + $optIndex) }}"
+                                                                style="max-height: 120px;">
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
