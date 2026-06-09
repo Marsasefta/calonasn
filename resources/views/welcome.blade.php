@@ -436,68 +436,6 @@
                             @endguest
                         </div>
                     </div>
-
-                    {{-- <div class="col-lg-6 col-12 text-center">
-                        <div class="bg-light p-4 p-md-5 rounded-4 border shadow-sm">
-                            <div
-                                class="badge bg-danger-soft text-danger mb-3 px-3 py-2 fw-bold text-uppercase tracking-wider">
-                                ⚡ Penawaran Terbatas Minggu Ini
-                            </div>
-                            <!-- PERBAIKAN: Diubah ke H2 agar sejajar hierarkinya, class h3 agar ukuran visual tetap -->
-                            <h2 class="h3 text-dark fw-bold mb-1">Paket Tryout Mandiri Premium</h2>
-                            <p class="text-muted small mb-4">Akses penuh ke seluruh sistem penilaian otomatis & kunci
-                                pembahasan lengkap.</p>
-
-                            <div class="py-3 mb-4 bg-white rounded border">
-                                <span class="text-muted small text-decoration-line-through d-block mb-1">
-                                    Harga Promo: Rp 20.000
-                                </span>
-
-                                <p class="display-4 fw-bolder text-primary mb-0">
-                                    Rp 13.000
-                                    <span class="fs-4 text-muted fw-normal">/paket</span>
-                                </p>
-
-                                <span class="badge bg-success mt-2">
-                                    🎁 Setelah pakai kode ASN2026
-                                </span>
-                            </div>                           
-
-                            <ul class="list-unstyled text-start mx-auto my-4 d-flex flex-column gap-3 text-dark fw-medium"
-                                style="max-width: 380px;">
-                                <li class="d-flex align-items-start">
-                                    <i class="fe fe-check-circle text-success me-3 mt-1 fs-5"></i>
-                                    <span>110 Soal Standar <strong>HOTS Terbaru 2026</strong></span>
-                                </li>
-                                <li class="d-flex align-items-start">
-                                    <i class="fe fe-check-circle text-success me-3 mt-1 fs-5"></i>
-                                    <span>Skor Real-Time Kelulusan (TWK, TIU, TKP)</span>
-                                </li>
-                                <li class="d-flex align-items-start">
-                                    <i class="fe fe-check-circle text-success me-3 mt-1 fs-5"></i>
-                                    <span>Kunci Jawaban & Trik Pembahasan Cepat</span>
-                                </li>
-                                <li class="d-flex align-items-start">
-                                    <i class="fe fe-check-circle text-success me-3 mt-1 fs-5"></i>
-                                    <span>Akses Selamanya Tanpa Biaya Bulanan</span>
-                                </li>
-                            </ul>
-
-                            @guest
-                                <div class="d-grid mt-4">
-                                    <a href="{{ route('register') }}" class="btn btn-primary btn-lg py-3 fw-bold shadow">
-                                        Amankan Paket Premium Sekarang <i class="fe fe-arrow-right ms-2"></i>
-                                    </a>
-                                </div>
-                            @else
-                                <div class="d-grid mt-4">
-                                    <a href="{{ route('checkout') }}" class="btn btn-primary btn-lg py-3 fw-bold shadow">
-                                        Beli Sekarang via QRIS <i class="fe fe-arrow-right ms-2"></i>
-                                    </a>
-                                </div>
-                            @endguest
-                        </div>
-                    </div> --}}
                 </div>
             </div>
         </section>
@@ -510,9 +448,12 @@
                             class="badge bg-primary-soft text-primary px-3 py-2 fw-bold text-uppercase rounded-pill mb-3 shadow-sm">
                             <i class="bi bi-tags-fill me-1"></i> Investasi Sekali Bayar
                         </span>
-                        <h2 class="display-5 fw-bold text-dark mb-3">Pilih Senjata Tempurmu Menuju NIP 2026</h2>
-                        <p class="lead text-muted">Akses selamanya tanpa biaya langganan bulanan. Semakin cepat kamu mulai,
-                            semakin besar peluangmu lulus.</p>
+                        <h2 class="display-5 fw-bold text-dark mb-3">
+                            Persiapkan SKD CPNS 2026 dari Sekarang!
+                        </h2>
+                        <p class="lead text-muted">
+                            Pelajari materi SKD CPNS 2026, latihan soal, dan ikuti tryout CAT dengan pembahasan lengkap. Akses selamanya tanpa biaya langganan bulanan.
+                        </p>
 
                         <div class="alert alert-success d-inline-block px-4 py-2 mt-2 shadow-sm border border-success"
                             role="alert">
@@ -532,7 +473,7 @@
                                 <span class="badge bg-secondary px-3 py-1 rounded-pill mb-2 fw-semibold">
                                     Paket Latihan
                                 </span>
-                                <h3 class="fw-bold text-dark mb-1">Tryout Mandiri</h3>
+                                <h3 class="fw-bold text-dark mb-1">Tryout Premium CPNS</h3>
                                 <p class="text-muted small">Fokus latih manajemen waktu dengan simulasi CAT.</p>
 
                                 <div class="mt-4 p-3 bg-light rounded-3 border">
@@ -601,7 +542,8 @@
                                 <span class="badge bg-primary-soft text-primary px-3 py-1 rounded-pill mb-2 fw-bold">
                                     Paket Super Lengkap
                                 </span>
-                                <h3 class="fw-bold text-dark mb-1">Tryout + Materi Full</h3>
+                                <h3 class="fw-bold text-dark mb-1">Tryout Premium + Materi Pembelajaran (Micro Learning)
+                                </h3>
                                 <p class="text-muted small">Solusi instan: Paham materinya, taklukkan simulasinya.</p>
 
                                 <div class="mt-4 p-3 bg-primary-soft rounded-3 border border-primary border-opacity-25">
