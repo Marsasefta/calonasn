@@ -74,7 +74,6 @@
                                 <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg px-4">
                                     <i class="fe fe-home me-2"></i> Kembali ke Dashboard
                                 </a>
-                                <p>harga :{{ $transaction->amount }}</p>
                             </div>
 
                         </div>
@@ -85,7 +84,7 @@
         </div>
     </div>
 
-    
+
 
     {{-- SCRIPT AJAX POLLING UNTUK CEK STATUS OTOMATIS --}}
     <script>
@@ -133,12 +132,14 @@
     <script src="assets/js/vendors/chart.js"></script>
     <script src="assets/js/vendors/navbar-nav.js"></script>
 
-    <script>
-        fbq('track', 'Purchase', {
-            value: {{ $transaction->amount }},
-            currency: 'IDR'
-        });
-    </script>
+    @if (session('purchase_pixel'))
+        <script>
+            fbq('track', 'Purchase', {
+                value: {{ $transaction->amount }},
+                currency: 'IDR'
+            });
+        </script>
+    @endif
 
 </body>
 

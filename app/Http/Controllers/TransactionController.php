@@ -186,8 +186,11 @@ class TransactionController extends Controller
             Notification::route('mail', $adminEmails)->notify(new AdminPaymentNotification($transaction));
         }
         // --- END NOTIFIKASI ---
+        session()->flash('purchase_pixel', true);
 
-        return redirect()->route('payment.pending')->with('success', 'Bukti transfer berhasil diunggah.');
+        return redirect()
+            ->route('payment.pending')
+            ->with('success', 'Bukti transfer berhasil diunggah.');
     }
 
     public function success()
