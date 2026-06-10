@@ -202,7 +202,11 @@ class TransactionController extends Controller
 
     public function pending()
     {
-        return view('user.payment.payment-pending');
+        $transaction = Transaction::where('user_id', auth()->id())
+            ->latest()
+            ->first();
+
+        return view('user.payment.payment-pending', compact('transaction'));
     }
 
     public function history()
