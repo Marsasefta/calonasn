@@ -132,14 +132,13 @@
     <script src="assets/js/vendors/chart.js"></script>
     <script src="assets/js/vendors/navbar-nav.js"></script>
 
-    @if (session('purchase_pixel'))
-        <script>
-            fbq('track', 'Purchase', {
-                value: {{ $transaction->amount }},
-                currency: 'IDR'
-            });
-        </script>
-    @endif
+
+    <script>
+        fbq('track', 'Purchase', {
+            value: {{ $transaction->amount }},
+            currency: 'IDR'
+        });
+    </script>
 
 </body>
 
