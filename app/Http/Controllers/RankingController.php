@@ -2,20 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\ExamSession;
 
 class RankingController extends Controller
 {
     public function index()
     {
-        // Data dummy untuk simulasi ranking
-        $rankings = [
-            ['rank' => 1, 'name' => 'Siti Aminah', 'twk' => 145, 'tiu' => 170, 'tkp' => 183, 'total' => 498, 'time' => '82 Menit'],
-            ['rank' => 2, 'name' => 'Ahmad Fauzi', 'twk' => 140, 'tiu' => 165, 'tkp' => 180, 'total' => 485, 'time' => '85 Menit'],
-            ['rank' => 3, 'name' => 'Budi Santoso', 'twk' => 135, 'tiu' => 160, 'tkp' => 177, 'total' => 472, 'time' => '88 Menit'],
-            ['rank' => 4, 'name' => 'Dian Puspita', 'twk' => 140, 'tiu' => 150, 'tkp' => 180, 'total' => 470, 'time' => '90 Menit'],
-            ['rank' => 5, 'name' => 'Eko Prasetyo', 'twk' => 135, 'tiu' => 140, 'tkp' => 175, 'total' => 450, 'time' => '88 Menit'],
-        ];
+        $sessions = ExamSession::with('user')
+            ->whereNotNull('end_time')
+            ->orderByDesc('total_score')
+            ->get();
+
+        $rankings = $sessions->map(function ($session, $index) {
+            $duration = '-';
+            if ($session->start_time && $session->end_time) {
+                $duration = $session->end_time->diffInMinutes($session->start_time) . ' Menit';
+            }
+
+            return [
+                'rank' => $index + 1,
+                'user_id' => $session->user_id,
+                'name' => $session->user->name ?? 'Peserta',
+                'twk' => $session->score_twk ?? 0,
+                'tiu' => $session->score_tiu ?? 0,
+                'tkp' => $session->score_tkp ?? 0,
+                'total' => $session->total_score ?? 0,
+                'time' => $duration,
+            ];
+        })->toArray();
 
         return view('user.rangking.ranking', compact('rankings'));
     }

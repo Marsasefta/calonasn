@@ -20,7 +20,7 @@
                     <h1 class="h2 mb-0">Peringkat Nasional</h1>
                     <p class="text-muted">Ukur kemampuanmu dibandingkan ribuan peserta lainnya.</p>
                 </div>
-                <div class="col-md-4">
+                <!-- <div class="col-md-4">
                     <label class="form-label fw-bold">Pilih Periode Tryout:</label>
                     <select class="form-select shadow-sm">
                         <option value="batch1">Batch 1 (01 - 05 Mei 2026)</option>
@@ -28,41 +28,41 @@
                         <option value="batch3">Batch 3 (11 - 15 Mei 2026)</option>
                         <option value="batch4">Terbaru (Sedang Berjalan)</option>
                     </select>
-                </div>
+                </div> -->
             </div>
 
+            @php
+                $topRankings = array_slice($rankings, 0, 3);
+            @endphp
             <div class="row mb-4">
-                <div class="col-md-4 mb-3">
-                    <div class="card border-0 shadow-sm text-center bg-light">
-                        <div class="card-body">
-                            <div class="display-4 text-warning mb-2">🥈</div>
-                            <h4 class="mb-0">Ahmad Fauzi</h4>
-                            <p class="text-muted small">Skor: 485</p>
-                            <span class="badge bg-secondary">Peringkat 2</span>
+                @foreach ($topRankings as $index => $item)
+                    @php
+                        $isFirst = $index === 0;
+                        $isSecond = $index === 1;
+                        $isThird = $index === 2;
+                    @endphp
+                    <div class="col-md-4 mb-3">
+                        <div class="card {{ $isFirst ? 'border-primary border-2 shadow text-center' : 'border-0 shadow-sm text-center bg-light' }}">
+                            <div class="card-body {{ $isFirst ? 'py-4' : '' }}">
+                                <div class="display-4 mb-2">{{ $isFirst ? '🥇' : ($isSecond ? '🥈' : '🥉') }}</div>
+                                <h4 class="mb-0 {{ $isFirst ? 'fw-bold' : '' }}">{{ $item['name'] }}</h4>
+                                <p class="text-muted {{ $isFirst ? '' : 'small' }}">Skor: {{ $item['total'] }}</p>
+                                @if ($isFirst)
+                                    <span class="badge bg-warning text-dark">Peringkat 1 (Juara)</span>
+                                @elseif ($isSecond)
+                                    <span class="badge bg-secondary">Peringkat 2</span>
+                                @else
+                                    <span class="badge" style="background-color: #cd7f32; color: white;">Peringkat 3</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card border-primary border-2 shadow text-center">
-                        <div class="card-body py-4">
-                            <div class="display-3 mb-2">🥇</div>
-                            <h3 class="mb-0 fw-bold">Siti Aminah</h3>
-                            <p class="text-muted">Skor: 498</p>
-                            <span class="badge bg-warning text-dark">Peringkat 1 (Juara)</span>
-                        </div>
+                @endforeach
+                @if (count($topRankings) === 0)
+                    <div class="col-12">
+                        <div class="alert alert-info mb-0">Belum ada data ranking yang tersedia.</div>
                     </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card border-0 shadow-sm text-center bg-light">
-                        <div class="card-body">
-                            <div class="display-4 text-danger mb-2">🥉</div>
-                            <h4 class="mb-0">Budi Santoso</h4>
-                            <p class="text-muted small">Skor: 472</p>
-                            <span class="badge bg-bronze" style="background-color: #cd7f32; color: white;">Peringkat
-                                3</span>
-                        </div>
-                    </div>
-                </div>
+                @endif
             </div>
 
             <div class="row">
@@ -82,7 +82,7 @@
                                     </tr>
                                 </thead>
                                 @foreach ($rankings as $row)
-                                    <tr class="{{ $row['name'] == auth()->user()->name ? 'table-warning' : '' }}">
+                                    <tr class="{{ $row['user_id'] === auth()->id() ? 'table-warning' : '' }}">
                                         <td class="fw-bold align-middle">{{ $row['rank'] }}</td>
                                         <td class="align-middle">
                                             <div class="d-flex align-items-center">
@@ -91,7 +91,7 @@
                                                         class="rounded-circle" width="30">
                                                 </div>
                                                 <span>{{ $row['name'] }}
-                                                    {{ $row['name'] == auth()->user()->name ? '(Kamu)' : '' }}</span>
+                                                    {{ $row['user_id'] === auth()->id() ? '(Kamu)' : '' }}</span>
                                             </div>
                                         </td>
                                         <td>{{ $row['twk'] }}</td>
