@@ -144,6 +144,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/transactions', [App\Http\Controllers\AdminTransactionController::class, 'index'])->name('transactions.index');
         Route::post('/transactions/{id}/status', [App\Http\Controllers\AdminTransactionController::class, 'updateStatus'])->name('transactions.update-status');
+        Route::delete('/transactions/{id}', [App\Http\Controllers\AdminTransactionController::class, 'destroy'])->name('transactions.destroy');
 
         Route::get('/reports', [App\Http\Controllers\AdminReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/export', [App\Http\Controllers\AdminReportController::class, 'export'])->name('reports.export');

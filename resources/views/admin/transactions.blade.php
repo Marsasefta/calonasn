@@ -3,6 +3,8 @@
 
 <head>
     @include('partials.head')
+    <link href="/build/assets/plugins/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <link href="/build/assets/plugins/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -28,8 +30,8 @@
 
                 <div class="card">
                     <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
+                        <div class="table-responsive p-3"> 
+                            <table class="table table-bordered table-hover table-striped" id="transactions-table" style="width:100%;">
                                 <thead class="table-light">
                                     <tr>
                                         <th>#</th>
@@ -46,8 +48,7 @@
                                 <tbody>
                                     @forelse($transactions as $transaction)
                                         <tr>
-                                            <td>{{ $loop->iteration + ($transactions->currentPage() - 1) * $transactions->perPage() }}
-                                            </td>
+                                            <td></td>
                                             <td>{{ $transaction->order_id }}</td>
                                             <td>{{ $transaction->user->name ?? '-' }}</td>
                                             <td>{{ $transaction->tryout->title ?? '-' }}</td>
@@ -63,27 +64,31 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <span
-                                                    class="badge bg-{{ $transaction->status === 'success' ? 'success' : ($transaction->status === 'pending' ? 'warning' : 'danger') }}">
+                                                <span class="badge bg-{{ $transaction->status === 'success' ? 'success' : ($transaction->status === 'pending' ? 'warning' : 'danger') }}">
                                                     {{ ucfirst($transaction->status) }}
                                                 </span>
                                             </td>
-                                            <td>{{ $transaction->created_at->format('d M Y H:i') }}</td>                                            
+                                            <td>{{ $transaction->created_at->format('d M Y H:i') }}</td>
                                             <td class="text-end">
-                                                @if ($transaction->status === 'pending')
-                                                    <form
-                                                        action="{{ route('admin.transactions.update-status', $transaction->id) }}"
-                                                        method="POST"
-                                                        class="confirm-payment-form d-flex justify-content-end align-items-center gap-2 mb-0">
+                                                <div class="d-flex justify-content-end align-items-center gap-2">
+                                                    @if ($transaction->status === 'pending')
+                                                        <form action="{{ route('admin.transactions.update-status', $transaction->id) }}"
+                                                            method="POST" class="confirm-payment-form mb-0">
+                                                            @csrf
+                                                            <input type="hidden" name="status" value="success">
+                                                            <button type="submit" class="btn btn-sm btn-primary">Konfirmasi</button>
+                                                        </form>
+                                                    @elseif($transaction->status === 'success')
+                                                        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Selesai</span>
+                                                    @endif
+
+                                                    <form action="{{ route('admin.transactions.destroy', $transaction->id) }}"
+                                                        method="POST" class="delete-transaction-form mb-0">
                                                         @csrf
-                                                        <input type="hidden" name="status" value="success">
-                                                        <button type="submit"
-                                                            class="btn btn-sm btn-primary">Konfirmasi</button>
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
                                                     </form>
-                                                @elseif($transaction->status === 'success')
-                                                    <span class="badge bg-success"><i
-                                                            class="fas fa-check-circle me-1"></i> Selesai</span>
-                                                @endif
+                                                </div>
                                             </td>
                                         </tr>
                                     @empty
@@ -102,27 +107,85 @@
                     </div>
                 </div>
 
-                <div class="mt-3">
-                    {{ $transactions->links() }}
-                </div>
             </section>
         </main>
     </div>
 
     @include('partials.scripts')
+    <script src="/build/assets/plugins/datatables.net/js/dataTables.min.js"></script>
+    <script src="/build/assets/plugins/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="/build/assets/plugins/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="/build/assets/plugins/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            if (window.jQuery && $.fn.DataTable) {
+                
+                // Inisialisasi DataTables
+                var table = $('#transactions-table').DataTable({
+                    responsive: false,
+                    scrollX: true,
+                    autoWidth: false,
+                    pageLength: 10,
+                    lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                    columnDefs: [
+                        { orderable: false, targets: [0, 5, 6, 8] }, // Kolom #, Bukti, Status, Aksi tidak bisa di-sort
+                        { searchable: false, targets: [0, 5, 6, 8] }
+                    ],
+                    // MEMAKSA URUTAN: Kolom indeks ke-7 (Tanggal) diurutkan secara DESCENDING (terbaru di atas)
+                    order: [[7, 'desc']], 
+                    language: {
+                        search: 'Cari:',
+                        lengthMenu: 'Tampilkan _MENU_ baris',
+                        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ transaksi',
+                        infoEmpty: 'Menampilkan 0 sampai 0 dari 0 transaksi',
+                        infoFiltered: '(disaring dari _MAX_ total transaksi)',
+                        zeroRecords: 'Tidak ditemukan data yang sesuai',
+                        paginate: {
+                            previous: 'Sebelumnya',
+                            next: 'Berikutnya'
+                        }
+                    }
+                });
+
+                // Menghitung nomor urut secara dinamis tanpa merusak susunan sorting tanggal terbaru
+                table.on('order.dt search.dt', function () {
+                    let i = 1;
+                    table.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+                        this.data(i++);
+                    });
+                }).draw(false); // Perubahan di sini: menggunakan 'false' agar default order [[7, 'desc']] di atas tidak tertimpa
+            }
+
+            // Handler SweetAlert2 untuk Konfirmasi Pembayaran
             document.querySelectorAll('.confirm-payment-form').forEach(function(form) {
                 form.addEventListener('submit', function(event) {
                     event.preventDefault();
-
                     Swal.fire({
                         title: 'Konfirmasi Pembayaran',
                         text: 'Apakah pembayaran ini sudah sesuai?',
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonText: 'Ya, sesuai',
+                        cancelButtonText: 'Batal',
+                    }).then(function(result) {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            // Handler SweetAlert2 untuk Hapus Transaksi
+            document.querySelectorAll('.delete-transaction-form').forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    Swal.fire({
+                        title: 'Hapus Transaksi',
+                        text: 'Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dikembalikan.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, hapus',
                         cancelButtonText: 'Batal',
                     }).then(function(result) {
                         if (result.isConfirmed) {

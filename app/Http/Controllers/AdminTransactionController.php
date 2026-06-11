@@ -12,7 +12,7 @@ class AdminTransactionController extends Controller
     {
         $transactions = Transaction::with(['user', 'tryout'])
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->get();
 
         return view('admin.transactions', compact('transactions'));
     }
@@ -37,5 +37,13 @@ class AdminTransactionController extends Controller
         }
 
         return back()->with('success', 'Status transaksi berhasil diperbarui dan email notifikasi telah dikirim ke user.');
+    }
+
+    public function destroy($id)
+    {
+        $transaction = Transaction::findOrFail($id);
+        $transaction->delete();
+
+        return back()->with('success', 'Transaksi berhasil dihapus.');
     }
 }
