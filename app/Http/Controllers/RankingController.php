@@ -16,7 +16,7 @@ class RankingController extends Controller
         $rankings = $sessions->map(function ($session, $index) {
             $duration = '-';
             if ($session->start_time && $session->end_time) {
-                $seconds = $session->end_time->diffInSeconds($session->start_time);
+                $seconds = abs($session->end_time->diffInSeconds($session->start_time));
                 $minutes = intdiv($seconds, 60);
                 $secondsRemaining = $seconds % 60;
                 $duration = sprintf('%d Menit %02d Detik', $minutes, $secondsRemaining);
