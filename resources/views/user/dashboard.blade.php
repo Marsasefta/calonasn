@@ -462,6 +462,10 @@
     @if (empty(auth()->user()->phone))
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                if (sessionStorage.getItem('phone_prompt_dismissed')) {
+                    return;
+                }
+
                 Swal.fire({
                     title: 'Eits, Ada yang Kelupaan Nih!',
                     html: `
@@ -470,10 +474,12 @@
                         </p>
                         <input id="swal-phone" type="tel" class="swal2-input" placeholder="Contoh: 08123456789...">
                     `,
-                    showCancelButton: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                    cancelButtonText: 'Nanti saja',
                     confirmButtonText: 'Gas, Simpan Nomorku! 🚀',
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
                     showLoaderOnConfirm: true,
                     preConfirm: () => {
                         const phoneEl = document.getElementById('swal-phone');
@@ -505,6 +511,11 @@
                         });
                     }
                 }).then((result) => {
+                    if (result.isDismissed) {
+                        sessionStorage.setItem('phone_prompt_dismissed', '1');
+                        return;
+                    }
+
                     if (result.isConfirmed) {
                         Swal.fire({
                             icon: 'success',
