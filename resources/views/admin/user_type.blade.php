@@ -2,14 +2,30 @@
 <html lang="en">
 <head>
     @include('partials.head')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <style>
+        /* Penyesuaian tampilan agar menyatu dengan tema Bootstrap */
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0px !important;
+            margin: 0px !important;
+        }
+        div.dataTables_wrapper div.dataTables_filter {
+            text-align: right;
+            padding: 1rem;
+        }
+        div.dataTables_wrapper div.dataTables_length {
+            padding: 1rem;
+        }
+        div.dataTables_wrapper div.dataTables_info {
+            padding: 1rem;
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Wrapper -->
     <div id="db-wrapper">
         @include('partials.navbar-vertical')
 
-        <!-- Page Content -->
         <main id="page-content">
             @include('partials.dashboard-header')
 
@@ -72,42 +88,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="col-xl-3 col-lg-6 col-md-12 col-12">
-                        <div class="card">
-                            <div class="card-body d-flex flex-column gap-3">
-                                <div class="d-flex align-items-center justify-content-between lh-1">
-                                    <div>
-                                        <span class="fs-6 text-uppercase fw-semibold ls-md">Verifikasi</span>
-                                    </div>
-                                    <div>
-                                        <span class="fe fe-check-circle fs-3 text-info"></span>
-                                    </div>
-                                </div>
-                                <div class="d-flex flex-column gap-1">
-                                    <h2 class="fw-bold mb-0">{{ $users->whereNotNull('email_verified_at')->count() }}</h2>
-                                    <span class="fw-medium small text-muted">Email terverifikasi</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-6 col-md-12 col-12">
-                        <div class="card">
-                            <div class="card-body d-flex flex-column gap-3">
-                                <div class="d-flex align-items-center justify-content-between lh-1">
-                                    <div>
-                                        <span class="fs-6 text-uppercase fw-semibold ls-md">Export HP</span>
-                                    </div>
-                                    <div>
-                                        <span class="fe fe-download fs-3 text-success"></span>
-                                    </div>
-                                </div>
-                                <div class="d-flex flex-column gap-1">
-                                    <p class="mb-0 small text-muted">Untuk Excel gunakan tanda kutip tunggal di depan angka.</p>
-                                    <code class="small">'0812xxxxxxxx</code>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
                 </div>
 
                 <div class="row">
@@ -118,7 +98,7 @@
                                 <span class="text-muted small">{{ $users->count() }} peserta</span>
                             </div>
                             <div class="table-responsive">
-                                <table class="table table-hover mb-0">
+                                <table id="usersTable" class="table table-hover mb-0" style="width:100%">
                                     <thead class="table-light">
                                         <tr>
                                             <th>#</th>
@@ -160,7 +140,7 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="8" class="text-center py-5">
+                                                <td colspan="7" class="text-center py-5">
                                                     <div class="text-muted">
                                                         <i class="fe fe-inbox fs-3 mb-2 d-block"></i>
                                                         Tidak ada peserta terdaftar.
@@ -178,7 +158,6 @@
         </main>
     </div>
 
-    <!-- Modal Tambah Peserta -->
     <div class="modal fade" id="createUserModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -199,7 +178,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Telepon</label>
-                            <input type="text" name="phone" class="form-control" placeholder="Contoh: '08123456789" />
+                            <input type="text" name="phone" class="form-control" placeholder="Contoh: 08123456789" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Peran</label>
@@ -223,5 +202,40 @@
     </div>
 
     @include('partials.scripts')
+
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#usersTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "language": {
+                    "search": "Cari peserta:",
+                    "lengthMenu": "Tampilkan _MENU_ data per halaman",
+                    "zeroRecords": "Data tidak ditemukan",
+                    "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
+                    "infoEmpty": "Tidak ada data tersedia",
+                    "infoFiltered": "(difilter dari _MAX_ total data)",
+                    "paginate": {
+                        "first": "Pertama",
+                        "last": "Terakhir",
+                        "next": "Selanjutnya",
+                        "previous": "Sebelumnya"
+                    }
+                },
+                "columnDefs": [
+                    { "orderable": false, "targets": 6 } // Mematikan fitur sorting pada kolom 'Aksi'
+                ]
+            });
+        });
+    </script>
 </body>
 </html>
