@@ -5,12 +5,29 @@
     @include('partials.head')
 
     <title>Upgrade Paket Premium</title>
+    <style>
+        /* Desain kustom agar komponen accordion selaras dengan tema modern */
+        .accordion-button:not(.collapsed) {
+            background-color: rgba(13, 110, 253, 0.05);
+            color: #0d6efd;
+            box-shadow: none;
+        }
+        .accordion-button:focus {
+            box-shadow: none;
+            border-color: rgba(13, 110, 253, 0.25);
+        }
+        .copy-btn {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .copy-btn:hover {
+            opacity: 0.8;
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Page Content -->
     @include('partials.navbar')
-    <!-- Sidebar -->
     @include('partials.navbar-student')
 
     <div class="db-content">
@@ -74,29 +91,95 @@
                     <div class="card mb-4 shadow-sm border-0">
 
                         @if (empty($transaction->payment_proof))
-                            {{-- KONDISI A: JIKA BELUM UPLOAD BUKTI (TAMPILKAN QRIS & FORM) --}}
-                            <div class="card-header bg-white pt-4 pb-0 border-bottom-0 text-center">
-                                <h3 class="mb-0">Scan QRIS</h3>
-                                <span class="text-muted small">Gunakan Gopay, OVO, Dana, LinkAja, atau M-Banking.</span>
+                            {{-- KONDISI A: JIKA BELUM UPLOAD BUKTI (TAMPILKAN PILIHAN METODE ACCORDION & FORM) --}}
+                            <div class="card-header bg-white pt-4 pb-2 border-bottom-0 text-center">
+                                <h3 class="mb-1">Pilih Metode Pembayaran</h3>
+                                <span class="text-muted small">Silakan pilih salah satu opsi pembayaran di bawah ini.</span>
                             </div>
 
-                            <div class="card-body py-4">
-                                <div class="text-center mb-5 mt-2">
-                                    <div class="p-2 border rounded d-inline-block bg-white shadow-sm">
-                                        <img src="{{ asset('image/qris.jpeg') }}" alt="QRIS Payment" class="img-fluid"
-                                            style="max-width: 250px;">
+                            <div class="card-body py-2">
+                                
+                                <div class="accordion mb-4 shadow-sm" id="paymentAccordion">
+                                    
+                                    <div class="accordion-item border-0 border-bottom">
+                                        <h2 class="accordion-header" id="headingQris">
+                                            <button class="accordion-button fw-bold py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQris" aria-expanded="true" aria-controls="collapseQris">
+                                                <i class="fe fe-scan text-primary me-2 fs-4"></i> QRIS
+                                            </button>
+                                        </h2>
+                                        <div id="collapseQris" class="accordion-collapse collapse " aria-labelledby="headingQris" data-bs-parent="#paymentAccordion">
+                                            <div class="accordion-body text-center bg-white py-4">
+                                                <div class="p-2 border rounded d-inline-block bg-white shadow-sm mb-3">
+                                                    <img src="{{ asset('image/qris.jpeg') }}" alt="QRIS Payment" class="img-fluid" style="max-width: 220px;">
+                                                </div>
+                                                <div>
+                                                    <a href="{{ asset('image/qris.jpeg') }}"
+                                                        download="QRIS_Pembayaran_{{ $transaction->invoice_number }}.jpeg"
+                                                        class="btn btn-outline-primary btn-sm fw-bold shadow-sm">
+                                                        <i class="fe fe-download me-2"></i> Simpan / Unduh QRIS
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div class="mt-3">
-                                        <a href="{{ asset('image/qris.jpeg') }}"
-                                            download="QRIS_Pembayaran_{{ $transaction->invoice_number }}.jpeg"
-                                            class="btn btn-outline-primary btn-sm fw-bold shadow-sm">
-                                            <i class="fe fe-download me-2"></i> Simpan / Unduh QRIS
-                                        </a>
+                                    <div class="accordion-item border-0 border-bottom">
+                                        <h2 class="accordion-header" id="headingMandiri">
+                                            <button class="accordion-button collapsed fw-bold py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMandiri" aria-expanded="false" aria-controls="collapseMandiri">
+                                                <i class="fe fe-credit-card text-info me-2"></i> Transfer Bank Mandiri
+                                            </button>
+                                        </h2>
+                                        <div id="collapseMandiri" class="accordion-collapse collapse" aria-labelledby="headingMandiri" data-bs-parent="#paymentAccordion">
+                                            <div class="accordion-body bg-white py-4">
+                                                <div class="bg-light p-3 rounded border">
+                                                    <span class="text-muted small d-block mb-1">Nama Bank:</span>
+                                                    <h5 class="fw-bold text-dark mb-3">Bank Mandiri</h5>
+                                                    
+                                                    <span class="text-muted small d-block mb-1">Nomor Rekening:</span>
+                                                    <div class="d-flex align-items-center mb-3">
+                                                        <h4 class="fw-bold text-primary mb-0 me-3" id="norekMandiri">1370023310705</h4>
+                                                        <button class="btn btn-sm btn-light border copy-btn text-dark py-1 px-2 fw-medium" onclick="copyText('1370023310705', this)">
+                                                            <i class="fe fe-copy me-1"></i>Salin
+                                                        </button>
+                                                    </div>
+
+                                                    <span class="text-muted small d-block mb-1">Nama Pemilik Rekening:</span>
+                                                    <h5 class="fw-bold text-dark mb-0">FENTHA LARI LESMANA</h5>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+
+                                    <div class="accordion-item border-0">
+                                        <h2 class="accordion-header" id="headingBsi">
+                                            <button class="accordion-button collapsed fw-bold py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBsi" aria-expanded="false" aria-controls="collapseBsi">
+                                                <i class="fe fe-credit-card text-success me-2"></i> Transfer Bank BSI
+                                            </button>
+                                        </h2>
+                                        <div id="collapseBsi" class="accordion-collapse collapse" aria-labelledby="headingBsi" data-bs-parent="#paymentAccordion">
+                                            <div class="accordion-body bg-white py-4">
+                                                <div class="bg-light p-3 rounded border">
+                                                    <span class="text-muted small d-block mb-1">Nama Bank:</span>
+                                                    <h5 class="fw-bold text-dark mb-3">Bank Syariah Indonesia (BSI)</h5>
+                                                    
+                                                    <span class="text-muted small d-block mb-1">Nomor Rekening:</span>
+                                                    <div class="d-flex align-items-center mb-3">
+                                                        <h4 class="fw-bold text-primary mb-0 me-3" id="norekBsi">6913630680</h4>
+                                                        <button class="btn btn-sm btn-light border copy-btn text-dark py-1 px-2 fw-medium" onclick="copyText('6913630680', this)">
+                                                            <i class="fe fe-copy me-1"></i>Salin
+                                                        </button>
+                                                    </div>
+
+                                                    <span class="text-muted small d-block mb-1">Nama Pemilik Rekening:</span>
+                                                    <h5 class="fw-bold text-dark mb-0">FENTHA LARI LESMANA</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
 
-                                <hr class="mb-4">
+                                <hr class="my-4">
 
                                 <div class="bg-light p-4 rounded border-0">
                                     <h5 class="fw-bold mb-3">
@@ -157,7 +240,7 @@
 
                             <div class="card-body py-4 text-center">
                                 <div class="mb-4 mt-2">
-                                    <div class="p-2 border rounded d-inline-block bg-white shadow-sm bg-light">
+                                    <div class="p-2 border rounded d-inline-block bg-white shadow-sm">
                                         <img src="{{ asset('storage/' . $transaction->payment_proof) }}"
                                             alt="Bukti Transfer User" class="img-fluid rounded"
                                             style="max-width: 300px; max-height: 400px; object-fit: contain;">
@@ -212,12 +295,28 @@
                     String(seconds).padStart(2, '0');
 
             }, 1000);
+
+            // Fungsi pembantu JavaScript untuk menyalin nomor rekening secara instan
+            function copyText(text, element) {
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = element.innerHTML;
+                    element.innerHTML = '<i class="fe fe-check me-1"></i>Tersalin!';
+                    element.classList.remove('btn-light');
+                    element.classList.add('btn-success', 'text-white');
+                    
+                    setTimeout(() => {
+                        element.innerHTML = originalText;
+                        element.classList.remove('btn-success', 'text-white');
+                        element.classList.add('btn-light');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Gagal menyalin teks: ', err);
+                });
+            }
         </script>
     @endif
 
-    <!-- Scroll top -->
     @include('partials.btn-scroll-top')
-    <!-- Scripts -->
     @include('partials.scripts')
     <script src="assets/js/vendors/tnsSlider.js"></script>
     <script src="assets/js/vendors/chart.js"></script>

@@ -78,15 +78,15 @@
                                 </div>
                             </div>
 
-                            <h5 class="mb-3 fw-bold mt-4">Metode Pembayaran</h5>
-                            <div class="border rounded p-3 mb-4 d-flex align-items-center bg-light">
+                            <!-- <h5 class="mb-3 fw-bold mt-4">Metode Pembayaran</h5> -->
+                            <!-- <div class="border rounded p-3 mb-4 d-flex align-items-center bg-light">
                                 <i class="bi bi-qr-code-scan text-success fs-2 me-3"></i>
                                 <div>
                                     <h5 class="mb-0 fw-bold">QRIS (Semua Pembayaran)</h5>
                                     <small class="text-muted">Mendukung Gopay, OVO, Dana, LinkAja, ShopeePay, dan
                                         M-Banking.</small>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <form action="{{ route('checkout.process') }}" method="POST">
                                 @csrf
