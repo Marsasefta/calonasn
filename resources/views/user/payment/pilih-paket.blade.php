@@ -57,7 +57,7 @@
                         <ul class="list-unstyled d-flex flex-column gap-3 text-dark fw-medium mb-5">
                             <li class="d-flex align-items-start small">
                                 <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
-                                <span>110 Soal FR (Field Report) 2024</span>
+                                <span>110 <b>Soal FR (Field Report) 2024</b></span>
                             </li>
                             <li class="d-flex align-items-start small">
                                 <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
