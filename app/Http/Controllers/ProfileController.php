@@ -57,4 +57,23 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    /**
+     * Update user's phone via AJAX from dashboard prompt.
+     */
+    public function updatePhone(Request $request)
+    {
+        $request->validate([
+            'phone' => ['required', 'string', 'min:9', 'max:30', 'regex:/^08[0-9]+$/'],
+        ]);
+
+        $user = $request->user();
+        $user->phone = $request->phone;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Nomor telepon berhasil disimpan.'
+        ]);
+    }
 }

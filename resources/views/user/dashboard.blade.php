@@ -459,6 +459,63 @@
             });
         </script>
     @endif
+    @if (empty(auth()->user()->phone))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Eits, Ada yang Kelupaan Nih!',
+                    html: `
+                        <p class="text-start mb-2" style="text-align: justify; text-justify: inter-word; line-height: 1.5;">
+                            Akun kamu udah hampir siap! Biar belajarnya makin sat-set dan mimin gampang ngabarin kalau ada info penting (atau promo rahasia!), bisikin nomor WhatsApp kamu di bawah ini dong.
+                        </p>
+                        <input id="swal-phone" type="tel" class="swal2-input" placeholder="Contoh: 08123456789...">
+                    `,
+                    showCancelButton: false,
+                    confirmButtonText: 'Gas, Simpan Nomorku! 🚀',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showLoaderOnConfirm: true,
+                    preConfirm: () => {
+                        const phoneEl = document.getElementById('swal-phone');
+                        const phone = phoneEl ? phoneEl.value.trim() : '';
+                        const digitsOnly = phone.replace(/\D/g, '');
+
+                        if (!phone || !phone.startsWith('08') || digitsOnly.length < 9) {
+                            Swal.showValidationMessage('Nomor harus diawali 08 dan minimal 9 digit.');
+                            return false;
+                        }
+
+                        return fetch('{{ route("profile.updatePhone") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({ phone: phone })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.success) {
+                                throw new Error(data.message || 'Gagal menyimpan nomor telepon');
+                            }
+                            return data;
+                        })
+                        .catch(err => {
+                            Swal.showValidationMessage(err.message || 'Gagal menyimpan nomor');
+                        });
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Tersimpan',
+                            text: 'Nomor telepon berhasil disimpan.'
+                        }).then(() => location.reload());
+                    }
+                });
+            });
+        </script>
+    @endif
 </body>
 
 </html>
