@@ -85,7 +85,7 @@
                     </ul>
                 </div>
 
-                <div class="d-flex flex-column gap-1 mt-2">
+                {{-- <div class="d-flex flex-column gap-1 mt-2">
                     <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Pengaturan</span>
                     <ul class="list-unstyled mb-0">
                         <li class="nav-item">
@@ -95,7 +95,7 @@
                             </a>
                         </li>
                     </ul>
-                </div>
+                </div> --}}
 
             </div>
         </div>
