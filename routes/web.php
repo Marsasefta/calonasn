@@ -143,6 +143,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/users/{id}/toggle-premium', [UserTypeController::class, 'togglePremium'])->name('users.toggle-premium');
         Route::post('/users/{id}/reset-password', [UserTypeController::class, 'resetPassword'])->name('users.reset-password');
 
+        Route::get('/whatsapp-blast', [App\Http\Controllers\AdminWhatsappBlastController::class, 'index'])->name('whatsapp-blast.index');
+        Route::post('/whatsapp-blast/send', [App\Http\Controllers\AdminWhatsappBlastController::class, 'send'])->name('whatsapp-blast.send');
+
         Route::get('/transactions', [App\Http\Controllers\AdminTransactionController::class, 'index'])->name('transactions.index');
         Route::post('/transactions/{id}/status', [App\Http\Controllers\AdminTransactionController::class, 'updateStatus'])->name('transactions.update-status');
         Route::delete('/transactions/{id}', [App\Http\Controllers\AdminTransactionController::class, 'destroy'])->name('transactions.destroy');
