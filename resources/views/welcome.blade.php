@@ -452,7 +452,8 @@
                             Persiapkan SKD CPNS 2026 dari Sekarang!
                         </h2>
                         <p class="lead text-muted">
-                            Pelajari materi SKD CPNS 2026, latihan soal, dan ikuti tryout CAT dengan pembahasan lengkap. Akses selamanya tanpa biaya langganan bulanan.
+                            Pelajari materi SKD CPNS 2026, latihan soal, dan ikuti tryout CAT dengan pembahasan lengkap.
+                            Akses selamanya tanpa biaya langganan bulanan.
                         </p>
 
                         <div class="alert alert-success d-inline-block px-4 py-2 mt-2 shadow-sm border border-success"
@@ -476,7 +477,7 @@
                                 <h3 class="fw-bold text-dark mb-1">Tryout Premium CPNS</h3>
                                 <p class="text-muted small">Fokus latih manajemen waktu dengan simulasi CAT.</p>
 
-                                <div class="mt-4 p-3 bg-light rounded-3 border">
+                                {{-- <div class="mt-4 p-3 bg-light rounded-3 border">
                                     <p class="text-muted small mb-1">Investasi Normal:</p>
                                     <p class="display-5 fw-bolder text-dark mb-0">
                                         Rp 20.000 <span class="fs-6 text-muted fw-normal">/selamanya</span>
@@ -487,6 +488,29 @@
                                                 class="fs-6">Rp 13.000</strong>
                                         </span>
                                     </div>
+                                </div> --}}
+                                <div class="mt-4 p-3 bg-light rounded-3 border border-success border-opacity-25">
+
+                                    <p class="text-success small mb-1 fw-semibold">Investasi Normal:</p>
+
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="text-muted text-decoration-line-through fs-5">Rp 20.000</span>
+                                        <span class="badge bg-success text-white shadow-sm px-2 py-1">
+                                            Hemat Rp 7.000!
+                                        </span>
+                                    </div>
+
+                                    <p class="display-5 fw-bolder text-success mb-0 lh-1">
+                                        Rp 13.000 <span class="fs-6 text-dark fw-normal">/selamanya</span>
+                                    </p>
+
+                                    <div class="mt-3 pt-2 border-top border-success border-opacity-25">
+                                        <p class="small text-muted mb-0">
+                                            <i class="bi bi-ticket-perforated-fill text-success me-1"></i>
+                                            Gunakan kode <strong class="text-dark fs-6">ASN2026</strong> saat checkout.
+                                        </p>
+                                    </div>
+
                                 </div>
                             </div>
 
@@ -546,7 +570,7 @@
                                 </h3>
                                 <p class="text-muted small">Solusi instan: Paham materinya, taklukkan simulasinya.</p>
 
-                                <div class="mt-4 p-3 bg-primary-soft rounded-3 border border-primary border-opacity-25">
+                                {{-- <div class="mt-4 p-3 bg-primary-soft rounded-3 border border-primary border-opacity-25">
                                     <p class="text-primary small mb-1 fw-semibold">Investasi Normal:</p>
                                     <p class="display-5 fw-bolder text-primary mb-0">
                                         Rp 49.000 <span class="fs-6 text-muted fw-normal">/selamanya</span>
@@ -556,6 +580,33 @@
                                             <i class="bi bi-tag-fill me-1"></i> + Kode ASN2026 jadi: <strong
                                                 class="fs-6 text-warning">Rp 42.000</strong>
                                         </span>
+                                    </div>
+                                </div> --}}
+                                <div
+                                    class="mt-4 p-3 bg-primary-soft rounded-3 border border-primary border-opacity-50 position-relative">
+                                    <span
+                                        class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-warning text-dark px-3 py-1 shadow-sm fw-bold"
+                                        style="font-size: 0.75rem;">
+                                        <i class="bi bi-star-fill text-danger me-1"></i> Paling Cepat Lulus
+                                    </span>
+
+                                    <p class="text-primary small mb-1 mt-2 fw-semibold">Investasi Normal:</p>
+
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="text-muted text-decoration-line-through fs-5">Rp 49.000</span>
+                                        <span class="badge bg-primary text-white shadow-sm px-2 py-1">Hemat Rp
+                                            7.000!</span>
+                                    </div>
+
+                                    <p class="display-5 fw-bolder text-primary mb-0 lh-1">
+                                        Rp 42.000 <span class="fs-6 text-dark fw-normal">/selamanya</span>
+                                    </p>
+
+                                    <div class="mt-3 pt-2 border-top border-primary border-opacity-25">
+                                        <p class="small text-muted mb-0">
+                                            <i class="bi bi-ticket-perforated-fill text-primary me-1"></i> Gunakan kode
+                                            <strong class="text-dark fs-6">ASN2026</strong> saat checkout.
+                                        </p>
                                     </div>
                                 </div>
                             </div>
