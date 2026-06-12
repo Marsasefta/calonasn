@@ -122,7 +122,7 @@
                                                         {{ $user->is_premium ? 'Ya' : 'Tidak' }}
                                                     </span>
                                                 </td>
-                                                <td>{{ $user->created_at->format('d M Y') }}</td>
+                                                <td>{{ $user->created_at->format('d M Y H:i') }}</td>
                                                 <td class="text-end">
                                                     <div class="btn-group" role="group">
                                                         <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-sm btn-outline-primary" title="Lihat Profil">
