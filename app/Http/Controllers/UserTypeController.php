@@ -47,6 +47,13 @@ class UserTypeController extends Controller
         return view('admin.user_profile', compact('user'));
     }
 
+    public function edit($id)
+    {
+        $user = User::findOrFail($id);
+
+        return view('admin.user_edit', compact('user'));
+    }
+
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -67,7 +74,9 @@ class UserTypeController extends Controller
             'is_premium' => $request->boolean('is_premium', false),
         ]);
 
-        return back()->with('success', 'Data peserta berhasil diperbarui.');
+        return redirect()
+            ->route('admin.users.show', $user->id)
+            ->with('success', 'Data peserta berhasil diperbarui.');
     }
 
     public function destroy($id)

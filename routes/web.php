@@ -136,6 +136,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/users', [UserTypeController::class, 'userType'])->name('users.index');
         Route::post('/users', [UserTypeController::class, 'store'])->name('users.store');
+        Route::get('/users/{id}/edit', [UserTypeController::class, 'edit'])->name('users.edit');
         Route::get('/users/{id}', [UserTypeController::class, 'show'])->name('users.show');
         Route::put('/users/{id}', [UserTypeController::class, 'update'])->name('users.update');
         Route::delete('/users/{id}', [UserTypeController::class, 'destroy'])->name('users.destroy');

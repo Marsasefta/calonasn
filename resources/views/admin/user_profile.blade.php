@@ -19,6 +19,9 @@
                         <p class="text-muted mb-0">Detail lengkap data peserta, status Premium, dan informasi kontak.</p>
                     </div>
                     <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-primary">
+                            <i class="fe fe-edit-2 me-1"></i> Edit Peserta
+                        </a>
                         <form action="{{ route('admin.users.toggle-premium', $user->id) }}" method="POST">
                             @csrf
                             <input type="hidden" name="is_premium" value="{{ $user->is_premium ? 0 : 1 }}" />
