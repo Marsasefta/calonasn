@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Http;
 
 class AdminWhatsappBlastController extends Controller
 {
-    private const DEFAULT_TEMPLATE = "[CalonASN.id] Langkah Kak [Nama] Menjadi ASN Sudah Dekat! 🚨\n\nHalo Kak [Nama], akun CalonASN.id Kakak sudah aktif dan siap digunakan untuk latihan. Kami melihat Kakak belum menyelesaikan pemilihan paket Tryout PPPK Kemensos Batch 1.\n\nKhusus untuk Kakak yang mendaftar hari ini, Admin punya kejutan spesial! Gunakan kode voucher: DISKON8000 saat memilih paket untuk mendapatkan potongan langsung sebesar Rp8.000! 🥳\n\n⏰ Voucher ini hanya berlaku sampai nanti malam pukul 23.59 WIB dan kuotanya sangat terbatas.\n\nYuk, amankan kuota simulasi CAT Kakak sekarang sebelum kedaluwarsa:\n👉 [Link ke Halaman Pembayaran Web Anda]\n\nJangan jadikan ujian asli sebagai ajang coba-coba. Mari bersiap bersama CalonASN.id!";
-
+    private const DEFAULT_TEMPLATE = "🔥 *Kak [Nama], Admin Tambahkan Voucher Rp9.000 untuk Pesanan Kakak!*\n\nHalo Kak,\n\nPesanan Kakak di CalonASN.id masih tersimpan dan belum diselesaikan.\n\nAgar lebih hemat, Admin memberikan voucher diskon khusus:\n\n🎁 Kode Promo: *DISKON9000*\n\nPotongan langsung Rp9.000 untuk paket yang Kakak pilih.\n\n⏰ Berlaku sampai *23.59 WIB besok malam.*\n\nSetelah itu voucher akan otomatis berakhir dan tidak dapat digunakan kembali.\n\n👉 Lanjutkan pembayaran:\nwww.calonasn.id/pilih-paket\n\nJangan sampai voucher Rp9.000 ini hangus ya, Kak. 😊";
+    
     public function index()
     {
         $users = User::query()
