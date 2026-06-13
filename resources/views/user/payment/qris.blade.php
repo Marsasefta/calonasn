@@ -282,6 +282,9 @@
                 if (distance < 0) {
                     clearInterval(timer);
                     document.getElementById("countdown").innerHTML = "KEDALUWARSA";
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1500);
                     return;
                 }
 

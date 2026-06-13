@@ -22,6 +22,37 @@ class Transaction extends Model
         'expired_at',      
     ];
 
+    protected $casts = [
+        'expired_at' => 'datetime',
+    ];
+
+    public static function deleteExpiredPendingPayments()
+    {
+        return self::whereIn('status', ['pending', 'verifying'])
+            ->whereNull('payment_proof')
+            ->whereNotNull('expired_at')
+            ->where('expired_at', '<', now())
+            ->delete();
+    }
+
+    public static function deleteExpiredPendingPaymentsForUser($userId)
+    {
+        return self::where('user_id', $userId)
+            ->whereIn('status', ['pending', 'verifying'])
+            ->whereNull('payment_proof')
+            ->whereNotNull('expired_at')
+            ->where('expired_at', '<', now())
+            ->delete();
+    }
+
+    public function isExpiredPending()
+    {
+        return in_array($this->status, ['pending', 'verifying'])
+            && $this->expired_at
+            && $this->expired_at->isPast()
+            && !$this->payment_proof;
+    }
+
     // Relasi ke User
     public function user()
     {

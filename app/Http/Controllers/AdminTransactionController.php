@@ -10,6 +10,8 @@ class AdminTransactionController extends Controller
 {
     public function index()
     {
+        Transaction::deleteExpiredPendingPayments();
+
         $transactions = Transaction::with(['user', 'tryout'])
             ->orderBy('created_at', 'desc')
             ->get();

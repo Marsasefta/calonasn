@@ -66,6 +66,9 @@ class TransactionController extends Controller
             }
         }
 
+        // Hapus tagihan pending yang sudah kedaluwarsa (belum bayar dan lebih dari 24 jam)
+        Transaction::deleteExpiredPendingPaymentsForUser($userId);
+
         // --- 2. CEK APAKAH ADA TAGIHAN PENDING ---
         $pendingTx = Transaction::where('user_id', $userId)
                         ->where('tryout_id', $tryoutId)
@@ -136,6 +139,13 @@ class TransactionController extends Controller
                         ->where('user_id', Auth::id())
                         ->firstOrFail();
 
+        if ($transaction->isExpiredPending()) {
+            $transaction->delete();
+
+            return redirect()->route('checkout', $transaction->tryout_id)
+                ->with('error', 'Tagihan sudah kedaluwarsa dan dihapus. Silakan buat pesanan baru.');
+        }
+
         if ($transaction->status == 'paid' || $transaction->status == 'success' || $transaction->status == 'failed') {
             return redirect()->route('riwayat')->with('error', 'Tagihan tidak valid atau sudah selesai.');
         }
@@ -205,6 +215,8 @@ class TransactionController extends Controller
 
     public function pending()
     {
+        Transaction::deleteExpiredPendingPaymentsForUser(auth()->id());
+
         $transaction = Transaction::where('user_id', auth()->id())
             ->latest()
             ->first();
@@ -217,6 +229,8 @@ class TransactionController extends Controller
         $userId = Auth::id();
 
         // 1. Ambil data transaksi (Riwayat Pembayaran)
+        Transaction::deleteExpiredPendingPaymentsForUser($userId);
+
         $transactions = Transaction::where('user_id', $userId)
                             ->orderBy('created_at', 'desc')
                             ->get();
@@ -241,6 +255,11 @@ class TransactionController extends Controller
                         })
                         ->firstOrFail();
 
+        if ($transaction->isExpiredPending()) {
+            $transaction->delete();
+            return redirect()->route('riwayat')->with('error', 'Invoice sudah kedaluwarsa dan dihapus.');
+        }
+
         return view('user.riwayat_transaksi.invoice', compact('transaction'));
     }
 
@@ -261,6 +280,8 @@ class TransactionController extends Controller
         $transaction = \App\Models\Transaction::where('user_id', auth()->id())
                         ->latest()
                         ->first();
+
+        Transaction::deleteExpiredPendingPaymentsForUser(auth()->id());
 
         if ($transaction) {
             return response()->json([
