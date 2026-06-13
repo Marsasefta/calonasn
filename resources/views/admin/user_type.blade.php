@@ -118,7 +118,6 @@
                                     <tbody>
                                         @forelse($users as $user)
                                             @php
-                                                // --- LOGIKA FOLLOW UP WA ---
                                                 $phoneClean = $user->phone ? ltrim($user->phone, "'") : null;
                                                 $phoneClean = $phoneClean
                                                     ? preg_replace('/\D+/', '', $phoneClean)
@@ -133,23 +132,19 @@
                                                 $hasWhatsappNumber = $phoneClean && strlen($phoneClean) >= 10;
                                                 $namaUser = $user->name ?? 'Kak';
 
-                                                // --- TEKS PESAN WA TERBARU ---
+                                                // Teks WA sesuai request kamu
                                                 $pesanWA =
-                                                    "*Kak {$namaUser}, Pesanan Kakak Masih Tersimpan + Ada Voucher Rp9.000!*\n\n" .
+                                                    "🔥 *Kak {$namaUser}, Pesanan Kakak Masih Tersimpan + Ada Voucher Rp9.000!*\n\n" .
                                                     "Halo Kak,\n\n" .
-                                                    "Kami melihat akun Kakak di *CalonASN.id* sudah aktif dan siap digunakan untuk latihan.\n\n" .
+                                                    "Kami melihat akun Kakak di *CalonASN.id* sudah aktif dan siap digunakan untuk latihan. 📚\n\n" .
                                                     "Supaya lebih hemat, Admin telah menambahkan voucher khusus untuk Kakak:\n\n" .
-                                                    "*Kode Voucher:* DISKON9000\n" .
-                                                    "*Potongan:* Rp9.000\n\n" .
-                                                    "Voucher berlaku sampai pukul *23.59 WIB malam ini*.\n\n" .
+                                                    "🎁 *Kode Voucher:* DISKON9000\n" .
+                                                    "💰 *Potongan:* Rp9.000\n\n" .
+                                                    "⏰ Voucher berlaku sampai pukul *23.59 WIB malam ini*.\n\n" .
                                                     "Setelah itu voucher akan otomatis berakhir dan tidak dapat digunakan kembali.\n\n" .
-                                                    "*Lanjutkan pesanan Kakak di:*\n" .
+                                                    "👉 *Lanjutkan pesanan Kakak di:*\n" .
                                                     "www.calonasn.id/pilih-paket\n\n" .
-                                                    'Jangan sampai voucher Rp9.000 ini hangus ya, Kak.';
-
-                                                $linkWaMe = $hasWhatsappNumber
-                                                    ? 'https://wa.me/' . $phoneClean . '?text=' . urlencode($pesanWA)
-                                                    : null;
+                                                    '⚠️ Jangan sampai voucher Rp9.000 ini hangus ya, Kak. 😊';
                                             @endphp
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
@@ -165,13 +160,17 @@
                                                 <td>{{ $user->created_at->format('d M Y H:i') }}</td>
                                                 <td class="text-end">
                                                     <div class="btn-group" role="group">
-                                                        @if ($linkWaMe)
-                                                            <a href="{{ $linkWaMe }}" target="_blank"
-                                                                rel="noopener" class="btn btn-sm btn-success text-white"
+                                                        @if ($hasWhatsappNumber)
+                                                            <button type="button"
+                                                                class="btn btn-sm btn-success text-white"
                                                                 style="background-color: #25D366; border-color: #25D366;"
-                                                                title="Sapa via WA">
+                                                                title="Copy Teks WA" data-bs-toggle="modal"
+                                                                data-bs-target="#waModal"
+                                                                data-nama="{{ $namaUser }}"
+                                                                data-phone="{{ $phoneClean }}"
+                                                                data-pesan="{{ $pesanWA }}">
                                                                 <i class="fe fe-message-circle"></i>
-                                                            </a>
+                                                            </button>
                                                         @endif
 
                                                         <a href="{{ route('admin.users.show', $user->id) }}"
@@ -197,14 +196,6 @@
                                                 </td>
                                             </tr>
                                         @empty
-                                            <tr>
-                                                <td colspan="7" class="text-center py-5">
-                                                    <div class="text-muted">
-                                                        <i class="fe fe-inbox fs-3 mb-2 d-block"></i>
-                                                        Tidak ada peserta terdaftar.
-                                                    </div>
-                                                </td>
-                                            </tr>
                                         @endforelse
                                     </tbody>
                                 </table>
@@ -261,6 +252,29 @@
         </div>
     </div>
 
+    <div class="modal fade" id="waModal" tabindex="-1" aria-labelledby="waModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="waModalLabel"><i
+                            class="fe fe-message-circle text-success me-2"></i>Copy Pesan WhatsApp</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-2 small text-muted">Nomor Tujuan: <strong id="waModalPhone"
+                            class="text-dark">-</strong></p>
+                    <textarea id="waModalText" class="form-control" rows="12" readonly></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" id="btnCopyWa">
+                        <i class="fe fe-copy me-1"></i> Copy Teks
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @include('partials.scripts')
 
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
@@ -297,6 +311,49 @@
                     } // Mematikan fitur sorting pada kolom 'Aksi'
                 ]
             });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const waModal = document.getElementById('waModal');
+            if (waModal) {
+                // Saat modal terbuka, ambil data dari tombol yang diklik
+                waModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const pesan = button.getAttribute('data-pesan');
+                    const phone = button.getAttribute('data-phone');
+
+                    document.getElementById('waModalPhone').textContent = '+' + phone;
+                    document.getElementById('waModalText').value = pesan;
+
+                    // Kembalikan teks tombol copy ke semula
+                    document.getElementById('btnCopyWa').innerHTML =
+                        '<i class="fe fe-copy me-1"></i> Copy Teks';
+                    document.getElementById('btnCopyWa').classList.replace('btn-success', 'btn-primary');
+                });
+
+                // Fungsi saat tombol Copy diklik
+                document.getElementById('btnCopyWa').addEventListener('click', function() {
+                    const textToCopy = document.getElementById('waModalText');
+
+                    // Salin teks ke clipboard
+                    navigator.clipboard.writeText(textToCopy.value).then(() => {
+                        // Beri efek visual sukses
+                        this.innerHTML = '<i class="fe fe-check me-1"></i> Berhasil disalin!';
+                        this.classList.replace('btn-primary', 'btn-success');
+
+                        // Kembalikan seperti semula setelah 2 detik
+                        setTimeout(() => {
+                            this.innerHTML = '<i class="fe fe-copy me-1"></i> Copy Teks';
+                            this.classList.replace('btn-success', 'btn-primary');
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Gagal menyalin teks: ', err);
+                        alert('Gagal menyalin teks. Silakan copy manual.');
+                    });
+                });
+            }
         });
     </script>
 </body>
