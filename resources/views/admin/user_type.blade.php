@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     @include('partials.head')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
@@ -9,13 +10,16 @@
             padding: 0px !important;
             margin: 0px !important;
         }
+
         div.dataTables_wrapper div.dataTables_filter {
             text-align: right;
             padding: 1rem;
         }
+
         div.dataTables_wrapper div.dataTables_length {
             padding: 1rem;
         }
+
         div.dataTables_wrapper div.dataTables_info {
             padding: 1rem;
         }
@@ -34,7 +38,8 @@
                     <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
                         <div>
                             <h1 class="mb-1 h2 fw-bold">Manajemen Pengguna</h1>
-                            <p class="text-muted mb-0">Kelola data peserta, hak Premium, dan reset password untuk pengguna.</p>
+                            <p class="text-muted mb-0">Kelola data peserta, hak Premium, dan reset password untuk
+                                pengguna.</p>
                         </div>
                         <div class="d-flex gap-2">
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">
@@ -47,7 +52,7 @@
                     </div>
                 </div>
 
-                @if(session('success'))
+                @if (session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
 
@@ -112,29 +117,79 @@
                                     </thead>
                                     <tbody>
                                         @forelse($users as $user)
+                                            @php
+                                                // --- LOGIKA FOLLOW UP WA ---
+                                                $phoneClean = $user->phone ? ltrim($user->phone, "'") : null;
+                                                $phoneClean = $phoneClean
+                                                    ? preg_replace('/\D+/', '', $phoneClean)
+                                                    : null;
+
+                                                if ($phoneClean && substr($phoneClean, 0, 1) === '0') {
+                                                    $phoneClean = '62' . substr($phoneClean, 1);
+                                                } elseif ($phoneClean && substr($phoneClean, 0, 1) === '8') {
+                                                    $phoneClean = '62' . $phoneClean;
+                                                }
+
+                                                $hasWhatsappNumber = $phoneClean && strlen($phoneClean) >= 10;
+                                                $namaUser = $user->name ?? 'Kak';
+
+                                                // --- TEKS PESAN WA TERBARU ---
+                                                $pesanWA =
+                                                    "*Kak {$namaUser}, Pesanan Kakak Masih Tersimpan + Ada Voucher Rp9.000!*\n\n" .
+                                                    "Halo Kak,\n\n" .
+                                                    "Kami melihat akun Kakak di *CalonASN.id* sudah aktif dan siap digunakan untuk latihan.\n\n" .
+                                                    "Supaya lebih hemat, Admin telah menambahkan voucher khusus untuk Kakak:\n\n" .
+                                                    "*Kode Voucher:* DISKON9000\n" .
+                                                    "*Potongan:* Rp9.000\n\n" .
+                                                    "Voucher berlaku sampai pukul *23.59 WIB malam ini*.\n\n" .
+                                                    "Setelah itu voucher akan otomatis berakhir dan tidak dapat digunakan kembali.\n\n" .
+                                                    "*Lanjutkan pesanan Kakak di:*\n" .
+                                                    "www.calonasn.id/pilih-paket\n\n" .
+                                                    'Jangan sampai voucher Rp9.000 ini hangus ya, Kak.';
+
+                                                $linkWaMe = $hasWhatsappNumber
+                                                    ? 'https://wa.me/' . $phoneClean . '?text=' . urlencode($pesanWA)
+                                                    : null;
+                                            @endphp
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $user->name }}</td>
                                                 <td>{{ $user->email }}</td>
                                                 <td>{{ $user->phone ?? '-' }}</td>
                                                 <td>
-                                                    <span class="badge bg-{{ $user->is_premium ? 'success' : 'secondary' }}">
+                                                    <span
+                                                        class="badge bg-{{ $user->is_premium ? 'success' : 'secondary' }}">
                                                         {{ $user->is_premium ? 'Ya' : 'Tidak' }}
                                                     </span>
                                                 </td>
                                                 <td>{{ $user->created_at->format('d M Y H:i') }}</td>
                                                 <td class="text-end">
                                                     <div class="btn-group" role="group">
-                                                        <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-sm btn-outline-primary" title="Lihat Profil">
+                                                        @if ($linkWaMe)
+                                                            <a href="{{ $linkWaMe }}" target="_blank"
+                                                                rel="noopener" class="btn btn-sm btn-success text-white"
+                                                                style="background-color: #25D366; border-color: #25D366;"
+                                                                title="Sapa via WA">
+                                                                <i class="fe fe-message-circle"></i>
+                                                            </a>
+                                                        @endif
+
+                                                        <a href="{{ route('admin.users.show', $user->id) }}"
+                                                            class="btn btn-sm btn-outline-primary" title="Lihat Profil">
                                                             <i class="fe fe-eye"></i>
                                                         </a>
-                                                        <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-outline-secondary" title="Edit Peserta">
+                                                        <a href="{{ route('admin.users.edit', $user->id) }}"
+                                                            class="btn btn-sm btn-outline-secondary"
+                                                            title="Edit Peserta">
                                                             <i class="fe fe-edit-2"></i>
                                                         </a>
-                                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
+                                                        <form action="{{ route('admin.users.destroy', $user->id) }}"
+                                                            method="POST" class="d-inline">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Yakin ingin menghapus peserta ini?')" title="Hapus">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                                onclick="return confirm('Yakin ingin menghapus peserta ini?')"
+                                                                title="Hapus">
                                                                 <i class="fe fe-trash-2"></i>
                                                             </button>
                                                         </form>
@@ -181,7 +236,8 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Telepon</label>
-                            <input type="text" name="phone" class="form-control" placeholder="Contoh: 08123456789" />
+                            <input type="text" name="phone" class="form-control"
+                                placeholder="Contoh: 08123456789" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Peran</label>
@@ -191,7 +247,8 @@
                             </select>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" name="is_premium" type="checkbox" id="isPremiumCheckbox" value="1" />
+                            <input class="form-check-input" name="is_premium" type="checkbox" id="isPremiumCheckbox"
+                                value="1" />
                             <label class="form-check-label" for="isPremiumCheckbox">Berikan akses Premium</label>
                         </div>
                     </div>
@@ -234,11 +291,14 @@
                         "previous": "Sebelumnya"
                     }
                 },
-                "columnDefs": [
-                    { "orderable": false, "targets": 6 } // Mematikan fitur sorting pada kolom 'Aksi'
+                "columnDefs": [{
+                        "orderable": false,
+                        "targets": 6
+                    } // Mematikan fitur sorting pada kolom 'Aksi'
                 ]
             });
         });
     </script>
 </body>
+
 </html>
