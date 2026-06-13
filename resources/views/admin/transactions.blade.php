@@ -47,6 +47,39 @@
                                 </thead>
                                 <tbody>
                                     @forelse($transactions as $transaction)
+                                        @php
+                                            $user = $transaction->user;
+                                            $phoneClean = $user?->phone ? ltrim($user->phone, "'") : null;
+                                            $phoneClean = $phoneClean ? preg_replace('/\D+/', '', $phoneClean) : null;
+
+                                            if ($phoneClean && substr($phoneClean, 0, 1) === '0') {
+                                                $phoneClean = '62' . substr($phoneClean, 1);
+                                            } elseif ($phoneClean && substr($phoneClean, 0, 1) === '8') {
+                                                $phoneClean = '62' . $phoneClean;
+                                            }
+
+                                            $hasWhatsappNumber = $phoneClean && strlen($phoneClean) >= 10;
+                                            $namaUser = $user?->name ?? 'Kak';
+                                            $linkBayar = $transaction->invoice_number
+                                                ? route('payment.qris', $transaction->invoice_number)
+                                                : url('/payment-pending');
+
+                                            $pesanWA = "*Kak {$namaUser}, Admin Tambahkan Voucher Rp9.000 untuk Pesanan Kakak!*\n\n"
+                                                . "Halo Kak,\n"
+                                                . "Pesanan Kakak di *CalonASN.id* masih tersimpan dan belum diselesaikan.\n\n"
+                                                . "Agar lebih hemat, Admin memberikan voucher khusus:\n"
+                                                . "*DISKON9000*\n\n"
+                                                . "Potongan langsung Rp9.000 untuk paket yang Kakak pilih.\n"
+                                                . "Berlaku sampai 23.59 WIB malam ini.\n"
+                                                . "Setelah itu voucher akan otomatis berakhir dan tidak dapat digunakan kembali.\n\n"
+                                                . "Lanjutkan pembayaran:\n"
+                                                . "{$linkBayar}\n\n"
+                                                . "Jangan sampai voucher Rp9.000 ini hangus ya, Kak. 😊";
+
+                                            $linkWaMe = $hasWhatsappNumber
+                                                ? 'https://wa.me/' . $phoneClean . '?text=' . urlencode($pesanWA)
+                                                : null;
+                                        @endphp
                                         <tr>
                                             <td></td>
                                             <td>{{ $transaction->order_id }}</td>
@@ -72,6 +105,16 @@
                                             <td class="text-end">
                                                 <div class="d-flex justify-content-end align-items-center gap-2">
                                                     @if ($transaction->status === 'pending')
+                                                        @if ($linkWaMe)
+                                                            <a href="{{ $linkWaMe }}"
+                                                                target="_blank"
+                                                                rel="noopener"
+                                                                class="btn btn-sm btn-success text-white"
+                                                                style="background-color: #25D366; border-color: #25D366;"
+                                                                title="Follow up via WhatsApp">
+                                                                <i class="fe fe-message-circle me-1"></i> Follow Up WA
+                                                            </a>
+                                                        @endif
                                                         <form action="{{ route('admin.transactions.update-status', $transaction->id) }}"
                                                             method="POST" class="confirm-payment-form mb-0">
                                                             @csrf
