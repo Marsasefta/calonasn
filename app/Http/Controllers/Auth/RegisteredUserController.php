@@ -76,6 +76,10 @@ class RegisteredUserController extends Controller
         }
 
         // Jika mendaftar biasa tanpa pilih paket dari homepage, arahkan ke pilih paket
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        
         return redirect()->route('user.pilih-paket');
     }
 }

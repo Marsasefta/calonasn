@@ -45,6 +45,11 @@ class GoogleController extends Controller
                 return redirect()->route('checkout', ['package' => $package])->with('login_success', 'Selamat Datang! Anda berhasil masuk menggunakan Google.');
             }
 
+            $loggedInUser = Auth::user();
+            if ($loggedInUser && $loggedInUser->role === 'admin') {
+                return redirect()->route('admin.dashboard')->with('login_success', 'Selamat Datang Admin!');
+            }
+
             return redirect()->route('user.pilih-paket')->with('login_success', 'Selamat Datang! Anda berhasil masuk menggunakan Google.');
         } catch (Exception $e) {
             return redirect()->route('login')->with('error', 'Gagal masuk menggunakan Google.');
