@@ -75,7 +75,7 @@ class RegisteredUserController extends Controller
             return redirect()->route('checkout', ['package' => $package]);
         }
 
-        // Jika mendaftar biasa tanpa pilih paket dari homepage, arahkan ke dashboard/materi gratis
-        return redirect()->route('dashboard');
+        // Jika mendaftar biasa tanpa pilih paket dari homepage, arahkan ke pilih paket
+        return redirect()->route('user.pilih-paket');
     }
 }

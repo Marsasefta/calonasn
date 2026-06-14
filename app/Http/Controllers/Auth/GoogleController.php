@@ -38,8 +38,14 @@ class GoogleController extends Controller
                 Auth::login($newUser);
             }
 
-            return redirect('/dashboard')->with('login_success', 'Selamat Datang! Anda berhasil masuk menggunakan Google.'); // Alihkan ke halaman utama setelah login
+            // Cek apakah ada session paket (dari URL register?package=...)
+            if (session()->has('selected_package')) {
+                $package = session('selected_package');
+                session()->forget('selected_package');
+                return redirect()->route('checkout', ['package' => $package])->with('login_success', 'Selamat Datang! Anda berhasil masuk menggunakan Google.');
+            }
 
+            return redirect()->route('user.pilih-paket')->with('login_success', 'Selamat Datang! Anda berhasil masuk menggunakan Google.');
         } catch (Exception $e) {
             return redirect()->route('login')->with('error', 'Gagal masuk menggunakan Google.');
         }
