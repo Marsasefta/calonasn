@@ -107,7 +107,7 @@
                                                 <i class="fe fe-scan text-primary me-2 fs-4"></i> QRIS
                                             </button>
                                         </h2>
-                                        <div id="collapseQris" class="accordion-collapse collapse show" aria-labelledby="headingQris" data-bs-parent="#paymentAccordion">
+                                        <div id="collapseQris" class="accordion-collapse collapse " aria-labelledby="headingQris" data-bs-parent="#paymentAccordion">
                                             <div class="accordion-body text-center bg-white py-4">
                                                 <div class="p-2 border rounded d-inline-block bg-white shadow-sm mb-3">
                                                     <img src="{{ asset('image/qris.jpeg') }}" alt="QRIS Payment" class="img-fluid" style="max-width: 220px;">
@@ -123,7 +123,6 @@
                                         </div>
                                     </div>
 
-                                    {{-- Sementara dinonaktifkan
                                     <div class="accordion-item border-0 border-bottom">
                                         <h2 class="accordion-header" id="headingMandiri">
                                             <button class="accordion-button collapsed fw-bold py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMandiri" aria-expanded="false" aria-controls="collapseMandiri">
@@ -177,7 +176,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    --}}
 
                                 </div>
 
