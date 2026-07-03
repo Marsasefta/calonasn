@@ -110,6 +110,17 @@
           </a>
         </li>
 
+        <li class="nav-item mt-3 mb-1 px-3">
+          <span class="section-heading-text">Sistem & Debug</span>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::is('log-viewer*') ? 'active' : '' }}" href="/log-viewer" target="_blank">
+            <i class="fe fe-activity me-2"></i>
+            <span>Log Aplikasi</span>
+          </a>
+        </li>
+
       </ul>
     </div>
 
