@@ -45,6 +45,10 @@ Route::get('/blog/{slug}', [App\Http\Controllers\BlogController::class, 'show'])
 
 Route::view('/demo-cat', 'demo')->name('demo.cat');
 
+// Route Redeem Tryout Gratis
+Route::get('/redeem', [App\Http\Controllers\RedeemController::class, 'index'])->name('redeem.index');
+Route::post('/redeem', [App\Http\Controllers\RedeemController::class, 'process'])->name('redeem.process');
+
 // --- TAMBAHAN ROUTE GOOGLE AUTHENTICATION ---
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
@@ -130,6 +134,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create-tryout', [CreateTryoutController::class, 'createTryout'])->name('create-tryout');
         Route::post('/store-bank-soal', [BankSoalController::class, 'storeBankSoal'])->name('store-bank-soal');
         Route::post('/store-tryout', [CreateTryoutController::class, 'storeTryout'])->name('store-tryout');
+        
+        Route::get('/free-tryout', [App\Http\Controllers\Admin\FreeTryoutController::class, 'index'])->name('free-tryout.index');
+        Route::post('/free-tryout', [App\Http\Controllers\Admin\FreeTryoutController::class, 'store'])->name('free-tryout.store');
+        
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
         Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
         Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('categories.update');

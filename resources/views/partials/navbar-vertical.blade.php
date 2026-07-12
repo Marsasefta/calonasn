@@ -63,6 +63,13 @@
           </a>
         </li>
 
+        <li class="nav-item">
+          <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.free-tryout.*') ? 'active' : '' }}" href="{{ route('admin.free-tryout.index') }}">
+            <i class="fe fe-gift me-2"></i>
+            <span>Tryout Gratis</span>
+          </a>
+        </li>
+
         <li class="nav-item mt-3 mb-1 px-3">
           <span class="section-heading-text">Pemasaran & SEO</span>
         </li>

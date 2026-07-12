@@ -3,25 +3,110 @@
 
 <head>
     @include('partials.head')
-
-    <title>Upgrade Paket Premium</title>
+    <title>Selesaikan Pembayaran | CalonASN.id</title>
     <style>
-        /* Desain kustom agar komponen accordion selaras dengan tema modern */
-        .accordion-button:not(.collapsed) {
-            background-color: rgba(13, 110, 253, 0.05);
-            color: #0d6efd;
-            box-shadow: none;
+        body {
+            background-color: #f8fafc;
         }
-        .accordion-button:focus {
-            box-shadow: none;
-            border-color: rgba(13, 110, 253, 0.25);
+
+        .payment-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            background: #ffffff;
+            transition: transform 0.3s ease;
         }
-        .copy-btn {
+
+        .payment-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .gradient-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%);
+            color: white;
+            padding: 2.5rem 2rem 4rem;
+            text-align: center;
+        }
+
+        .timer-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: inline-block;
+        }
+
+        .qr-wrapper {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 24px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin: -3.5rem auto 2rem;
+            border: 4px solid #f8fafc;
+            position: relative;
+            z-index: 10;
+        }
+
+        .qr-wrapper img {
+            max-width: 220px;
+            border-radius: 12px;
+        }
+
+        .upload-zone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            background: #f8fafc;
+            transition: all 0.3s ease;
             cursor: pointer;
-            transition: all 0.2s ease;
+            position: relative;
         }
-        .copy-btn:hover {
-            opacity: 0.8;
+
+        .upload-zone:hover {
+            border-color: #4f46e5;
+            background: #f1f5f9;
+        }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .btn-glow {
+            background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+            color: white;
+        }
+
+        .price-tag {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0f172a, #334155);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
@@ -30,263 +115,151 @@
     @include('partials.navbar')
     @include('partials.navbar-student')
 
-    <div class="db-content">
-        <div class="container mb-4">
-            <div class="row mb-5">
-                <div class="col-12">
-                    <h1 class="h2 mb-0">Detail Transaksi Pembayaran</h1>
-                </div>
-            </div>
+    <div class="container py-5 mt-3">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-md-10">
 
-            <div class="row">
-                <div class="col-12 col-md-8 offset-md-2">
-
-                    @if (session('info'))
-                        <div class="alert alert-info alert-dismissible fade show" role="alert">
-                            <i class="fe fe-info me-2"></i> {{ session('info') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                aria-label="Close"></button>
-                        </div>
-                    @endif
-
-                    @if (session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="fe fe-check-circle me-2"></i> {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                aria-label="Close"></button>
-                        </div>
-                    @endif
-
-                    <div class="card mb-4 shadow-sm border-0">
-                        <div
-                            class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center py-4">
-                            <div class="mb-3 mb-md-0">
-                                <h4 class="text-dark mb-1">Tagihan: {{ $transaction->invoice_number }}</h4>
-                                <span class="text-muted small">Status:
-                                    @if (empty($transaction->payment_proof))
-                                        <span id="countdown" class="text-danger fw-bold">Menghitung...</span>
-                                    @else
-                                        <span class="text-info fw-bold"><i class="fe fe-refresh-cw me-1"></i>Menunggu
-                                            Verifikasi Admin</span>
-                                    @endif
-                                </span>
-                            </div>
-
-                            <div class="text-md-end text-start bg-light p-3 rounded border">
-                                <span class="text-muted small d-block mb-1">Nominal Tagihan:</span>
-                                <h2 class="fw-bold mb-0 text-primary">
-                                    Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}
-                                </h2>
-
-                                @if ($transaction->discount_amount > 0)
-                                    <div class="mt-2 text-success small fw-bold">
-                                        <i class="fe fe-gift me-1"></i> Hemat Rp
-                                        {{ number_format($transaction->discount_amount, 0, ',', '.') }} dari Promo!
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
+                @if (session('info'))
+                    <div class="alert alert-info border-0 shadow-sm rounded-4 mb-4">
+                        <i class="fe fe-info me-2"></i> {{ session('info') }}
                     </div>
+                @endif
 
-                    <div class="card mb-4 shadow-sm border-0">
+                @if (session('success'))
+                    <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4">
+                        <i class="fe fe-check-circle me-2"></i> {{ session('success') }}
+                    </div>
+                @endif
 
-                        @if (empty($transaction->payment_proof))
-                            {{-- KONDISI A: JIKA BELUM UPLOAD BUKTI (TAMPILKAN PILIHAN METODE ACCORDION & FORM) --}}
-                            <div class="card-header bg-white pt-4 pb-2 border-bottom-0 text-center">
-                                <h3 class="mb-1">Pilih Metode Pembayaran</h3>
-                                <span class="text-muted small">Silakan pilih salah satu opsi pembayaran di bawah ini.</span>
+                <div class="payment-card mb-4">
+
+                    @if (empty($transaction->payment_proof))
+                        <!-- HEADER GRADIENT -->
+                        <div class="gradient-header">
+                            <h2 class="fw-bold mb-2 text-white">Selesaikan Pembayaran</h2>
+                            <p class="text-white-50 mb-4 px-3">Pindai kode QRIS di bawah ini menggunakan aplikasi
+                                E-Wallet atau Mobile Banking Anda.</p>
+
+                            <div class="timer-badge">
+                                <i class="fe fe-clock me-1"></i> Sisa Waktu: <span id="countdown">Menghitung...</span>
                             </div>
+                        </div>
 
-                            <div class="card-body py-2">
-                                
-                                <div class="accordion mb-4 shadow-sm" id="paymentAccordion">
-                                    
-                                    <div class="accordion-item border-0 border-bottom">
-                                        <h2 class="accordion-header" id="headingQris">
-                                            <button class="accordion-button fw-bold py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQris" aria-expanded="true" aria-controls="collapseQris">
-                                                <i class="fe fe-scan text-primary me-2 fs-4"></i> QRIS
-                                            </button>
-                                        </h2>
-                                        <div id="collapseQris" class="accordion-collapse collapse show" aria-labelledby="headingQris" data-bs-parent="#paymentAccordion">
-                                            <div class="accordion-body text-center bg-white py-4">
-                                                <div class="p-2 border rounded d-inline-block bg-white shadow-sm mb-3">
-                                                    <img src="{{ asset('image/qris.jpeg') }}" alt="QRIS Payment" class="img-fluid" style="max-width: 220px;">
-                                                </div>
-                                                <div>
-                                                    <a href="{{ asset('image/qris.jpeg') }}"
-                                                        download="QRIS_Pembayaran_{{ $transaction->invoice_number }}.jpeg"
-                                                        class="btn btn-outline-primary btn-sm fw-bold shadow-sm">
-                                                        <i class="fe fe-download me-2"></i> Simpan / Unduh QRIS
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Sementara dinonaktifkan
-                                    <div class="accordion-item border-0 border-bottom">
-                                        <h2 class="accordion-header" id="headingMandiri">
-                                            <button class="accordion-button collapsed fw-bold py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMandiri" aria-expanded="false" aria-controls="collapseMandiri">
-                                                <i class="fe fe-credit-card text-info me-2"></i> Transfer Bank Mandiri
-                                            </button>
-                                        </h2>
-                                        <div id="collapseMandiri" class="accordion-collapse collapse" aria-labelledby="headingMandiri" data-bs-parent="#paymentAccordion">
-                                            <div class="accordion-body bg-white py-4">
-                                                <div class="bg-light p-3 rounded border">
-                                                    <span class="text-muted small d-block mb-1">Nama Bank:</span>
-                                                    <h5 class="fw-bold text-dark mb-3">Bank Mandiri</h5>
-                                                    
-                                                    <span class="text-muted small d-block mb-1">Nomor Rekening:</span>
-                                                    <div class="d-flex align-items-center mb-3">
-                                                        <h4 class="fw-bold text-primary mb-0 me-3" id="norekMandiri">1370023310705</h4>
-                                                        <button class="btn btn-sm btn-light border copy-btn text-dark py-1 px-2 fw-medium" onclick="copyText('1370023310705', this)">
-                                                            <i class="fe fe-copy me-1"></i>Salin
-                                                        </button>
-                                                    </div>
-
-                                                    <span class="text-muted small d-block mb-1">Nama Pemilik Rekening:</span>
-                                                    <h5 class="fw-bold text-dark mb-0">FENTHA LARI LESMANA</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="accordion-item border-0">
-                                        <h2 class="accordion-header" id="headingBsi">
-                                            <button class="accordion-button collapsed fw-bold py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBsi" aria-expanded="false" aria-controls="collapseBsi">
-                                                <i class="fe fe-credit-card text-success me-2"></i> Transfer Bank BSI
-                                            </button>
-                                        </h2>
-                                        <div id="collapseBsi" class="accordion-collapse collapse" aria-labelledby="headingBsi" data-bs-parent="#paymentAccordion">
-                                            <div class="accordion-body bg-white py-4">
-                                                <div class="bg-light p-3 rounded border">
-                                                    <span class="text-muted small d-block mb-1">Nama Bank:</span>
-                                                    <h5 class="fw-bold text-dark mb-3">Bank Syariah Indonesia (BSI)</h5>
-                                                    
-                                                    <span class="text-muted small d-block mb-1">Nomor Rekening:</span>
-                                                    <div class="d-flex align-items-center mb-3">
-                                                        <h4 class="fw-bold text-primary mb-0 me-3" id="norekBsi">6913630680</h4>
-                                                        <button class="btn btn-sm btn-light border copy-btn text-dark py-1 px-2 fw-medium" onclick="copyText('6913630680', this)">
-                                                            <i class="fe fe-copy me-1"></i>Salin
-                                                        </button>
-                                                    </div>
-
-                                                    <span class="text-muted small d-block mb-1">Nama Pemilik Rekening:</span>
-                                                    <h5 class="fw-bold text-dark mb-0">FENTHA LARI LESMANA</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    --}}
-
-                                </div>
-
-                                <hr class="my-4">
-
-                                <div class="bg-light p-4 rounded border-0">
-                                    <h5 class="fw-bold mb-3">
-                                        <i class="fe fe-check-circle text-success me-2"></i>Konfirmasi Pembayaran
-                                    </h5>
-                                    <p class="text-muted small mb-4">Jika Anda sudah melakukan transfer, wajib
-                                        mengunggah foto struk atau *screenshot* bukti transaksi agar Admin dapat segera
-                                        memverifikasi pesanan Anda.</p>
-
-                                    @if ($errors->any())
-                                        <div class="alert alert-danger border-0 shadow-sm small mb-4">
-                                            <ul class="mb-0 list-unstyled">
-                                                @foreach ($errors->all() as $error)
-                                                    <li><i class="fe fe-alert-circle me-2"></i> {{ $error }}</li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    @endif
-
-                                    <form action="{{ route('payment.upload', $transaction->invoice_number) }}"
-                                        method="POST" enctype="multipart/form-data">
-                                        @csrf
-                                        <div class="mb-4">
-                                            <label for="payment_proof" class="form-label fw-medium text-dark">Pilih File
-                                                Bukti Transfer</label>
-
-                                            <input
-                                                class="form-control form-control-lg bg-white @error('payment_proof') is-invalid @enderror"
-                                                type="file" id="payment_proof" name="payment_proof"
-                                                accept="image/jpeg,image/png,image/jpg" required>
-
-                                            @error('payment_proof')
-                                                <div class="invalid-feedback mt-2 fw-medium">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-
-                                            <div class="form-text mt-2">Format yang diizinkan: JPG, JPEG, PNG. Maksimal
-                                                ukuran file 15MB.</div>
-                                        </div>
-
-                                        <div class="d-grid mt-2">
-                                            <button type="submit" class="btn btn-primary btn-lg">
-                                                Kirim Bukti Pembayaran <i class="fe fe-arrow-right ms-2"></i>
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        @else
-                            {{-- KONDISI B: JIKA SUDAH UPLOAD BUKTI (TAMPILKAN PREVIEW STRUK) --}}
-                            <div class="card-header bg-white pt-4 pb-0 border-bottom-0 text-center">
-                                <h3 class="mb-1 text-success"><i class="fe fe-check-circle me-2"></i>Bukti Berhasil
-                                    Dikirim</h3>
-                                <span class="text-muted small">Berikut adalah bukti transfer yang telah Anda
-                                    unggah.</span>
-                            </div>
-
-                            <div class="card-body py-4 text-center">
-                                <div class="mb-4 mt-2">
-                                    <div class="p-2 border rounded d-inline-block bg-white shadow-sm">
-                                        <img src="{{ asset('storage/' . $transaction->payment_proof) }}"
-                                            alt="Bukti Transfer User" class="img-fluid rounded"
-                                            style="max-width: 300px; max-height: 400px; object-fit: contain;">
-                                    </div>
-                                </div>
-
-                                <div class="alert alert-warning text-start small border-0 shadow-sm mx-md-4 mb-4">
-                                    <h6 class="fw-bold text-warning-dark mb-1"><i class="fe fe-info me-2"></i>Dalam
-                                        Proses Peninjauan</h6>
-                                    Admin sedang mencocokkan mutasi masuk sebesar <strong>Rp
-                                        {{ number_format($transaction->total_amount, 0, ',', '.') }}</strong>. Mohon
-                                    bersabar, halaman ini akan otomatis berubah setelah disetujui oleh Admin.
-                                </div>
-
-                                <div class="d-grid gap-2 mx-md-4">
-                                    <a href="{{ route('riwayat') }}" class="btn btn-primary btn-lg">
-                                        <i class="fe fe-arrow-left me-2"></i>Kembali ke Riwayat
+                        <!-- BODY QR & UPLOAD -->
+                        <div class="card-body px-4 px-md-5 text-center pb-5">
+                            <div class="qr-wrapper">
+                                <img src="{{ asset('image/qris.jpeg') }}" alt="QRIS Payment">
+                                <div class="mt-3">
+                                    <a href="{{ asset('image/qris.jpeg') }}"
+                                        download="QRIS_{{ $transaction->invoice_number }}.jpeg"
+                                        class="text-primary fw-bold small text-decoration-none bg-light px-3 py-2 rounded-pill shadow-sm">
+                                        <i class="fe fe-download me-1"></i> Simpan Kode QR
                                     </a>
                                 </div>
                             </div>
-                        @endif
 
-                    </div>
+                            <div class="mb-4 mt-2">
+                                <p class="text-muted small text-uppercase fw-bold tracking-wider mb-1">Total Pembayaran
+                                </p>
+                                <h1 class="price-tag mb-0 lh-1">Rp
+                                    {{ number_format($transaction->total_amount, 0, ',', '.') }}</h1>
 
+                                @if ($transaction->discount_amount > 0)
+                                    <div class="badge bg-success text-white mt-3 px-3 py-2 rounded-pill shadow-sm">
+                                        <i class="fe fe-gift me-1"></i> Promo Terpakai: Hemat Rp
+                                        {{ number_format($transaction->discount_amount, 0, ',', '.') }}
+                                    </div>
+                                @endif
+
+                                <p class="text-muted small mt-3 mb-0">No. Invoice: <strong
+                                        class="text-dark">{{ $transaction->invoice_number }}</strong></p>
+                            </div>
+
+                            <hr class="my-4 border-light">
+
+                            <h5 class="fw-bold text-dark mb-2">Konfirmasi Pembayaran</h5>
+                            <p class="text-muted small mb-4">Sudah transfer? Wajib unggah bukti transfer/screenshot agar
+                                Admin dapat segera memverifikasi pesanan Anda.</p>
+
+                            @if ($errors->any())
+                                <div class="alert alert-danger border-0 text-start small mb-4 rounded-3 shadow-sm">
+                                    <ul class="mb-0 list-unstyled">
+                                        @foreach ($errors->all() as $error)
+                                            <li><i class="fe fe-alert-circle me-1"></i> {{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            <form action="{{ route('payment.upload', $transaction->invoice_number) }}" method="POST"
+                                enctype="multipart/form-data">
+                                @csrf
+                                <div class="upload-zone mb-4" id="upload-zone">
+                                    <input type="file" id="payment_proof" name="payment_proof"
+                                        accept="image/jpeg,image/png,image/jpg" required
+                                        onchange="previewFileName(this)">
+                                    <i class="fe fe-upload-cloud fs-1 text-primary mb-2 d-block"></i>
+                                    <h6 class="fw-bold mb-1">Klik atau Tarik File Bukti Transfer</h6>
+                                    <p class="text-muted small mb-0" id="file-name">Format JPG, JPEG, PNG (Maks 15MB)
+                                    </p>
+                                </div>
+
+                                <button type="submit" class="btn btn-glow w-100">
+                                    Kirim Bukti Pembayaran <i class="fe fe-arrow-right ms-2"></i>
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        <!-- STATUS REVIEW -->
+                        <div class="gradient-header py-5"
+                            style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding-bottom: 3rem;">
+                            <h2 class="fw-bold mb-2 text-white"><i class="fe fe-check-circle me-2"></i>Bukti Diterima
+                            </h2>
+                            <p class="text-white-50 mb-0">Pembayaran Anda sedang dalam proses verifikasi Admin</p>
+                        </div>
+                        <div class="card-body px-4 px-md-5 text-center pb-5">
+                            <div class="qr-wrapper mt-0 mb-4"
+                                style="border-radius: 16px; padding: 0.5rem; max-width: 250px;">
+                                <img src="{{ asset('storage/' . $transaction->payment_proof) }}"
+                                    alt="Bukti Transfer User" class="img-fluid rounded" style="object-fit: contain;">
+                            </div>
+
+                            <p class="text-muted small text-uppercase fw-bold tracking-wider mb-1">Total Tagihan</p>
+                            <h2 class="fw-bold text-dark mb-4 lh-1">Rp
+                                {{ number_format($transaction->total_amount, 0, ',', '.') }}</h2>
+
+                            <div class="alert bg-light border-0 text-start small p-3 rounded-4 mb-4">
+                                <strong><i class="fe fe-info me-1"></i> Mohon Bersabar</strong><br>
+                                Admin sedang memverifikasi mutasi bank. Halaman ini akan berubah otomatis setelah
+                                transaksi disetujui, atau Anda dapat mengecek status di Riwayat Transaksi.
+                            </div>
+
+                            <a href="{{ route('riwayat') }}"
+                                class="btn btn-outline-primary w-100 py-3 rounded-pill fw-bold">
+                                <i class="fe fe-clock me-2"></i> Cek Riwayat Transaksi
+                            </a>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="text-center mt-3 opacity-75">
+                    <span class="text-muted small fw-medium">Transaksi Aman & Terverifikasi</span>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- SCRIPT TIMER HANYA BERJALAN JIKA BELUM UPLOAD --}}
     @if (empty($transaction->payment_proof))
         <script>
             const expiredDate = new Date("{{ $transaction->expired_at }}").getTime();
-
             const timer = setInterval(function() {
                 const now = new Date().getTime();
                 const distance = expiredDate - now;
 
                 if (distance < 0) {
                     clearInterval(timer);
-                    document.getElementById("countdown").innerHTML = "KEDALUWARSA";
-                    setTimeout(function() {
-                        window.location.reload();
-                    }, 1500);
+                    document.getElementById("countdown").innerHTML = "WAKTU HABIS";
+                    setTimeout(() => window.location.reload(), 1500);
                     return;
                 }
 
@@ -298,34 +271,17 @@
                     String(hours).padStart(2, '0') + ":" +
                     String(minutes).padStart(2, '0') + ":" +
                     String(seconds).padStart(2, '0');
-
             }, 1000);
 
-            // Fungsi pembantu JavaScript untuk menyalin nomor rekening secara instan
-            function copyText(text, element) {
-                navigator.clipboard.writeText(text).then(() => {
-                    const originalText = element.innerHTML;
-                    element.innerHTML = '<i class="fe fe-check me-1"></i>Tersalin!';
-                    element.classList.remove('btn-light');
-                    element.classList.add('btn-success', 'text-white');
-                    
-                    setTimeout(() => {
-                        element.innerHTML = originalText;
-                        element.classList.remove('btn-success', 'text-white');
-                        element.classList.add('btn-light');
-                    }, 2000);
-                }).catch(err => {
-                    console.error('Gagal menyalin teks: ', err);
-                });
+            function previewFileName(input) {
+                const fileName = input.files[0] ? input.files[0].name : "Format JPG, JPEG, PNG (Maks 15MB)";
+                const textElement = document.getElementById('file-name');
+                textElement.innerHTML = `<strong class="text-primary">${fileName}</strong>`;
             }
         </script>
     @endif
 
-    @include('partials.btn-scroll-top')
     @include('partials.scripts')
-    <script src="assets/js/vendors/tnsSlider.js"></script>
-    <script src="assets/js/vendors/chart.js"></script>
-    <script src="assets/js/vendors/navbar-nav.js"></script>
 </body>
 
 </html>
