@@ -115,6 +115,57 @@
             height: 1.2em;
             cursor: pointer;
         }
+
+        /* High Contrast Custom Badges (Override Theme White-Text Bug) */
+        .badge-count-dark {
+            background-color: #e2e8f0 !important;
+            color: #0f172a !important;
+            font-weight: 700 !important;
+            border: 1px solid #cbd5e1 !important;
+        }
+
+        .badge-registered-count {
+            background-color: #eff6ff !important;
+            color: #1d4ed8 !important;
+            font-weight: 700 !important;
+            border: 1px solid #bfdbfe !important;
+        }
+
+        .badge-status-premium {
+            background-color: #fef3c7 !important;
+            color: #78350f !important;
+            font-weight: 700 !important;
+            border: 1px solid #f59e0b !important;
+            box-shadow: 0 1px 2px rgba(245, 158, 11, 0.15) !important;
+        }
+
+        .badge-status-free {
+            background-color: #f1f5f9 !important;
+            color: #1e293b !important;
+            font-weight: 600 !important;
+            border: 1px solid #cbd5e1 !important;
+        }
+
+        .badge-role-admin {
+            background-color: #ede9fe !important;
+            color: #4c1d95 !important;
+            font-weight: 700 !important;
+            border: 1px solid #c4b5fd !important;
+        }
+
+        .badge-role-user {
+            background-color: #f8fafc !important;
+            color: #334155 !important;
+            font-weight: 600 !important;
+            border: 1px solid #cbd5e1 !important;
+        }
+
+        .badge-admin-tag {
+            background-color: #4338ca !important;
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.5px;
+        }
     </style>
 </head>
 
@@ -132,7 +183,7 @@
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-1">
                                 <h1 class="h2 fw-bold text-dark mb-0">Manajemen Pengguna</h1>
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2.5 py-1 rounded-pill">
+                                <span class="badge badge-registered-count px-3 py-1.5 rounded-pill">
                                     {{ $users->count() }} Terdaftar
                                 </span>
                             </div>
@@ -243,7 +294,7 @@
                     <div class="p-3.5 px-4 border-bottom bg-white d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
                         <div class="d-flex align-items-center gap-2">
                             <span class="fw-bold text-dark fs-5">Daftar Pengguna</span>
-                            <span class="badge bg-light text-muted border rounded-pill px-2.5 py-1">
+                            <span class="badge badge-count-dark px-2.5 py-1 rounded-pill">
                                 {{ $users->count() }} data
                             </span>
                         </div>
@@ -349,7 +400,7 @@
                                                             {{ $user->name }}
                                                         </a>
                                                         @if ($user->role === 'admin')
-                                                            <span class="badge rounded-pill" style="background: rgba(99, 102, 241, 0.15); color: #4f46e5; font-size: 0.68rem; font-weight: 700;">
+                                                            <span class="badge badge-admin-tag rounded-pill px-2 py-0.5" style="font-size: 0.65rem;">
                                                                 ADMIN
                                                             </span>
                                                         @endif
@@ -365,12 +416,14 @@
                                         <!-- Role / Peran -->
                                         <td>
                                             @if ($user->role === 'admin')
-                                                <span class="badge px-2.5 py-1.5 rounded-pill fw-semibold" style="background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe;">
-                                                    <i class="fe fe-shield me-1"></i>Administrator
+                                                <span class="badge badge-role-admin px-2.5 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
+                                                    <i class="fe fe-shield" style="color: #6d28d9 !important;"></i>
+                                                    <span>Administrator</span>
                                                 </span>
                                             @else
-                                                <span class="badge px-2.5 py-1.5 rounded-pill fw-normal text-secondary bg-light border">
-                                                    <i class="fe fe-user me-1"></i>Peserta
+                                                <span class="badge badge-role-user px-2.5 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
+                                                    <i class="fe fe-user" style="color: #64748b !important;"></i>
+                                                    <span>Peserta</span>
                                                 </span>
                                             @endif
                                         </td>
@@ -379,13 +432,14 @@
                                         <td>
                                             <div class="d-flex align-items-center gap-2">
                                                 @if ($user->is_premium)
-                                                    <span class="badge px-2.5 py-1.5 rounded-pill fw-bold" 
-                                                          style="background: rgba(245, 158, 11, 0.15); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.3);">
-                                                        <i class="fe fe-star me-1 text-warning"></i>PRO Premium
+                                                    <span class="badge badge-status-premium px-2.5 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
+                                                        <i class="fe fe-award" style="color: #d97706 !important;"></i>
+                                                        <span>PRO Premium</span>
                                                     </span>
                                                 @else
-                                                    <span class="badge px-2.5 py-1.5 rounded-pill fw-medium text-muted bg-light border">
-                                                        Free User
+                                                    <span class="badge badge-status-free px-2.5 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
+                                                        <i class="fe fe-user" style="color: #64748b !important;"></i>
+                                                        <span>Free User</span>
                                                     </span>
                                                 @endif
 
