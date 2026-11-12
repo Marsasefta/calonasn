@@ -36,6 +36,12 @@
                             <form method="POST" action="{{ route('register') }}" class="needs-validation" novalidate>
                                 @csrf
 
+                                {{-- Honeypot anti-bot trap (Tersembunyi dari manusia, otomatis diisi oleh bot spam) --}}
+                                <div class="d-none" style="display: none !important; position: absolute !important; left: -9999px !important;" aria-hidden="true">
+                                    <label for="middle_name_check">Abaikan kolom ini</label>
+                                    <input type="text" name="middle_name_check" id="middle_name_check" tabindex="-1" autocomplete="off" value="" />
+                                </div>
+
                                 <div class="mb-3">
                                     <label for="name" class="form-label">Nama Lengkap</label>
                                     <input type="text" id="name"

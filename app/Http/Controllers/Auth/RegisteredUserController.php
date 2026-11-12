@@ -35,11 +35,49 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // 1. Cek Honeypot (Jika bot mengisi input tersembunyi ini, tolak langsung)
+        if (!empty($request->input('middle_name_check'))) {
+            return back()->withInput()->withErrors([
+                'name' => 'Aktivitas tidak valid atau bot otomatis terdeteksi.',
+            ]);
+        }
+
+        // 2. Cek Anti-Link / HTML Spam pada Nama
+        $rawName = (string) $request->input('name', '');
+        if (preg_match('/<[^>]*>|https?:\/\/|www\.|\.ru\b|\.cc\b|\.xyz\b|href=/i', $rawName)) {
+            return back()->withInput()->withErrors([
+                'name' => 'Nama tidak boleh mengandung tautan website atau tag HTML.',
+            ]);
+        }
+
+        // 3. Cek Domain Email Sementara / Spambot
+        $email = (string) $request->input('email', '');
+        $emailParts = explode('@', $email);
+        $domain = isset($emailParts[1]) ? strtolower(trim($emailParts[1])) : '';
+        $blockedDomains = [
+            'merepost.com', 'fextemp.com', 'notboxletters.com', 'nolettersbox.com',
+            'belettersmail.com', 'tempmail.com', '10minutemail.com', 'guerrillamail.com',
+            'mailinator.com', 'yopmail.com', 'trashmail.com'
+        ];
+        if (in_array($domain, $blockedDomains)) {
+            return back()->withInput()->withErrors([
+                'email' => 'Gunakan alamat email resmi/pribadi (misal: Gmail, Yahoo, dll).',
+            ]);
+        }
+
+        $cleanedName = strip_tags(trim($rawName));
+        $request->merge(['name' => $cleanedName]);
+
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:100', 'regex:/^[\p{L}\s\.,\'\-]+$/u'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'phone' => ['required', 'string', 'max:20'],
+            'phone' => ['required', 'string', 'max:20', 'regex:/^[0-9+\s\-]+$/'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'name.regex' => 'Format nama hanya boleh menggunakan huruf, spasi, titik, koma, tanda petik, atau tanda hubung.',
+            'phone.regex' => 'Nomor WhatsApp / telepon hanya boleh berisi angka dan tanda (+ / -).',
+            'email.unique' => 'Alamat email ini sudah terdaftar sebelumnya.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
         $role = 'user';
