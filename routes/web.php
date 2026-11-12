@@ -19,6 +19,7 @@ use App\Models\LearningCategory;
 
 use App\Http\Controllers\UserTypeController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -219,8 +220,46 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/update-phone', [ProfileController::class, 'updatePhone'])->name('profile.updatePhone');
+});
 
+// Route uji coba pengiriman email (Testing SMTP / Resend)
+Route::get('/test-email', function (\Illuminate\Http\Request $request) {
+    $recipient = $request->query('to');
 
+    if (!$recipient) {
+        $recipient = auth()->user()?->email ?? config('mail.from.address');
+    }
+
+    if (!$recipient || !filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+        return response("Silakan tentukan email tujuan dengan parameter: <code>/test-email?to=emailanda@gmail.com</code>", 400);
+    }
+
+    try {
+        Mail::raw("Halo!\n\nIni adalah email uji coba dari sistem CalonASN pada " . now()->format('d M Y H:i:s') . ".\nJika email ini sampai, berarti konfigurasi SMTP sudah berjalan dengan sukses!", function ($message) use ($recipient) {
+            $message->to($recipient)
+                    ->subject('Test Koneksi Email CalonASN - ' . now()->format('H:i:s'));
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'message' => "Email uji coba berhasil dikirim ke: {$recipient}",
+            'mailer' => config('mail.default'),
+            'host' => config('mail.mailers.smtp.host'),
+            'port' => config('mail.mailers.smtp.port'),
+            'encryption' => config('mail.mailers.smtp.encryption'),
+            'from' => config('mail.from.address'),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Gagal mengirim email: ' . $e->getMessage(),
+            'mailer' => config('mail.default'),
+            'host' => config('mail.mailers.smtp.host'),
+            'port' => config('mail.mailers.smtp.port'),
+            'encryption' => config('mail.mailers.smtp.encryption'),
+            'from' => config('mail.from.address'),
+        ], 500);
+    }
 });
 
 require __DIR__.'/auth.php';
