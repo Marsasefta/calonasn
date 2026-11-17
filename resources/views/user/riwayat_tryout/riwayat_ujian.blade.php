@@ -26,8 +26,7 @@
                     <div class="card shadow-sm border-0">
                         <div class="table-responsive">
                             <table class="table text-nowrap mb-0 table-hover">
-                                <table class="table text-nowrap mb-0 table-hover">
-                                    <thead class="table-light">
+                                <thead class="table-light">
                                         <tr>
                                             <th>Tanggal</th>
                                             <th>Nama Tryout</th>
