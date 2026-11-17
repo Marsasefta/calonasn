@@ -380,13 +380,65 @@
         .fe-arrow-right {
             transition: transform 0.2s ease;
         }
+
+        /* 2026 Modern Landing Dark Mode & Section Themes */
+        .hero-section-2026 {
+            background: radial-gradient(circle at 85% 20%, rgba(59, 130, 246, 0.08) 0%, rgba(248, 250, 252, 0) 60%), linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+        }
+        [data-bs-theme="dark"] .hero-section-2026 {
+            background: radial-gradient(circle at 85% 20%, rgba(59, 130, 246, 0.15) 0%, rgba(15, 23, 42, 0) 60%), linear-gradient(180deg, #090d16 0%, #0f172a 100%) !important;
+        }
+
+        .section-paket {
+            background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+        }
+        [data-bs-theme="dark"] .section-paket {
+            background: linear-gradient(180deg, #0b1324 0%, #0f172a 100%) !important;
+        }
+
+        .bento-card-highlight {
+            background: linear-gradient(135deg, #f8fafc 0%, #edf4fe 100%);
+            border: 1px solid rgba(226, 232, 240, 0.8) !important;
+        }
+        [data-bs-theme="dark"] .bento-card-highlight {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+            border-color: #334155 !important;
+        }
+
+        .section-blog,
+        .section-bottom-cta {
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        }
+        [data-bs-theme="dark"] .section-blog,
+        [data-bs-theme="dark"] .section-bottom-cta {
+            background: linear-gradient(180deg, #0b1324 0%, #0f172a 100%) !important;
+        }
+
+        .badge-paket-latihan {
+            background: #f1f5f9;
+            color: #475569 !important;
+        }
+        [data-bs-theme="dark"] .badge-paket-latihan {
+            background: #334155 !important;
+            color: #e2e8f0 !important;
+        }
+
+        .badge-bkn-tag {
+            background: #ffffff;
+            color: #1e40af !important;
+        }
+        [data-bs-theme="dark"] .badge-bkn-tag {
+            background: rgba(59, 130, 246, 0.2) !important;
+            color: #93c5fd !important;
+            border-color: rgba(59, 130, 246, 0.4) !important;
+        }
     </style>
 @endpush
 
 @section('content')
     <main>
         <!-- HERO SECTION 2026 -->
-        <section class="py-xl-8 py-5 position-relative overflow-hidden" style="background: radial-gradient(circle at 85% 20%, rgba(59, 130, 246, 0.08) 0%, rgba(248, 250, 252, 0) 60%), linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);">
+        <section class="hero-section-2026 py-xl-8 py-5 position-relative overflow-hidden">
             <!-- Ambient Glow Blobs -->
             <div class="hero-glow-blob bg-primary" style="top: -80px; right: -80px; width: 350px; height: 350px;"></div>
             <div class="hero-glow-blob bg-success" style="bottom: 20px; right: 25%; width: 280px; height: 280px;"></div>
@@ -610,7 +662,7 @@
         </section>
 
         <!-- SECTION PAKET & PRICING 2026 -->
-        <section id="paket" class="py-xl-9 py-6 position-relative" style="background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);">
+        <section id="paket" class="section-paket py-xl-9 py-6 position-relative">
             <div class="container position-relative" style="z-index: 1;">
                 <!-- Header Section -->
                 <div class="row justify-content-center text-center mb-5">
@@ -650,7 +702,7 @@
                              style="border: 1px solid rgba(226, 232, 240, 0.9) !important;">
                             <div class="mb-4">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="badge rounded-pill px-3 py-1 fw-bold small text-uppercase" style="background: #f1f5f9; color: #475569 !important;">
+                                    <span class="badge badge-paket-latihan rounded-pill px-3 py-1 fw-bold small text-uppercase">
                                         Paket Latihan
                                     </span>
                                 </div>
@@ -900,14 +952,13 @@
                 <div class="row g-4">
                     <!-- Bento 1: Fitur Utama (Besar - col-lg-7) -->
                     <div class="col-lg-7 col-12">
-                        <div class="card h-100 rounded-4 border-0 shadow-sm p-4 p-md-5 overflow-hidden position-relative hover-lift"
-                             style="background: linear-gradient(135deg, #f8fafc 0%, #edf4fe 100%); border: 1px solid rgba(226, 232, 240, 0.8) !important;">
+                        <div class="card bento-card-highlight h-100 rounded-4 border-0 shadow-sm p-4 p-md-5 overflow-hidden position-relative hover-lift">
                             
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="badge bg-primary text-white rounded-pill px-3 py-1 fw-bold small">
                                     FITUR UTAMA
                                 </span>
-                                <span class="badge rounded-pill px-2.5 py-1 small fw-bold border border-primary border-opacity-25" style="background: #ffffff; color: #1e40af !important;">
+                                <span class="badge badge-bkn-tag rounded-pill px-2.5 py-1 small fw-bold border border-primary border-opacity-25">
                                     Presisi 100% BKN
                                 </span>
                             </div>
@@ -1114,7 +1165,7 @@
         </section>
 
         <!-- SECTION BLOG & KISI-KISI CPNS 2026 -->
-        <section id="blog" class="py-xl-9 py-6 position-relative" style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);">
+        <section id="blog" class="section-blog py-xl-9 py-6 position-relative">
             <div class="container position-relative">
                 <div class="row align-items-end mb-5">
                     <div class="col-md-8 col-12 text-center text-md-start">
@@ -1337,7 +1388,7 @@
         </section>
 
         <!-- SECTION FINAL CTA BANNER 2026 -->
-        <section class="py-xl-8 py-6 position-relative overflow-hidden" style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);">
+        <section class="section-bottom-cta py-xl-8 py-6 position-relative overflow-hidden">
             <div class="container position-relative" style="z-index: 1;">
                 <div class="rounded-5 p-5 p-md-7 text-center position-relative overflow-hidden shadow-2xl" 
                      style="background: radial-gradient(100% 100% at 50% 0%, #1e3a8a 0%, #0f172a 100%); border: 1px solid rgba(59, 130, 246, 0.3);">

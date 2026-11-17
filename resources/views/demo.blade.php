@@ -18,14 +18,18 @@
         }
 
         body {
-            background-color: #ffffff;
+            background-color: var(--bs-body-bg, #ffffff);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         .hero-section {
-            background: linear-gradient(135deg, var(--color-light-blue) 0%, #ffffff 100%);
+            background: linear-gradient(135deg, var(--color-light-blue) 0%, var(--bs-body-bg, #ffffff) 100%);
             position: relative;
             overflow: hidden;
+        }
+
+        [data-bs-theme="dark"] .hero-section {
+            background: radial-gradient(circle at 85% 20%, rgba(59, 130, 246, 0.15) 0%, rgba(15, 23, 42, 0) 60%), linear-gradient(180deg, #090d16 0%, #0f172a 100%) !important;
         }
 
         .hero-section::before {

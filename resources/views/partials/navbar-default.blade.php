@@ -2,9 +2,7 @@
     <div class="container">
         <!-- Brand Logo -->
         <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url('/') }}">
-            <div class="bg-primary bg-gradient text-white rounded-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px;">
-                <i class="fe fe-award fs-4"></i>
-            </div>
+            <img src="{{ asset('image/logoasn-96.png') }}" alt="Logo CalonASN" width="38" height="38" class="rounded-3 shadow-xs me-1">
             <span class="fs-4 fw-bold text-dark">
                 CalonASN<span class="text-primary">.id</span>
             </span>

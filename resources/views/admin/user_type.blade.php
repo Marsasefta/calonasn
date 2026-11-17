@@ -221,6 +221,67 @@
             font-weight: 800 !important;
             letter-spacing: 0.5px;
         }
+
+        /* Dark Mode High-Contrast Overrides */
+        [data-bs-theme="dark"] .badge-pkg-lengkap {
+            background-color: rgba(30, 58, 138, 0.45) !important;
+            color: #93c5fd !important;
+            border-color: #3b82f6 !important;
+        }
+        [data-bs-theme="dark"] .badge-pkg-lengkap * {
+            color: #93c5fd !important;
+        }
+        [data-bs-theme="dark"] .badge-pkg-lengkap .bi-star-fill {
+            color: #fbbf24 !important;
+        }
+
+        [data-bs-theme="dark"] .badge-pkg-tryout {
+            background-color: rgba(217, 119, 6, 0.35) !important;
+            color: #fde68a !important;
+            border-color: #f59e0b !important;
+        }
+        [data-bs-theme="dark"] .badge-pkg-tryout * {
+            color: #fde68a !important;
+        }
+        [data-bs-theme="dark"] .badge-pkg-tryout .bi-check-circle-fill {
+            color: #34d399 !important;
+        }
+
+        [data-bs-theme="dark"] .badge-pkg-manual {
+            background-color: rgba(14, 165, 233, 0.35) !important;
+            color: #7dd3fc !important;
+            border-color: #0284c7 !important;
+        }
+        [data-bs-theme="dark"] .badge-pkg-manual * {
+            color: #7dd3fc !important;
+        }
+
+        [data-bs-theme="dark"] .badge-pkg-free {
+            background-color: rgba(51, 65, 85, 0.6) !important;
+            color: #cbd5e1 !important;
+            border-color: #475569 !important;
+        }
+        [data-bs-theme="dark"] .badge-pkg-free * {
+            color: #cbd5e1 !important;
+        }
+
+        [data-bs-theme="dark"] .badge-role-admin {
+            background-color: rgba(109, 40, 217, 0.4) !important;
+            color: #c4b5fd !important;
+            border-color: #7c3aed !important;
+        }
+        [data-bs-theme="dark"] .badge-role-admin * {
+            color: #c4b5fd !important;
+        }
+
+        [data-bs-theme="dark"] .badge-role-user {
+            background-color: rgba(51, 65, 85, 0.5) !important;
+            color: #cbd5e1 !important;
+            border-color: #475569 !important;
+        }
+        [data-bs-theme="dark"] .badge-role-user * {
+            color: #cbd5e1 !important;
+        }
     </style>
 </head>
 
@@ -531,7 +592,7 @@
                                                            {{ $user->is_premium ? 'checked' : '' }} />
                                                 </div>
                                             </div>
-                                            <small class="d-block mt-1 fw-semibold" style="font-size: 0.75rem; color: #64748b !important;">
+                                            <small class="d-block mt-1 fw-semibold text-muted" style="font-size: 0.75rem;">
                                                 {{ $user->package_sublabel ?? ($user->is_premium ? 'PRO Aktif' : 'Belum Beli') }}
                                             </small>
                                         </td>
