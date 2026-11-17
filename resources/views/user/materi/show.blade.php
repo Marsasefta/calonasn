@@ -49,7 +49,7 @@
     @include('partials.navbar')
     @include('partials.navbar-student')
 
-    <div class="db-content text-dark">
+    <div class="db-content">
         <div class="container-fluid py-4">
             <span
                 class="badge bg-{{ $category->color_theme ?? 'primary' }}-soft text-{{ $category->color_theme ?? 'primary' }} border border-{{ $category->color_theme ?? 'primary' }} px-3 py-2 rounded-pill mb-3 fw-bold">

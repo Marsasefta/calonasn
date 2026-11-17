@@ -13,7 +13,7 @@
     <!-- Sidebar -->
     @include('partials.navbar-student')
 
-    <div class="db-content text-dark">
+    <div class="db-content">
         @php
             $lulus = true; // Set awal true, lalu uji dengan perulangan di bawah
             foreach ($hasilPerKategori as $hasil) {

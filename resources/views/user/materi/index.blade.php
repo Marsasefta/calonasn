@@ -23,7 +23,7 @@
     @include('partials.navbar')
     @include('partials.navbar-student')
 
-    <div class="db-content text-dark">
+    <div class="db-content">
         <div class="container-fluid py-4">
 
             <div class="row mb-4">

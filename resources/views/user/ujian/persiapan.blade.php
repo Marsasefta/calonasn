@@ -13,7 +13,7 @@
     <!-- Sidebar -->
     @include('partials.navbar-student')
 
-    <div class="db-content text-dark">
+    <div class="db-content">
         <div class="container-fluid mb-4">
             <div class="row align-items-center mb-4 bg-white p-3 shadow-sm rounded">
                 <div class="col-md-6">

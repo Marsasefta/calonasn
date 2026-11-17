@@ -54,7 +54,7 @@
     <!-- Sidebar -->
     @include('partials.navbar-student')
 
-    <div class="db-content text-dark">
+    <div class="db-content">
         <div class="container py-4">
             <!-- Print Header (Tampil saat dicetak/disimpan ke PDF) -->
             <div class="print-header">

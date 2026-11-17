@@ -46,7 +46,7 @@
     <!-- Sidebar -->
     @include('partials.navbar-student')
 
-    <div class="db-content text-dark">
+    <div class="db-content">
         <div class="container-fluid mb-5 px-3 px-md-4">
 
             <!-- Header Section -->

@@ -16,7 +16,7 @@
     </style>
 </head>
 
-<body class="bg-white">
+<body class="bg-body">
     @include('partials.navbar-default')
 
     @yield('content')

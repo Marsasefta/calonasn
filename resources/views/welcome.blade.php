@@ -17,13 +17,21 @@
             --shadow-large: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
+        [data-bs-theme="dark"] {
+            --color-light: #1e293b;
+            --color-light-blue: #0f172a;
+            --color-text-dark: #f8fafc;
+            --color-text-muted: #94a3b8;
+        }
+
         body {
-            background-color: #ffffff;
+            background-color: var(--bs-body-bg, #ffffff);
+            color: var(--bs-body-color, #334155);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         .hero-section {
-            background: linear-gradient(135deg, var(--color-light-blue) 0%, #ffffff 100%);
+            background: linear-gradient(135deg, var(--color-light-blue) 0%, var(--bs-body-bg, #ffffff) 100%);
             position: relative;
             overflow: hidden;
         }
@@ -1020,7 +1028,7 @@
         </section>
 
         <!-- SECTION 3 LANGKAH MUDAH 2026 -->
-        <section id="cara-mulai" class="py-xl-9 py-6 position-relative overflow-hidden" style="background: #f8fafc;">
+        <section id="cara-mulai" class="py-xl-9 py-6 position-relative overflow-hidden bg-light">
             <div class="container position-relative" style="z-index: 1;">
                 <div class="row justify-content-center text-center mb-5">
                     <div class="col-lg-7 col-12">
@@ -1225,53 +1233,50 @@
                         <div class="accordion modern-faq" id="faqAccordion">
 
                             <!-- FAQ 1 -->
-                            <div class="accordion-item mb-3 border rounded-4 shadow-xs overflow-hidden" 
-                                 style="border-color: #e2e8f0 !important; background: #ffffff;">
+                            <div class="accordion-item mb-3 border rounded-4 shadow-xs overflow-hidden">
                                 <h2 class="accordion-header" id="headingOne">
-                                    <button class="accordion-button collapsed bg-transparent shadow-none fw-bold text-dark fs-5 py-4 px-4"
+                                    <button class="accordion-button collapsed shadow-none fw-bold text-dark fs-5 py-4 px-4"
                                             type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
                                             aria-expanded="false" aria-controls="collapseOne">
                                         Apakah harus install aplikasi di HP/Laptop?
                                     </button>
                                 </h2>
                                 <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body text-dark px-4 pb-4 pt-0" style="line-height: 1.7; color: #475569 !important;">
+                                    <div class="accordion-body px-4 pb-4 pt-0 text-muted" style="line-height: 1.7;">
                                         <strong class="text-dark">Tentu saja tidak!</strong> CalonASN.id berbasis 100% Cloud Web App. Kamu bisa langsung mengerjakan Tryout dari browser modern (Chrome, Safari, Edge) di HP, Tablet, maupun Laptop kapan saja dan di mana saja tanpa membebani memori penyimpanan perangkatmu.
                                     </div>
                                 </div>
                             </div>
 
                             <!-- FAQ 2 -->
-                            <div class="accordion-item mb-3 border rounded-4 shadow-xs overflow-hidden"
-                                 style="border-color: #e2e8f0 !important; background: #ffffff;">
+                            <div class="accordion-item mb-3 border rounded-4 shadow-xs overflow-hidden">
                                 <h2 class="accordion-header" id="headingTwo">
-                                    <button class="accordion-button collapsed bg-transparent shadow-none fw-bold text-dark fs-5 py-4 px-4"
+                                    <button class="accordion-button collapsed shadow-none fw-bold text-dark fs-5 py-4 px-4"
                                             type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
                                             aria-expanded="false" aria-controls="collapseTwo">
                                         Apakah bank soal sudah disesuaikan dengan kisi-kisi resmi BKN 2026?
                                     </button>
                                 </h2>
                                 <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body text-dark px-4 pb-4 pt-0" style="line-height: 1.7; color: #475569 !important;">
-                                        <strong>Ya, 100% disesuaikan.</strong> Tim penyusun materi kami selalu memantau pembaruan regulasi KemenPAN-RB dan kisi-kisi resmi BKN. Tryout mencakup proporsi presisi: <strong>30 soal TWK</strong>, <strong>35 soal TIU</strong>, dan <strong>45 soal TKP</strong> dengan dominasi soal tipe penalaran analisis <strong>HOTS (Higher Order Thinking Skills)</strong> terbaru.
+                                    <div class="accordion-body px-4 pb-4 pt-0 text-muted" style="line-height: 1.7;">
+                                        <strong class="text-dark">Ya, 100% disesuaikan.</strong> Tim penyusun materi kami selalu memantau pembaruan regulasi KemenPAN-RB dan kisi-kisi resmi BKN. Tryout mencakup proporsi presisi: <strong>30 soal TWK</strong>, <strong>35 soal TIU</strong>, dan <strong>45 soal TKP</strong> dengan dominasi soal tipe penalaran analisis <strong>HOTS (Higher Order Thinking Skills)</strong> terbaru.
                                     </div>
                                 </div>
                             </div>
 
                             <!-- FAQ 3 -->
-                            <div class="accordion-item mb-3 border rounded-4 shadow-xs overflow-hidden"
-                                 style="border-color: #e2e8f0 !important; background: #ffffff;">
+                            <div class="accordion-item mb-3 border rounded-4 shadow-xs overflow-hidden">
                                 <h2 class="accordion-header" id="headingThree">
-                                    <button class="accordion-button collapsed bg-transparent shadow-none fw-bold text-dark fs-5 py-4 px-4"
+                                    <button class="accordion-button collapsed shadow-none fw-bold text-dark fs-5 py-4 px-4"
                                             type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree"
                                             aria-expanded="false" aria-controls="collapseThree">
                                         Berapa kali saya bisa mengerjakan paket Tryout Premium?
                                     </button>
                                 </h2>
                                 <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body text-dark px-4 pb-4 pt-0" style="line-height: 1.7; color: #475569 !important;">
-                                        Sistem kami sangat bersahabat: <strong>Beli sesuai kebutuhan tanpa langganan bulanan mahal!</strong> Satu kali pembayaran memberi hak ujian 1 paket Tryout lengkap (110 butir soal).
-                                        <div class="mt-2 p-3 rounded-3" style="background: #f8fafc; border-left: 3px solid #2563eb;">
+                                    <div class="accordion-body px-4 pb-4 pt-0 text-muted" style="line-height: 1.7;">
+                                        Sistem kami sangat bersahabat: <strong class="text-dark">Beli sesuai kebutuhan tanpa langganan bulanan mahal!</strong> Satu kali pembayaran memberi hak ujian 1 paket Tryout lengkap (110 butir soal).
+                                        <div class="mt-2 p-3 rounded-3 bg-light border-start border-3 border-primary">
                                             <i class="fe fe-check-circle text-primary me-1"></i> Setelah selesai ujian, akses ke <strong>Skor, Analisis Passing Grade, Kunci Jawaban, dan Trik Pembahasan Cepat</strong> terbuka <strong>selamanya</strong> untuk dipelajari ulang kapan pun kamu mau.
                                         </div>
                                     </div>
@@ -1279,35 +1284,33 @@
                             </div>
 
                             <!-- FAQ 4 -->
-                            <div class="accordion-item mb-3 border rounded-4 shadow-xs overflow-hidden"
-                                 style="border-color: #e2e8f0 !important; background: #ffffff;">
+                            <div class="accordion-item mb-3 border rounded-4 shadow-xs overflow-hidden">
                                 <h2 class="accordion-header" id="headingFour">
-                                    <button class="accordion-button collapsed bg-transparent shadow-none fw-bold text-dark fs-5 py-4 px-4"
+                                    <button class="accordion-button collapsed shadow-none fw-bold text-dark fs-5 py-4 px-4"
                                             type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour"
                                             aria-expanded="false" aria-controls="collapseFour">
                                         Bagaimana sistem penilaian dan pembahasan tryout bekerja?
                                     </button>
                                 </h2>
                                 <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body text-dark px-4 pb-4 pt-0" style="line-height: 1.7; color: #475569 !important;">
-                                        Begitu waktu habis atau tombol "Selesai Ujian" diklik, sistem mesin kami secara otomatis mengkalkulasi skormu secara instan: bobot benar 5/0 untuk TWK & TIU, serta skala 1–5 untuk TKP. Kamu langsung mengetahui status <strong>Lolos / Tidak Lolos Passing Grade</strong> beserta kunci dan rumus eliminasi opsi trik 1 menit.
+                                    <div class="accordion-body px-4 pb-4 pt-0 text-muted" style="line-height: 1.7;">
+                                        Begitu waktu habis atau tombol "Selesai Ujian" diklik, sistem mesin kami secara otomatis mengkalkulasi skormu secara instan: bobot benar 5/0 untuk TWK & TIU, serta skala 1–5 untuk TKP. Kamu langsung mengetahui status <strong class="text-dark">Lolos / Tidak Lolos Passing Grade</strong> beserta kunci dan rumus eliminasi opsi trik 1 menit.
                                     </div>
                                 </div>
                             </div>
 
                             <!-- FAQ 5 -->
-                            <div class="accordion-item mb-3 border rounded-4 shadow-xs overflow-hidden"
-                                 style="border-color: #e2e8f0 !important; background: #ffffff;">
+                            <div class="accordion-item mb-3 border rounded-4 shadow-xs overflow-hidden">
                                 <h2 class="accordion-header" id="headingFive">
-                                    <button class="accordion-button collapsed bg-transparent shadow-none fw-bold text-dark fs-5 py-4 px-4"
+                                    <button class="accordion-button collapsed shadow-none fw-bold text-dark fs-5 py-4 px-4"
                                             type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive"
                                             aria-expanded="false" aria-controls="collapseFive">
                                         Metode pembayaran apa saja yang didukung?
                                     </button>
                                 </h2>
                                 <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body text-dark px-4 pb-4 pt-0" style="line-height: 1.7; color: #475569 !important;">
-                                        Kami mendukung pembayaran instan via <strong>QRIS</strong> standar Bank Indonesia yang kompatibel dengan seluruh aplikasi m-Banking (BCA, Mandiri, BRI, BNI, BSI) serta e-Wallet (GoPay, OVO, Dana, ShopeePay, LinkAja). Jangan lupa gunakan voucher <strong>ASN2026</strong> saat checkout untuk potongan langsung Rp 7.000!
+                                    <div class="accordion-body px-4 pb-4 pt-0 text-muted" style="line-height: 1.7;">
+                                        Kami mendukung pembayaran instan via <strong class="text-dark">QRIS</strong> standar Bank Indonesia yang kompatibel dengan seluruh aplikasi m-Banking (BCA, Mandiri, BRI, BNI, BSI) serta e-Wallet (GoPay, OVO, Dana, ShopeePay, LinkAja). Jangan lupa gunakan voucher <strong>ASN2026</strong> saat checkout untuk potongan langsung Rp 7.000!
                                     </div>
                                 </div>
                             </div>
