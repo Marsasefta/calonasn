@@ -146,6 +146,61 @@
             border: 1px solid #cbd5e1 !important;
         }
 
+        /* High Contrast Custom Badges for Package Status (Fix White-Text Bug) */
+        .badge-pkg-lengkap {
+            background-color: #dbeafe !important;
+            color: #1e40af !important;
+            font-weight: 700 !important;
+            border: 1px solid #93c5fd !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+        .badge-pkg-lengkap * {
+            color: #1e40af !important;
+        }
+        .badge-pkg-lengkap .bi-star-fill {
+            color: #d97706 !important;
+        }
+
+        .badge-pkg-tryout {
+            background-color: #fef3c7 !important;
+            color: #92400e !important;
+            font-weight: 700 !important;
+            border: 1px solid #fcd34d !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+        .badge-pkg-tryout * {
+            color: #92400e !important;
+        }
+        .badge-pkg-tryout .bi-check-circle-fill {
+            color: #16a34a !important;
+        }
+
+        .badge-pkg-manual {
+            background-color: #e0f2fe !important;
+            color: #0369a1 !important;
+            font-weight: 700 !important;
+            border: 1px solid #7dd3fc !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+        .badge-pkg-manual * {
+            color: #0369a1 !important;
+        }
+
+        .badge-pkg-free {
+            background-color: #f1f5f9 !important;
+            color: #334155 !important;
+            font-weight: 600 !important;
+            border: 1px solid #cbd5e1 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+        .badge-pkg-free * {
+            color: #334155 !important;
+        }
+
         .badge-role-admin {
             background-color: #ede9fe !important;
             color: #4c1d95 !important;
@@ -448,24 +503,24 @@
                                         <td>
                                             <div class="d-flex align-items-center gap-2">
                                                 @if (($user->package_status ?? '') === 'lengkap')
-                                                    <span class="badge bg-primary-subtle text-primary border border-primary border-opacity-25 px-2.5 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
-                                                        <i class="bi bi-star-fill text-warning" style="font-size: 0.75rem;"></i>
+                                                    <span class="badge badge-pkg-lengkap px-2.5 py-1.5 rounded-pill gap-1.5 shadow-sm">
+                                                        <i class="bi bi-star-fill text-warning" style="font-size: 0.8rem;"></i>
                                                         <span class="fw-bold">Paket Lengkap</span>
                                                     </span>
                                                 @elseif (($user->package_status ?? '') === 'tryout')
-                                                    <span class="badge bg-warning-subtle text-dark border border-warning px-2.5 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
-                                                        <i class="bi bi-check-circle-fill text-success" style="font-size: 0.75rem;"></i>
+                                                    <span class="badge badge-pkg-tryout px-2.5 py-1.5 rounded-pill gap-1.5 shadow-sm">
+                                                        <i class="bi bi-check-circle-fill text-success" style="font-size: 0.8rem;"></i>
                                                         <span class="fw-bold">Tryout Saja</span>
                                                     </span>
                                                 @elseif (($user->package_status ?? '') === 'manual')
-                                                    <span class="badge bg-info-subtle text-info border border-info border-opacity-25 px-2.5 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
-                                                        <i class="fe fe-award text-info" style="font-size: 0.75rem;"></i>
+                                                    <span class="badge badge-pkg-manual px-2.5 py-1.5 rounded-pill gap-1.5 shadow-sm">
+                                                        <i class="fe fe-award text-info" style="font-size: 0.8rem;"></i>
                                                         <span class="fw-bold">PRO Khusus</span>
                                                     </span>
                                                 @else
-                                                    <span class="badge bg-light text-muted border px-2.5 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
-                                                        <i class="fe fe-user text-secondary" style="font-size: 0.75rem;"></i>
-                                                        <span>Free User</span>
+                                                    <span class="badge badge-pkg-free px-2.5 py-1.5 rounded-pill gap-1.5">
+                                                        <i class="fe fe-user text-secondary" style="font-size: 0.8rem;"></i>
+                                                        <span class="fw-semibold">Free User</span>
                                                     </span>
                                                 @endif
 
@@ -476,7 +531,7 @@
                                                            {{ $user->is_premium ? 'checked' : '' }} />
                                                 </div>
                                             </div>
-                                            <small class="text-muted d-block mt-0.5" style="font-size: 0.72rem;">
+                                            <small class="d-block mt-1 fw-semibold" style="font-size: 0.75rem; color: #64748b !important;">
                                                 {{ $user->package_sublabel ?? ($user->is_premium ? 'PRO Aktif' : 'Belum Beli') }}
                                             </small>
                                         </td>
