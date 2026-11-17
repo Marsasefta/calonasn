@@ -235,7 +235,7 @@
         </div>
 
         <div class="d-flex align-items-center mb-3">
-            <h5 class="fw-bold text-dark mb-0 me-2">Analisis & Peringkat Nasional</h5>
+            <h5 class="fw-bold text-dark mb-0 me-2">Statistik & Evaluasi Belajar Kamu</h5>
             @if ($hasCompletedExam)
                 <span class="badge bg-success-subtle text-success rounded-pill"><i class="bi bi-unlock-fill me-1"></i> Aktif</span>
             @else

@@ -233,7 +233,23 @@
                         </div>
                     </div>
 
-                    <!-- User Premium -->
+                    <!-- Paket Lengkap -->
+                    <div class="col-xl-3 col-sm-6 col-12">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 p-1" style="border: 1px solid #e2e8f0 !important;">
+                            <div class="card-body d-flex align-items-center gap-3">
+                                <div class="rounded-3 d-flex align-items-center justify-content-center" 
+                                     style="width: 48px; height: 48px; background: rgba(37, 99, 235, 0.15); color: #2563eb;">
+                                    <i class="bi bi-star-fill fs-3 text-warning"></i>
+                                </div>
+                                <div>
+                                    <span class="d-block text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.5px;">Paket Lengkap</span>
+                                    <h3 class="fw-bold mb-0 text-dark">{{ $users->where('package_status', 'lengkap')->count() }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tryout Saja -->
                     <div class="col-xl-3 col-sm-6 col-12">
                         <div class="card border-0 shadow-sm rounded-4 h-100 p-1" style="border: 1px solid #e2e8f0 !important;">
                             <div class="card-body d-flex align-items-center gap-3">
@@ -242,24 +258,8 @@
                                     <i class="fe fe-award fs-3"></i>
                                 </div>
                                 <div>
-                                    <span class="d-block text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.5px;">Akun Premium</span>
-                                    <h3 class="fw-bold mb-0 text-dark">{{ $users->where('is_premium', true)->count() }}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- User Gratis / Free -->
-                    <div class="col-xl-3 col-sm-6 col-12">
-                        <div class="card border-0 shadow-sm rounded-4 h-100 p-1" style="border: 1px solid #e2e8f0 !important;">
-                            <div class="card-body d-flex align-items-center gap-3">
-                                <div class="rounded-3 d-flex align-items-center justify-content-center" 
-                                     style="width: 48px; height: 48px; background: rgba(100, 116, 139, 0.1); color: #475569;">
-                                    <i class="fe fe-user fs-3"></i>
-                                </div>
-                                <div>
-                                    <span class="d-block text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.5px;">Akun Gratis</span>
-                                    <h3 class="fw-bold mb-0 text-dark">{{ $users->where('is_premium', false)->count() }}</h3>
+                                    <span class="d-block text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.5px;">Tryout Saja</span>
+                                    <h3 class="fw-bold mb-0 text-dark">{{ $users->where('package_status', 'tryout')->count() }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -304,11 +304,14 @@
                             <button type="button" class="filter-pill-btn active" data-filter="all">
                                 Semua ({{ $users->count() }})
                             </button>
-                            <button type="button" class="filter-pill-btn" data-filter="premium">
-                                👑 Premium ({{ $users->where('is_premium', true)->count() }})
+                            <button type="button" class="filter-pill-btn" data-filter="lengkap">
+                                ⭐ Paket Lengkap ({{ $users->where('package_status', 'lengkap')->count() }})
+                            </button>
+                            <button type="button" class="filter-pill-btn" data-filter="tryout">
+                                📝 Tryout Saja ({{ $users->where('package_status', 'tryout')->count() }})
                             </button>
                             <button type="button" class="filter-pill-btn" data-filter="free">
-                                Free ({{ $users->where('is_premium', false)->count() }})
+                                Free ({{ $users->where('package_status', 'free')->count() }})
                             </button>
                             <button type="button" class="filter-pill-btn" data-filter="whatsapp">
                                 💬 Punya WA ({{ $totalWithPhone }})
@@ -368,19 +371,32 @@
                                         ];
                                         $avatarStyle = $avatarColors[$user->id % count($avatarColors)];
 
-                                        // Template Pesan WA Follow-up Marketing
-                                        $pesanWA =
-                                            "🔥 *Kak {$namaUser}, Pesanan Kakak Masih Tersimpan + Ada Voucher Rp9.000!*\n\n" .
-                                            "Halo Kak,\n\n" .
-                                            "Kami melihat akun Kakak di *CalonASN.id* sudah aktif dan siap digunakan untuk latihan CAT SKD CPNS 2026. 📚\n\n" .
-                                            "Supaya lebih hemat, Admin telah menambahkan voucher khusus untuk Kakak:\n\n" .
-                                            "🎁 *Kode Voucher:* DISKON9000\n" .
-                                            "💰 *Potongan:* Rp9.000\n\n" .
-                                            "⏰ Voucher berlaku sampai pukul *23.59 WIB malam ini*.\n" .
-                                            "Setelah itu voucher akan otomatis berakhir dan tidak dapat digunakan kembali.\n\n" .
-                                            "👉 *Lanjutkan pesanan Kakak di:*\n" .
-                                            "https://calonasn.id/pilih-paket\n\n" .
-                                            '⚠️ Jangan sampai voucher Rp9.000 ini hangus ya, Kak. Semangat belajarnya! 😊';
+                                        // Template Pesan WA Follow-up Marketing (Disesuaikan dengan status paket)
+                                        if (($user->package_status ?? '') === 'tryout') {
+                                            $pesanWA =
+                                                "🔥 *Kak {$namaUser}, Mau Akses Ratusan Materi Pembelajaran CPNS?*\n\n" .
+                                                "Halo Kak,\n\n" .
+                                                "Kami melihat akun Kakak di *CalonASN.id* sudah aktif di Tryout Mandiri. Agar persiapan tes SKD semakin mantang, Kakak bisa upgrade ke *Paket Super Lengkap*:\n\n" .
+                                                "📚 Akses Ratusan Modul Micro-Learning (TWK, TIU, TKP)\n" .
+                                                "⚡ Trik Rahasia Jawab Cepat & Pembahasan Mendalam\n" .
+                                                "💰 Biaya Upgrade: Cukup *Rp29.000* saja!\n\n" .
+                                                "👉 *Upgrade akun Kakak sekarang di:*\n" .
+                                                "https://calonasn.id/pilih-paket\n\n" .
+                                                "Semangat berjuang meraih NIP impian tahun ini ya, Kak! 😊";
+                                        } else {
+                                            $pesanWA =
+                                                "🔥 *Kak {$namaUser}, Pesanan Kakak Masih Tersimpan + Ada Voucher Rp9.000!*\n\n" .
+                                                "Halo Kak,\n\n" .
+                                                "Kami melihat akun Kakak di *CalonASN.id* sudah aktif dan siap digunakan untuk latihan CAT SKD CPNS 2026. 📚\n\n" .
+                                                "Supaya lebih hemat, Admin telah menambahkan voucher khusus untuk Kakak:\n\n" .
+                                                "🎁 *Kode Voucher:* DISKON9000\n" .
+                                                "💰 *Potongan:* Rp9.000\n\n" .
+                                                "⏰ Voucher berlaku sampai pukul *23.59 WIB malam ini*.\n" .
+                                                "Setelah itu voucher akan otomatis berakhir dan tidak dapat digunakan kembali.\n\n" .
+                                                "👉 *Lanjutkan pesanan Kakak di:*\n" .
+                                                "https://calonasn.id/pilih-paket\n\n" .
+                                                '⚠️ Jangan sampai voucher Rp9.000 ini hangus ya, Kak. Semangat belajarnya! 😊';
+                                        }
 
                                         $urlWhatsAppDirect = $hasWhatsappNumber ? "https://wa.me/{$phoneClean}?text=" . rawurlencode($pesanWA) : null;
                                     @endphp
@@ -400,7 +416,7 @@
                                                             {{ $user->name }}
                                                         </a>
                                                         @if ($user->role === 'admin')
-                                                            <span class="badge badge-admin-tag rounded-pill px-2 py-0.5" style="font-size: 0.65rem;">
+                                                             <span class="badge badge-admin-tag rounded-pill px-2 py-0.5" style="font-size: 0.65rem;">
                                                                 ADMIN
                                                             </span>
                                                         @endif
@@ -431,14 +447,24 @@
                                         <!-- Status Paket & Quick Toggle -->
                                         <td>
                                             <div class="d-flex align-items-center gap-2">
-                                                @if ($user->is_premium)
-                                                    <span class="badge badge-status-premium px-2.5 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
-                                                        <i class="fe fe-award" style="color: #d97706 !important;"></i>
-                                                        <span>PRO Premium</span>
+                                                @if (($user->package_status ?? '') === 'lengkap')
+                                                    <span class="badge bg-primary-subtle text-primary border border-primary border-opacity-25 px-2.5 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
+                                                        <i class="bi bi-star-fill text-warning" style="font-size: 0.75rem;"></i>
+                                                        <span class="fw-bold">Paket Lengkap</span>
+                                                    </span>
+                                                @elseif (($user->package_status ?? '') === 'tryout')
+                                                    <span class="badge bg-warning-subtle text-dark border border-warning px-2.5 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
+                                                        <i class="bi bi-check-circle-fill text-success" style="font-size: 0.75rem;"></i>
+                                                        <span class="fw-bold">Tryout Saja</span>
+                                                    </span>
+                                                @elseif (($user->package_status ?? '') === 'manual')
+                                                    <span class="badge bg-info-subtle text-info border border-info border-opacity-25 px-2.5 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
+                                                        <i class="fe fe-award text-info" style="font-size: 0.75rem;"></i>
+                                                        <span class="fw-bold">PRO Khusus</span>
                                                     </span>
                                                 @else
-                                                    <span class="badge badge-status-free px-2.5 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
-                                                        <i class="fe fe-user" style="color: #64748b !important;"></i>
+                                                    <span class="badge bg-light text-muted border px-2.5 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
+                                                        <i class="fe fe-user text-secondary" style="font-size: 0.75rem;"></i>
                                                         <span>Free User</span>
                                                     </span>
                                                 @endif
@@ -450,6 +476,9 @@
                                                            {{ $user->is_premium ? 'checked' : '' }} />
                                                 </div>
                                             </div>
+                                            <small class="text-muted d-block mt-0.5" style="font-size: 0.72rem;">
+                                                {{ $user->package_sublabel ?? ($user->is_premium ? 'PRO Aktif' : 'Belum Beli') }}
+                                            </small>
                                         </td>
 
                                         <!-- Kontak WhatsApp -->
@@ -683,8 +712,10 @@
 
                 if (filter === 'all') {
                     dataTable.search('').columns().search('').draw();
-                } else if (filter === 'premium') {
-                    dataTable.column(3).search('PRO Premium').draw();
+                } else if (filter === 'lengkap') {
+                    dataTable.column(3).search('Paket Lengkap').draw();
+                } else if (filter === 'tryout') {
+                    dataTable.column(3).search('Tryout Saja').draw();
                 } else if (filter === 'free') {
                     dataTable.column(3).search('Free User').draw();
                 } else if (filter === 'whatsapp') {

@@ -11,7 +11,34 @@ class UserTypeController extends Controller
 {
     public function userType()
     {
-        $users = User::orderBy('created_at', 'desc')->get();
+        $users = User::with(['transactions' => function ($q) {
+            $q->whereRaw('LOWER(status) = ?', ['success']);
+        }])->orderBy('created_at', 'desc')->get();
+
+        foreach ($users as $user) {
+            $successTryoutIds = $user->transactions->pluck('tryout_id')->toArray();
+            $hasPaket1 = in_array(1, $successTryoutIds);
+            $hasPaket2 = in_array(2, $successTryoutIds);
+            $hasPaket3 = in_array(3, $successTryoutIds);
+
+            if ($hasPaket2 || ($hasPaket1 && $hasPaket3)) {
+                $user->package_status = 'lengkap';
+                $user->package_label = 'Paket Lengkap';
+                $user->package_sublabel = 'Tryout + Materi';
+            } elseif ($hasPaket1) {
+                $user->package_status = 'tryout';
+                $user->package_label = 'Tryout Saja';
+                $user->package_sublabel = 'Belum Materi';
+            } elseif ($user->is_premium) {
+                $user->package_status = 'manual';
+                $user->package_label = 'PRO Khusus';
+                $user->package_sublabel = 'Akses Manual';
+            } else {
+                $user->package_status = 'free';
+                $user->package_label = 'Free User';
+                $user->package_sublabel = 'Belum Beli';
+            }
+        }
 
         return view('admin.user_type', compact('users'));
     }

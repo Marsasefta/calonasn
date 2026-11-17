@@ -23,17 +23,19 @@ class AdminReportController extends Controller
         $response = new StreamedResponse(function () {
             $handle = fopen('php://output', 'w');
 
-            fputcsv($handle, ['Nama Peserta', 'Tryout', 'Skor Total', 'Waktu Mulai', 'Waktu Selesai', 'Durasi (menit)']);
+            fputcsv($handle, ['Nomor WhatsApp', 'Nama Peserta', 'Tryout', 'Skor Total', 'Waktu Mulai', 'Waktu Selesai', 'Durasi (menit)']);
 
             ExamSession::with(['user', 'tryout'])->chunk(100, function ($sessions) use ($handle) {
                 foreach ($sessions as $session) {
                     $start = $session->start_time ? $session->start_time->format('Y-m-d H:i') : '-';
                     $end = $session->end_time ? $session->end_time->format('Y-m-d H:i') : '-';
                     $duration = $session->start_time && $session->end_time ? $session->end_time->diffInMinutes($session->start_time) : '-';
+                    $phone = $session->user ? ($session->user->phone ? "'{$session->user->phone}" : '-') : '-';
+                    $name = $session->user->name ?? 'Peserta';
 
                     fputcsv($handle, [
-                        "'{$session->user->phone}",
-                        $session->user->name,
+                        $phone,
+                        $name,
                         $session->tryout->title ?? '-',
                         $session->total_score,
                         $start,
