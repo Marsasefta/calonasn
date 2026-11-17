@@ -158,6 +158,76 @@ class DashboardController extends Controller
             $access = $ujianController->checkUserAccess($tryout->id);
         }
 
-        return view('user.dashboard', compact('tryout', 'access', 'isPaketTryoutSaja', 'isPaketLengkapPdf'));
+        // D. Statistik & Progres Ujian User
+        $userSessions = ExamSession::where('user_id', $user->id)
+            ->whereNotNull('end_time')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $totalUserExams = $userSessions->count();
+        $hasCompletedExam = $totalUserExams > 0;
+
+        $highestScore = 0;
+        $passRatio = 0;
+        $userRank = '-';
+        $chartLabels = [];
+        $chartScores = [];
+
+        // Top 3 Peserta Nasional (Unik per User)
+        $topNational = ExamSession::with('user:id,name')
+            ->whereNotNull('end_time')
+            ->orderByDesc('total_score')
+            ->get()
+            ->unique('user_id')
+            ->take(3);
+
+        $totalParticipants = ExamSession::whereNotNull('end_time')
+            ->distinct('user_id')
+            ->count('user_id');
+
+        if ($hasCompletedExam) {
+            $highestScore = $userSessions->max('total_score') ?? 0;
+
+            // Passing grade SKD standar: TWK >= 65, TIU >= 80, TKP >= 166
+            $passedCount = $userSessions->filter(function ($s) {
+                return ($s->score_twk >= 65) && ($s->score_tiu >= 80) && ($s->score_tkp >= 166);
+            })->count();
+
+            $passRatio = round(($passedCount / $totalUserExams) * 100);
+
+            // Hitung peringkat user secara nasional berdasarkan skor tertinggi user
+            $usersWithHigherScore = ExamSession::whereNotNull('end_time')
+                ->where('total_score', '>', $highestScore)
+                ->distinct('user_id')
+                ->count('user_id');
+
+            $userRank = $usersWithHigherScore + 1;
+
+            // Data grafik perkembangan skor
+            foreach ($userSessions as $index => $session) {
+                $dateStr = $session->created_at ? $session->created_at->format('d/m') : '';
+                $chartLabels[] = 'TO ' . ($index + 1) . ($dateStr ? " ($dateStr)" : '');
+                $chartScores[] = (int) $session->total_score;
+            }
+        } else {
+            $chartLabels = ['TO 1', 'TO 2', 'TO 3', 'TO 4', 'TO 5'];
+            $chartScores = [0, 0, 0, 0, 0];
+        }
+
+        return view('user.dashboard', compact(
+            'tryout',
+            'access',
+            'isPaketTryoutSaja',
+            'isPaketLengkapPdf',
+            'hasCompletedExam',
+            'totalUserExams',
+            'highestScore',
+            'passRatio',
+            'userRank',
+            'totalParticipants',
+            'chartLabels',
+            'chartScores',
+            'topNational'
+        ));
     }
 }

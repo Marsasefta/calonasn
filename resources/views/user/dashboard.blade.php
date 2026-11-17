@@ -236,25 +236,33 @@
 
         <div class="d-flex align-items-center mb-3">
             <h5 class="fw-bold text-dark mb-0 me-2">Analisis & Peringkat Nasional</h5>
-            <span class="badge bg-secondary rounded-pill">Terkunci</span>
+            @if ($hasCompletedExam)
+                <span class="badge bg-success-subtle text-success rounded-pill"><i class="bi bi-unlock-fill me-1"></i> Aktif</span>
+            @else
+                <span class="badge bg-secondary rounded-pill"><i class="bi bi-lock-fill me-1"></i> Terkunci</span>
+            @endif
         </div>
 
         <div class="position-relative">
-            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center rounded-4"
-                style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(4px); z-index: 10;">
-                <div class="bg-white p-4 rounded-4 shadow-lg text-center border" style="max-width: 400px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#6c757d" class="mb-3"
-                        viewBox="0 0 16 16">
-                        <path
-                            d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1" />
-                    </svg>
-                    <h4 class="fw-bold text-dark">Data Belum Tersedia</h4>
-                    <p class="text-muted mb-0">Kerjakan Tryout Premium pertamamu untuk membuka grafik analisis
-                        kompetensi dan melihat posisimu di peringkat nasional.</p>
+            @if (!$hasCompletedExam)
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center rounded-4"
+                    style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(4px); z-index: 10;">
+                    <div class="bg-white p-4 rounded-4 shadow-lg text-center border" style="max-width: 420px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#6c757d" class="mb-3"
+                            viewBox="0 0 16 16">
+                            <path
+                                d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1" />
+                        </svg>
+                        <h4 class="fw-bold text-dark">Data Belum Tersedia</h4>
+                        <p class="text-muted mb-3">Kerjakan Tryout pertamamu untuk membuka grafik analisis kompetensi dan melihat posisimu di peringkat nasional.</p>
+                        <a href="{{ route('ujian.persiapan', $tryout->id ?? 1) }}" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                            <i class="bi bi-play-circle-fill me-1"></i> Mulai Tryout Sekarang
+                        </a>
+                    </div>
                 </div>
-            </div>
+            @endif
 
-            <div style="opacity: 0.4; pointer-events: none; user-select: none;">
+            <div style="{{ !$hasCompletedExam ? 'opacity: 0.35; pointer-events: none; user-select: none;' : '' }}">
 
                 <div class="row mb-4">
                     <div class="col-xl-3 col-lg-6 col-md-12 mb-3 mb-xl-0">
@@ -265,7 +273,7 @@
                                     <div class="icon-shape icon-sm bg-light-primary text-primary rounded-circle"><i
                                             class="fe fe-file-text"></i></div>
                                 </div>
-                                <h2 class="fw-bold mb-0">0 <span class="fs-6 text-muted fw-normal">Sesi</span></h2>
+                                <h2 class="fw-bold mb-0">{{ $totalUserExams }} <span class="fs-6 text-muted fw-normal">Sesi</span></h2>
                             </div>
                         </div>
                     </div>
@@ -277,7 +285,7 @@
                                     <div class="icon-shape icon-sm bg-light-success text-success rounded-circle"><i
                                             class="fe fe-trending-up"></i></div>
                                 </div>
-                                <h2 class="fw-bold mb-0 text-success">0 <span
+                                <h2 class="fw-bold mb-0 text-success">{{ $highestScore }} <span
                                         class="fs-6 text-muted fw-normal">Poin</span></h2>
                             </div>
                         </div>
@@ -290,9 +298,7 @@
                                     <div class="icon-shape icon-sm bg-light-warning text-warning rounded-circle"><i
                                             class="fe fe-pie-chart"></i></div>
                                 </div>
-                                <h2 class="fw-bold mb-0">0% <span class="fs-6 text-muted fw-normal">Lulus
-                                        PG</span>
-                                </h2>
+                                <h2 class="fw-bold mb-0">{{ $passRatio }}% <span class="fs-6 text-muted fw-normal">Lulus PG</span></h2>
                             </div>
                         </div>
                     </div>
@@ -300,11 +306,17 @@
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h6 class="text-muted mb-0">Peringkat Rata-rata</h6>
+                                    <h6 class="text-muted mb-0">Peringkat Nasional</h6>
                                     <div class="icon-shape icon-sm bg-light-info text-info rounded-circle"><i
                                             class="fe fe-award"></i></div>
                                 </div>
-                                <h2 class="fw-bold mb-0">-</h2>
+                                <h2 class="fw-bold mb-0">
+                                    @if ($userRank !== '-')
+                                        #{{ $userRank }} <span class="fs-6 text-muted fw-normal">dari {{ $totalParticipants }} Peserta</span>
+                                    @else
+                                        -
+                                    @endif
+                                </h2>
                             </div>
                         </div>
                     </div>
@@ -325,23 +337,31 @@
                         <div class="card border-0 shadow-sm mb-4">
                             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0 fw-bold">Top 3 Nasional</h5>
+                                <a href="{{ route('ranking') }}" class="btn btn-sm btn-outline-primary rounded-pill">Lihat Semua</a>
                             </div>
                             <div class="card-body p-0">
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item d-flex align-items-center p-3">
-                                        <h4 class="mb-0 me-3 text-warning">🥇</h4>
-                                        <div>
-                                            <h6 class="mb-0 fw-bold">Siti Aminah</h6>
-                                            <small class="text-muted">Skor: 498</small>
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item d-flex align-items-center p-3">
-                                        <h4 class="mb-0 me-3 text-secondary">🥈</h4>
-                                        <div>
-                                            <h6 class="mb-0 fw-bold">Ahmad Fauzi</h6>
-                                            <small class="text-muted">Skor: 485</small>
-                                        </div>
-                                    </li>
+                                    @forelse ($topNational as $index => $top)
+                                        @php
+                                            $medal = $index === 0 ? '🥇' : ($index === 1 ? '🥈' : '🥉');
+                                        @endphp
+                                        <li class="list-group-item d-flex align-items-center justify-content-between p-3">
+                                            <div class="d-flex align-items-center">
+                                                <span class="fs-4 me-3">{{ $medal }}</span>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold text-dark">{{ $top->user->name ?? 'Peserta' }}</h6>
+                                                    <small class="text-muted">TWK: {{ $top->score_twk }} | TIU: {{ $top->score_tiu }} | TKP: {{ $top->score_tkp }}</small>
+                                                </div>
+                                            </div>
+                                            <span class="badge bg-primary-subtle text-primary fw-bold px-2 py-1 rounded-pill">
+                                                {{ $top->total_score }} Poin
+                                            </span>
+                                        </li>
+                                    @empty
+                                        <li class="list-group-item text-center text-muted py-4">
+                                            Belum ada data peserta tryout
+                                        </li>
+                                    @endforelse
                                 </ul>
                             </div>
                         </div>
@@ -393,10 +413,13 @@
 
         // Script Grafik
         document.addEventListener("DOMContentLoaded", function() {
+            var chartLabels = @json($chartLabels);
+            var chartScores = @json($chartScores);
+
             var options = {
                 series: [{
                     name: 'Total Skor',
-                    data: [350, 380, 375, 420, 415, 450, 480]
+                    data: chartScores
                 }],
                 chart: {
                     height: 300,
@@ -424,15 +447,22 @@
                     }
                 },
                 xaxis: {
-                    categories: ['TO 1', 'TO 2', 'TO 3', 'TO 4', 'TO 5', 'TO 6', 'TO 7'],
+                    categories: chartLabels,
                     tooltip: {
                         enabled: false
                     }
                 },
                 yaxis: {
-                    min: 300,
+                    min: 0,
                     max: 550,
                     tickAmount: 5
+                },
+                tooltip: {
+                    y: {
+                        formatter: function(val) {
+                            return val + " Poin";
+                        }
+                    }
                 }
             };
             var chart = new ApexCharts(document.querySelector("#chartProgress"), options);
