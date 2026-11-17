@@ -83,17 +83,34 @@ class DemoController extends Controller
         $correct = 0;
         $detailHasil = []; 
 
+        $twkTotal = 0;
+        $tiuTotal = 0;
+        $tkpTotal = 0;
+        $twkCorrect = 0;
+        $tiuCorrect = 0;
+        $tkpCorrect = 0;
+
         foreach($questions as $q) {
+            $cat = strtoupper(trim($q['kategori'] ?? ''));
+            if ($cat === 'TWK') $twkTotal++;
+            elseif ($cat === 'TIU') $tiuTotal++;
+            elseif ($cat === 'TKP') $tkpTotal++;
+
             $jawabanUser = isset($answers[$q['id']]) ? $answers[$q['id']] : null;
             
             $isCorrect = (strtolower(trim($jawabanUser)) === strtolower(trim($q['kunci'])));
             
             if($isCorrect) {
                 $correct++;
+                if ($cat === 'TWK') $twkCorrect++;
+                elseif ($cat === 'TIU') $tiuCorrect++;
+                elseif ($cat === 'TKP') $tkpCorrect++;
             }
 
             $detailHasil[] = [
                 'no' => $q['id'],
+                'kategori' => $q['kategori'] ?? 'UMUM',
+                'pertanyaan' => \Illuminate\Support\Str::limit(strip_tags($q['pertanyaan']), 80),
                 'user' => $jawabanUser,
                 'kunci' => $q['kunci'],
                 'status' => $isCorrect
@@ -102,11 +119,37 @@ class DemoController extends Controller
 
         $totalSoal = count($questions);
 
-        // --- PERBAIKAN DI SINI ---
-        // Mengubah dari sistem persentase ke standar poin CAT BKN (1 soal = 5 poin)
+        // Standar poin CAT BKN untuk demo (1 soal = 5 poin)
         $score = $correct * 5;
 
-        return view('user.demo.result', compact('correct', 'score', 'totalSoal', 'detailHasil'));
+        // Cek status paket user
+        $user = auth()->user();
+        $hasPaket1 = false;
+        $hasPaket3 = false;
+        $hasPaketLengkap = false;
+        $isLengkap = false;
+
+        if ($user) {
+            $hasPaket1 = \App\Models\Transaction::where('user_id', $user->id)->where('tryout_id', 1)->where('status', 'Success')->exists();
+            $hasPaket3 = \App\Models\Transaction::where('user_id', $user->id)->where('tryout_id', 3)->where('status', 'Success')->exists();
+            $hasPaketLengkap = \App\Models\Transaction::where('user_id', $user->id)->where('tryout_id', 2)->where('status', 'Success')->exists();
+            $isLengkap = $hasPaketLengkap || ($hasPaket1 && $hasPaket3);
+        }
+
+        return view('user.demo.result', compact(
+            'correct', 
+            'score', 
+            'totalSoal', 
+            'detailHasil',
+            'twkTotal',
+            'tiuTotal',
+            'tkpTotal',
+            'twkCorrect',
+            'tiuCorrect',
+            'tkpCorrect',
+            'hasPaket1',
+            'isLengkap'
+        ));
     }
 
 }
