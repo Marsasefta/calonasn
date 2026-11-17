@@ -67,14 +67,26 @@
                                     </div>
                                 </div>
 
-                                <p class="text-muted mb-4 flex-grow-1 fs-5">
+                                <p class="text-muted mb-3 flex-grow-1 fs-5">
                                     {{ $category->description }}
                                 </p>
+
+                                <div class="mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small fw-semibold text-muted">Progres Membaca</span>
+                                        <span class="small fw-bold text-{{ $category->color_theme }}">{{ $category->completed_count ?? 0 }}/{{ $category->materials_count }} Selesai ({{ $category->progress_percent ?? 0 }}%)</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-{{ $category->color_theme }}" role="progressbar" 
+                                             style="width: {{ $category->progress_percent ?? 0 }}%;" 
+                                             aria-valuenow="{{ $category->progress_percent ?? 0 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
 
                                 <div class="mt-auto">
                                     <a href="{{ route('materi.show', $category->slug) }}"
                                         class="btn btn-outline-{{ $category->color_theme }} w-100 rounded-pill fw-bold py-2 d-flex align-items-center justify-content-center">
-                                        Mulai Belajar
+                                        {{ ($category->completed_count ?? 0) > 0 ? 'Lanjutkan Belajar' : 'Mulai Belajar' }}
                                         <i class="bi bi-play-circle-fill ms-2 fs-5"></i>
                                     </a>
                                 </div>

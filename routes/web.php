@@ -115,6 +115,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Halaman Lobby Kategori
     Route::get('/materi-belajar', [MateriController::class, 'index'])->name('materi.index');
+    Route::post('/materi-belajar/toggle-progress/{id}', [MateriController::class, 'toggleProgress'])->name('materi.toggle-progress');
     Route::get('/materi-belajar/{categorySlug}/{materialSlug?}', [MateriController::class, 'show'])
         ->name('materi.show'); // Ini untuk akses awal (Lobby)
 

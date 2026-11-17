@@ -9,15 +9,28 @@ use App\Models\LearningMaterial;
 use App\Models\LearningChapter;
 use App\Models\Transaction;
 use App\Models\Tryout;
+use App\Models\UserMaterialProgress;
 
 class MateriController extends Controller
 {
     // Method untuk halaman Lobby (Menampilkan 3 Kategori)
     public function index()
     {
-        // Mengambil semua data kategori dari database
-        // Kita juga bisa sekalian menghitung total materi jika ingin (opsional)
+        $userId = auth()->id();
         $categories = LearningCategory::withCount('materials')->get();
+
+        $completedMaterialIds = $userId 
+            ? UserMaterialProgress::where('user_id', $userId)->pluck('learning_material_id')->toArray()
+            : [];
+
+        foreach ($categories as $category) {
+            $catMaterialIds = $category->materials->pluck('id')->toArray();
+            $totalInCat = count($catMaterialIds);
+            $completedInCat = count(array_intersect($catMaterialIds, $completedMaterialIds));
+            
+            $category->completed_count = $completedInCat;
+            $category->progress_percent = $totalInCat > 0 ? round(($completedInCat / $totalInCat) * 100) : 0;
+        }
 
         return view('user.materi.index', compact('categories'));
     }
@@ -102,7 +115,74 @@ class MateriController extends Controller
         $upgradeLabel = $sudahBeliPaket1 ? 'Upgrade ke Paket Lengkap (29rb)' : 'Beli Paket Lengkap (49rb)';
 
         $tryout = Tryout::find(1) ?? Tryout::first();
-        // 5. Lempar variabel $hasFullAccess ke View Blade
-        return view('user.materi.show', compact('category', 'chapters', 'currentMaterial', 'nextMaterial', 'hasFullAccess','upgradeRoute', 'upgradeLabel', 'tryout'));
+
+        // Riwayat materi yang sudah diselesaikan user dalam kategori ini
+        $completedMaterialIds = $user 
+            ? UserMaterialProgress::where('user_id', $user->id)->pluck('learning_material_id')->toArray()
+            : [];
+
+        $isCurrentCompleted = in_array($currentMaterial->id, $completedMaterialIds);
+
+        $categoryMaterialIds = $category->materials->pluck('id')->toArray();
+        $totalCategoryMaterials = count($categoryMaterialIds);
+        $completedCategoryCount = count(array_intersect($categoryMaterialIds, $completedMaterialIds));
+        $progressPercent = $totalCategoryMaterials > 0 ? round(($completedCategoryCount / $totalCategoryMaterials) * 100) : 0;
+
+        // 5. Lempar variabel ke View Blade
+        return view('user.materi.show', compact(
+            'category',
+            'chapters',
+            'currentMaterial',
+            'nextMaterial',
+            'hasFullAccess',
+            'upgradeRoute',
+            'upgradeLabel',
+            'tryout',
+            'completedMaterialIds',
+            'isCurrentCompleted',
+            'completedCategoryCount',
+            'totalCategoryMaterials',
+            'progressPercent'
+        ));
+    }
+
+    public function toggleProgress($id)
+    {
+        $userId = auth()->id();
+        $material = LearningMaterial::with('chapter.category')->findOrFail($id);
+
+        $progress = UserMaterialProgress::where('user_id', $userId)
+            ->where('learning_material_id', $material->id)
+            ->first();
+
+        if ($progress) {
+            $progress->delete();
+            $isCompleted = false;
+        } else {
+            UserMaterialProgress::create([
+                'user_id' => $userId,
+                'learning_material_id' => $material->id,
+                'completed_at' => now(),
+            ]);
+            $isCompleted = true;
+        }
+
+        $category = $material->chapter->category ?? null;
+        $categoryMaterialIds = $category ? $category->materials->pluck('id')->toArray() : [];
+        $totalCategoryMaterials = count($categoryMaterialIds);
+        $completedCategoryCount = UserMaterialProgress::where('user_id', $userId)
+            ->whereIn('learning_material_id', $categoryMaterialIds)
+            ->count();
+
+        $percent = $totalCategoryMaterials > 0 ? round(($completedCategoryCount / $totalCategoryMaterials) * 100) : 0;
+
+        return response()->json([
+            'status' => 'success',
+            'is_completed' => $isCompleted,
+            'completed_count' => $completedCategoryCount,
+            'total_count' => $totalCategoryMaterials,
+            'percentage' => $percent,
+            'material_id' => $material->id
+        ]);
     }
 }

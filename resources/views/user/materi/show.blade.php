@@ -60,6 +60,19 @@
 
                 <div class="col-lg-3">
                     <div class="sidebar-sticky">
+                        <!-- Progress Belajar Kategori -->
+                        <div class="card border-0 shadow-sm rounded-4 mb-3 p-3 bg-white border border-light">
+                            <div class="d-flex justify-content-between align-items-center mb-1.5">
+                                <span class="small fw-bold text-dark">Progres Belajar</span>
+                                <span class="small fw-bold text-success" id="progressSummary">{{ $completedCategoryCount ?? 0 }}/{{ $totalCategoryMaterials ?? 0 }} ({{ $progressPercent ?? 0 }}%)</span>
+                            </div>
+                            <div class="progress rounded-pill" style="height: 7px; background-color: #f1f5f9;">
+                                <div class="progress-bar bg-success rounded-pill" id="progressBarCategory" role="progressbar" 
+                                     style="width: {{ $progressPercent ?? 0 }}%;" 
+                                     aria-valuenow="{{ $progressPercent ?? 0 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+
                         <div class="accordion" id="accordionChapters">
                             @foreach ($chapters as $chapter)
                                 @php
@@ -84,12 +97,10 @@
                                         <div class="accordion-body p-2">
                                             @foreach ($chapter->materials as $materi)
                                                 @php
-                                                    // LOGIKA UTAMA:
-                                                    // Materi bisa diakses JIKA User punya Full Access (Paket 2) ATAU Materi memang diset Gratis (is_locked == 0)
-                                                    // Asumsi $hasFullAccess dikirim dari Controller
                                                     $canAccess =
                                                         (isset($hasFullAccess) && $hasFullAccess) ||
                                                         !$materi->is_locked;
+                                                    $isDone = in_array($materi->id, $completedMaterialIds ?? []);
                                                 @endphp
 
                                                 <a href="{{ $canAccess ? route('materi.show', [$category->slug, $materi->slug]) : '#' }}"
@@ -98,9 +109,12 @@
                                                     <div class="d-flex align-items-center">
                                                         @if (!$canAccess)
                                                             <i class="bi bi-lock-fill text-danger me-2 fs-6"></i>
+                                                        @elseif ($isDone)
+                                                            <i class="bi bi-check-circle-fill text-success me-2 fs-6" id="icon-materi-{{ $materi->id }}"></i>
+                                                        @elseif ($currentMaterial->id == $materi->id)
+                                                            <i class="bi bi-play-circle-fill text-primary me-2 fs-6" id="icon-materi-{{ $materi->id }}"></i>
                                                         @else
-                                                            <i
-                                                                class="bi {{ $currentMaterial->id == $materi->id ? 'bi-play-circle-fill' : 'bi-check-circle' }} me-2 fs-6"></i>
+                                                            <i class="bi bi-circle text-muted me-2 fs-6" id="icon-materi-{{ $materi->id }}"></i>
                                                         @endif
                                                         <span class="small">{{ $materi->title }}</span>
                                                     </div>
@@ -151,8 +165,17 @@
                             <hr class="my-5">
 
                             <div
-                                class="d-flex justify-content-between align-items-center bg-light p-3 rounded-4 border">
-                                <span class="fw-medium text-muted">Selesai membaca?</span>
+                                class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 bg-light p-3 rounded-4 border">
+                                <div class="d-flex align-items-center gap-2">
+                                    <button type="button" id="btnToggleProgress" data-material-id="{{ $currentMaterial->id }}"
+                                            class="btn {{ $isCurrentCompleted ? 'btn-success' : 'btn-outline-success' }} rounded-pill px-3 py-2 fw-semibold shadow-sm d-inline-flex align-items-center gap-1.5">
+                                        <i class="bi {{ $isCurrentCompleted ? 'bi-check-circle-fill' : 'bi-check-circle' }}" id="btnCheckIcon"></i>
+                                        <span id="btnCheckLabel">{{ $isCurrentCompleted ? 'Selesai Dibaca' : 'Tandai Selesai' }}</span>
+                                    </button>
+                                    <span class="small text-muted d-none d-md-inline" id="statusSaveHint">
+                                        {{ $isCurrentCompleted ? 'Tersimpan di progres' : 'Klik jika sudah paham' }}
+                                    </span>
+                                </div>
 
                                 @if ($nextMaterial)
                                     @php
@@ -237,6 +260,68 @@
     </div>
 
     @include('partials.scripts')
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const btnToggle = document.getElementById('btnToggleProgress');
+            if (!btnToggle) return;
+
+            btnToggle.addEventListener('click', function() {
+                const materialId = this.getAttribute('data-material-id');
+                const icon = document.getElementById('btnCheckIcon');
+                const label = document.getElementById('btnCheckLabel');
+                const hint = document.getElementById('statusSaveHint');
+                const progressBar = document.getElementById('progressBarCategory');
+                const progressSummary = document.getElementById('progressSummary');
+                const sidebarIcon = document.getElementById('icon-materi-' + materialId);
+
+                btnToggle.disabled = true;
+
+                fetch(`/materi-belajar/toggle-progress/${materialId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    btnToggle.disabled = false;
+                    if (data.status === 'success') {
+                        if (data.is_completed) {
+                            btnToggle.classList.remove('btn-outline-success');
+                            btnToggle.classList.add('btn-success');
+                            icon.className = 'bi bi-check-circle-fill';
+                            label.textContent = 'Selesai Dibaca';
+                            if (hint) hint.textContent = 'Tersimpan di progres';
+                            if (sidebarIcon) {
+                                sidebarIcon.className = 'bi bi-check-circle-fill text-success me-2 fs-6';
+                            }
+                        } else {
+                            btnToggle.classList.remove('btn-success');
+                            btnToggle.classList.add('btn-outline-success');
+                            icon.className = 'bi bi-check-circle';
+                            label.textContent = 'Tandai Selesai';
+                            if (hint) hint.textContent = 'Klik jika sudah paham';
+                            if (sidebarIcon) {
+                                sidebarIcon.className = 'bi bi-play-circle-fill text-primary me-2 fs-6';
+                            }
+                        }
+
+                        if (progressBar) {
+                            progressBar.style.width = data.percentage + '%';
+                        }
+                        if (progressSummary) {
+                            progressSummary.textContent = `${data.completed_count}/${data.total_count} (${data.percentage}%)`;
+                        }
+                    }
+                })
+                .catch(err => {
+                    btnToggle.disabled = false;
+                    console.error('Error toggling progress:', err);
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

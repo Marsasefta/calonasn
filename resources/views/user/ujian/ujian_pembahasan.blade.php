@@ -4,7 +4,48 @@
 <head>
     @include('partials.head')
 
-    <title>Simulasi Ujian</title>
+    <title>Review & Pembahasan Soal - CalonASN.id</title>
+
+    <style>
+        @media print {
+            nav, .sidenav, .navbar, .btn, .floating-wa-btn, .floating-wa-pill, .btn-scroll-top, header, footer {
+                display: none !important;
+            }
+            body, .db-content, .container {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .print-header {
+                display: block !important;
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #0f172a;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .card {
+                border: 1px solid #cbd5e1 !important;
+                box-shadow: none !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                margin-bottom: 20px !important;
+            }
+            .badge {
+                border: 1px solid #64748b !important;
+                color: #0f172a !important;
+                background: #f1f5f9 !important;
+            }
+        }
+        @media screen {
+            .print-header {
+                display: none;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -15,13 +56,30 @@
 
     <div class="db-content text-dark">
         <div class="container py-4">
-            <div class="row mb-4 align-items-center">
-                <div class="col-md-8">
+            <!-- Print Header (Tampil saat dicetak/disimpan ke PDF) -->
+            <div class="print-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="fw-bold text-dark mb-1">CalonASN.id - Lembar Pembahasan Tryout CAT</h3>
+                        <p class="mb-0 text-muted small">Simulasi CAT CPNS 2026 Standar BKN | TWK, TIU, TKP</p>
+                    </div>
+                    <div class="text-end">
+                        <p class="mb-0 small fw-bold text-dark">Peserta: {{ auth()->user()->name }}</p>
+                        <p class="mb-0 small text-muted">Dicetak pada: {{ now()->translatedFormat('d F Y') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4 align-items-center no-print">
+                <div class="col-md-7">
                     <h2 class="fw-bold mb-0">Review & Pembahasan</h2>
                     <p class="text-muted">Pelajari letak kesalahanmu agar tidak mengulanginya di tes asli.</p>
                 </div>
-                <div class="col-md-4 text-end">
-                    <a href="{{ route('ujian.hasil', $id) }}" class="btn btn-outline-secondary">
+                <div class="col-md-5 text-end d-flex justify-content-md-end align-items-center gap-2">
+                    <button type="button" onclick="window.print()" class="btn btn-primary shadow-sm fw-bold rounded-pill px-3 py-2">
+                        <i class="fe fe-printer me-1"></i> Cetak / Simpan PDF
+                    </button>
+                    <a href="{{ route('ujian.hasil', $id) }}" class="btn btn-outline-secondary rounded-pill px-3 py-2">
                         Kembali
                     </a>
                 </div>
