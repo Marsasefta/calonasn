@@ -1,4 +1,48 @@
 <!-- Sidebar -->
+<style>
+    @media (min-width: 992px) {
+        .sidenav.sidenav-navbar {
+            position: fixed !important;
+            top: 70px !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            width: 240px !important;
+            height: calc(100vh - 70px) !important;
+            max-height: calc(100vh - 70px) !important;
+            padding-top: 1.25rem !important;
+            padding-bottom: 5rem !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            box-sizing: border-box !important;
+            z-index: 100 !important;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+        }
+
+        .sidenav.sidenav-navbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidenav.sidenav-navbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidenav.sidenav-navbar::-webkit-scrollbar-thumb {
+            background-color: rgba(148, 163, 184, 0.4);
+            border-radius: 4px;
+        }
+
+        .sidenav.sidenav-navbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(100, 116, 139, 0.7);
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .sidenav.sidenav-navbar {
+            padding-bottom: 3rem !important;
+        }
+    }
+</style>
 <div class="position-relative">
     <nav class="navbar navbar-expand-lg sidenav sidenav-navbar">
         <!-- Menu -->
@@ -13,7 +57,7 @@
 
         <!-- Collapse -->
         <div class="collapse navbar-collapse" id="sidenavNavbar">
-            <div class="navbar-nav flex-column mt-4 mt-lg-0 d-flex flex-column gap-3">
+            <div class="navbar-nav flex-column mt-4 mt-lg-0 d-flex flex-column gap-3 pb-4">
 
                 <ul class="list-unstyled mb-0">
                     <li class="nav-item">
