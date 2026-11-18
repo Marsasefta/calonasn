@@ -180,13 +180,7 @@
 
                     <!-- Footer Info Bawah -->
                     <div class="text-center mt-3 text-muted small">
-                        <span>© {{ date('Y') }} CalonASN.id • Layanan Pengguna: </span>
-                        <a href="https://wa.me/6285113655806?text={{ urlencode('Halo Admin CalonASN, saya butuh bantuan...') }}"
-                           target="_blank"
-                           rel="noopener noreferrer"
-                           class="text-decoration-none text-success fw-semibold">
-                            <i class="bi bi-whatsapp"></i> 0851-1365-5806
-                        </a>
+                        <span>© {{ date('Y') }} CalonASN.id</span>
                     </div>
                 </div>
             </div>
