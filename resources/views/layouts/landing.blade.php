@@ -23,7 +23,6 @@
 
     @include('partials.footer-default')
     @include('partials.btn-scroll-top')
-    @include('partials.floating-wa')
     @include('partials.scripts')
     @stack('scripts')
 </body>

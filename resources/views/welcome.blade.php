@@ -1382,11 +1382,21 @@
                                 <h4 class="fw-bold text-dark mb-1 fs-5">Masih punya pertanyaan lain?</h4>
                                 <p class="text-muted small mb-0">Tim layanan CalonASN.id siap membantumu setiap hari.</p>
                             </div>
-                            <a href="mailto:support@calonasn.id?subject=Pertanyaan%20seputar%20Tryout%20CalonASN"
-                               class="btn btn-outline-primary rounded-pill px-4 py-2.5 fw-semibold d-inline-flex align-items-center gap-2 text-nowrap shadow-xs">
-                                <i class="fe fe-mail"></i>
-                                <span>Hubungi support@calonasn.id</span>
-                            </a>
+                            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-sm-end gap-2">
+                                <a href="https://wa.me/6285113655806?text={{ urlencode('Halo Admin CalonASN, saya ingin konsultasi mengenai paket tryout & materi CPNS...') }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="btn btn-success rounded-pill px-4 py-2.5 fw-semibold d-inline-flex align-items-center gap-2 text-nowrap shadow-xs text-white"
+                                   style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); border: none;">
+                                    <i class="bi bi-whatsapp fs-5"></i>
+                                    <span>Chat WhatsApp Admin</span>
+                                </a>
+                                <a href="mailto:support@calonasn.id?subject=Pertanyaan%20seputar%20Tryout%20CalonASN"
+                                   class="btn btn-outline-secondary rounded-pill px-3 py-2.5 fw-semibold d-inline-flex align-items-center gap-2 text-nowrap shadow-xs">
+                                    <i class="fe fe-mail"></i>
+                                    <span>Email</span>
+                                </a>
+                            </div>
                         </div>
 
                     </div>

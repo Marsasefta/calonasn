@@ -88,8 +88,20 @@
                             support@calonasn.id
                         </a>
                     </div>
-                    <!-- Server Status Badge (High Contrast & Glowing Dot) -->
+                    <!-- WhatsApp Consultation Button in Footer -->
                     <div class="pt-2">
+                        <a href="https://wa.me/6285113655806?text={{ urlencode('Halo Admin CalonASN, saya tertarik konsultasi mengenai paket tryout & materi CPNS...') }}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="btn btn-success btn-sm rounded-pill py-2 px-3 fw-bold d-inline-flex align-items-center gap-2 shadow-sm text-white w-100 justify-content-center hover-lift"
+                           style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); border: none;">
+                            <i class="bi bi-whatsapp fs-5"></i>
+                            <span>Konsultasi Gratis via WA</span>
+                        </a>
+                    </div>
+
+                    <!-- Server Status Badge (High Contrast & Glowing Dot) -->
+                    <div class="pt-1">
                         <span class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill shadow-xs" 
                               style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(52, 211, 153, 0.4); font-size: 0.78rem;">
                             <span class="position-relative d-inline-flex align-items-center justify-content-center" style="width: 8px; height: 8px;">
@@ -150,7 +162,7 @@
     }
     @media (max-width: 767.98px) {
         footer.footer-2026 {
-            padding-bottom: 5.5rem !important;
+            padding-bottom: 2rem !important;
         }
     }
 </style>
