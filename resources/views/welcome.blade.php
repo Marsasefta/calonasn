@@ -333,6 +333,13 @@
         .cat-float-1 {
             animation: catFloatSlow 4s ease-in-out infinite;
         }
+        @media (max-width: 576px) {
+            .cat-float-1 {
+                left: 4px !important;
+                top: -16px !important;
+                padding: 6px 10px !important;
+            }
+        }
         .cat-float-2 {
             animation: catFloatReverse 4.8s ease-in-out infinite;
         }
@@ -679,7 +686,7 @@
                         </p>
 
                         <!-- Copyable Promo Voucher Banner -->
-                        <div class="d-inline-flex align-items-center gap-2 p-2 px-3 bg-white rounded-pill border border-success border-opacity-50 shadow-sm mt-2" 
+                        <div class="d-inline-flex flex-wrap justify-content-center align-items-center gap-2 p-2 px-3 bg-white rounded-pill border border-success border-opacity-50 shadow-sm mt-2" 
                              style="cursor: pointer;" 
                              onclick="copyPromoCode()" 
                              id="promoBanner" 
@@ -1390,7 +1397,7 @@
         <!-- SECTION FINAL CTA BANNER 2026 -->
         <section class="section-bottom-cta py-xl-8 py-6 position-relative overflow-hidden">
             <div class="container position-relative" style="z-index: 1;">
-                <div class="rounded-5 p-5 p-md-7 text-center position-relative overflow-hidden shadow-2xl" 
+                <div class="rounded-5 p-4 p-md-7 text-center position-relative overflow-hidden shadow-2xl" 
                      style="background: radial-gradient(100% 100% at 50% 0%, #1e3a8a 0%, #0f172a 100%); border: 1px solid rgba(59, 130, 246, 0.3);">
                     
                     <!-- Decorative Ambient Glow -->

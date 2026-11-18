@@ -6,7 +6,7 @@
             <!-- Col 1: Brand & Bio -->
             <div class="col-lg-4 col-12 pe-lg-4">
                 <a class="d-flex align-items-center gap-2 mb-3 text-decoration-none" href="{{ url('/') }}">
-                    <img src="{{ asset('image/logoasn-96.png') }}" alt="Logo CalonASN" width="36" height="36" class="rounded-3 shadow-xs me-1">
+                    <img src="{{ asset('image/logoasn-icon.png') }}" alt="Logo CalonASN" width="36" height="36" class="rounded-circle shadow-xs">
                     <span class="fs-4 fw-bold text-white">
                         CalonASN<span style="color: #60a5fa !important;">.id</span>
                     </span>

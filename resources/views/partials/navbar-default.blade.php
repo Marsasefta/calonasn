@@ -2,7 +2,7 @@
     <div class="container">
         <!-- Brand Logo -->
         <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url('/') }}">
-            <img src="{{ asset('image/logoasn-96.png') }}" alt="Logo CalonASN" width="38" height="38" class="rounded-3 shadow-xs me-1">
+            <img src="{{ asset('image/logoasn-icon.png') }}" alt="Logo CalonASN" width="36" height="36" class="rounded-circle shadow-xs">
             <span class="fs-4 fw-bold text-dark">
                 CalonASN<span class="text-primary">.id</span>
             </span>
@@ -47,7 +47,7 @@
             </ul>
 
             <!-- Right Buttons (Auth) -->
-            <div class="d-flex align-items-center gap-2 pt-2 pt-lg-0">
+            <div class="d-flex flex-wrap align-items-center gap-2 pt-2 pt-lg-0">
                 @auth
                     <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('dashboard') }}" 
                        class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
