@@ -16,10 +16,16 @@
                     <div class="card shadow">
                         <!-- Card body -->
                         <div class="card-body p-6 d-flex flex-column gap-4">
-                            <div>
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <a href="{{ url('/') }}" class="text-decoration-none d-flex align-items-center gap-2">
+                                    <img src="{{ asset('image/logoasn-icon.png') }}" alt="Logo CalonASN" width="34" height="34" class="rounded-circle shadow-xs">
+                                    <span class="fs-4 fw-bold text-dark">
+                                        CalonASN<span class="text-primary">.id</span>
+                                    </span>
+                                </a>
                                 <a href="{{ url('/') }}"
                                     class="text-muted text-decoration-none small fw-medium transition-all hover-primary">
-                                    <i class="fe fe-arrow-left me-1"></i> Kembali ke Beranda
+                                    <i class="fe fe-arrow-left me-1"></i> Beranda
                                 </a>
                             </div>
 
@@ -158,7 +164,29 @@
                                     </a>
                                 </div>
                             </form>
+
+                            <!-- Bantuan WhatsApp di Footer Card -->
+                            <div class="text-center pt-3 border-top">
+                                <span class="text-muted small">Butuh bantuan pendaftaran?</span>
+                                <a href="https://wa.me/6285113655806?text={{ urlencode('Halo Admin CalonASN, saya butuh bantuan saat mendaftar akun...') }}" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer" 
+                                   class="d-inline-flex align-items-center gap-1 text-success fw-semibold small text-decoration-none ms-1">
+                                    <i class="bi bi-whatsapp"></i> Chat WhatsApp Bantuan
+                                </a>
+                            </div>
                         </div>
+                    </div>
+
+                    <!-- Footer Info Bawah -->
+                    <div class="text-center mt-3 text-muted small">
+                        <span>© {{ date('Y') }} CalonASN.id • Layanan Pengguna: </span>
+                        <a href="https://wa.me/6285113655806?text={{ urlencode('Halo Admin CalonASN, saya butuh bantuan...') }}"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="text-decoration-none text-success fw-semibold">
+                            <i class="bi bi-whatsapp"></i> 0851-1365-5806
+                        </a>
                     </div>
                 </div>
             </div>
