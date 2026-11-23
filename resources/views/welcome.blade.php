@@ -757,10 +757,6 @@
                                     <i class="fe fe-x-circle text-secondary fs-5 mt-0.5"></i>
                                     <span class="text-decoration-line-through">Akses Ratusan Modul Micro-Learning SKD</span>
                                 </li>
-                                <li class="d-flex align-items-start gap-2.5 text-muted opacity-50">
-                                    <i class="fe fe-x-circle text-secondary fs-5 mt-0.5"></i>
-                                    <span class="text-decoration-line-through">Trik Cepat Menjawab Soal Kurang dari 1 Menit</span>
-                                </li>
                             </ul>
 
                             <!-- Action Button -->
@@ -838,10 +834,6 @@
                                 <li class="d-flex align-items-start gap-2.5">
                                     <i class="fe fe-check-circle text-primary fs-5 mt-0.5"></i>
                                     <span><strong>110 Soal CAT Lengkap Standar BKN</strong> (TWK, TIU, TKP)</span>
-                                </li>
-                                <li class="d-flex align-items-start gap-2.5">
-                                    <i class="fe fe-check-circle text-primary fs-5 mt-0.5"></i>
-                                    <span>Trik Rahasia Menjawab Soal Kurang dari 1 Menit</span>
                                 </li>
                                 <li class="d-flex align-items-start gap-2.5">
                                     <i class="fe fe-check-circle text-primary fs-5 mt-0.5"></i>
@@ -1175,7 +1167,7 @@
             </div>
         </section>
 
-        <!-- SECTION BLOG & KISI-KISI CPNS 2026 -->
+        {{-- ── SECTION BLOG & KISI-KISI CPNS 2026 (DI-HIDE SEMENTARA) ──
         <section id="blog" class="section-blog py-xl-9 py-6 position-relative">
             <div class="container position-relative">
                 <div class="row align-items-end mb-5">
@@ -1275,6 +1267,7 @@
                 </div>
             </div>
         </section>
+        --}}
         <!-- SECTION FAQ 2026 -->
         <section id="faq" class="py-xl-9 py-6 bg-white position-relative">
             <div class="container py-xl-4">

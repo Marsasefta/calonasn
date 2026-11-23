@@ -13,7 +13,7 @@ class UserTypeController extends Controller
     {
         $users = User::with(['transactions' => function ($q) {
             $q->whereRaw('LOWER(status) = ?', ['success']);
-        }])->orderBy('created_at', 'desc')->get();
+        }])->orderByDesc('created_at')->orderByDesc('id')->get();
 
         foreach ($users as $user) {
             $successTryoutIds = $user->transactions->pluck('tryout_id')->toArray();

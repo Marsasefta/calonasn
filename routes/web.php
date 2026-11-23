@@ -125,6 +125,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Admin routes with /admin/ prefix and admin middleware
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', function () {
+            return redirect()->route('admin.dashboard');
+        });
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/create-bank-soal', [BankSoalController::class, 'createBankSoal'])->name('create-bank-soal');
         Route::get('/list-bank-soal', [BankSoalController::class, 'listBankSoal'])->name('list-bank-soal');

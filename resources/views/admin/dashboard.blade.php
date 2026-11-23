@@ -76,6 +76,24 @@
             </div>
           </div>
 
+          {{-- ── Alert Verifikasi Pembayaran (Jika Ada) ── --}}
+          @if($pendingVerifications > 0)
+          <div class="alert alert-warning border-0 shadow-sm rounded-4 p-3 mb-4 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3" role="alert" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-left: 4px solid #f59e0b !important;">
+            <div class="d-flex align-items-center gap-3">
+              <div class="dash-icon-sm ic-rose">
+                <i class="fe fe-alert-circle" style="font-size: 18px;"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold text-dark mb-0">Perhatian: {{ $pendingVerifications }} Pembayaran Menunggu Verifikasi</h6>
+                <small class="text-muted">Ada transaksi peserta yang telah upload bukti pembayaran dan membutuhkan konfirmasi Anda.</small>
+              </div>
+            </div>
+            <a href="{{ route('admin.transactions.index') }}" class="btn btn-warning btn-sm rounded-pill px-3 py-1.5 fw-bold text-dark shadow-sm align-self-start align-self-sm-center text-nowrap">
+              Verifikasi Sekarang <i class="fe fe-arrow-right ms-1"></i>
+            </a>
+          </div>
+          @endif
+
           {{-- ══════════════════════════════════════════════ --}}
           {{-- BARIS 1: 4 Stat Cards                          --}}
           {{-- ══════════════════════════════════════════════ --}}
@@ -152,12 +170,12 @@
           </div>
 
           {{-- ══════════════════════════════════════════════ --}}
-          {{-- BARIS 2: 2 Charts (full width, stacked)        --}}
+          {{-- BARIS 2: 2 Charts (Side-by-side di Desktop)    --}}
           {{-- ══════════════════════════════════════════════ --}}
           <div class="row g-3 mb-4">
             {{-- Grafik Pendapatan --}}
-            <div class="col-12">
-              <div class="card dash-chart shadow-sm">
+            <div class="col-12 col-xl-6">
+              <div class="card dash-chart shadow-sm h-100">
                 <div class="card-header bg-white border-0 pt-4 pb-0 px-4">
                   <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -170,14 +188,16 @@
                   </div>
                 </div>
                 <div class="card-body px-4 pb-4">
-                  <canvas id="revenueChart" height="220"></canvas>
+                  <div style="position: relative; height: 240px; width: 100%;">
+                    <canvas id="revenueChart"></canvas>
+                  </div>
                 </div>
               </div>
             </div>
 
             {{-- Grafik User --}}
-            <div class="col-12">
-              <div class="card dash-chart shadow-sm">
+            <div class="col-12 col-xl-6">
+              <div class="card dash-chart shadow-sm h-100">
                 <div class="card-header bg-white border-0 pt-4 pb-0 px-4">
                   <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -190,120 +210,127 @@
                   </div>
                 </div>
                 <div class="card-body px-4 pb-4">
-                  <canvas id="userChart" height="180"></canvas>
+                  <div style="position: relative; height: 240px; width: 100%;">
+                    <canvas id="userChart"></canvas>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           {{-- ══════════════════════════════════════════════ --}}
-          {{-- BARIS 3: Transaksi Terbaru (full width)        --}}
+          {{-- BARIS 3: Transaksi & User Terbaru (2 Kolom)     --}}
           {{-- ══════════════════════════════════════════════ --}}
-          <div class="card dash-table shadow-sm mb-4">
-            <div class="card-header bg-white border-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center">
-              <div>
-                <h5 class="fw-bold mb-0">Transaksi Terbaru</h5>
-                <small class="text-muted">5 transaksi terakhir masuk</small>
+          <div class="row g-3 mb-4">
+            {{-- Transaksi Terbaru --}}
+            <div class="col-12 col-xl-7">
+              <div class="card dash-table shadow-sm h-100">
+                <div class="card-header bg-white border-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5 class="fw-bold mb-0">Transaksi Terbaru</h5>
+                    <small class="text-muted">5 transaksi terakhir masuk</small>
+                  </div>
+                  <a href="{{ route('admin.transactions.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                    Lihat Semua <i class="fe fe-arrow-right ms-1"></i>
+                  </a>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                  <div class="table-responsive">
+                    <table class="table table-hover text-nowrap mb-0">
+                      <thead>
+                        <tr>
+                          <th>User</th>
+                          <th>Paket</th>
+                          <th>Jumlah</th>
+                          <th>Status</th>
+                          <th>Tanggal</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @forelse($latestTransactions as $trx)
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center gap-2">
+                              <img src="https://ui-avatars.com/api/?name={{ urlencode($trx->user->name ?? '-') }}&background=random&color=fff&size=32&bold=true&rounded=true" alt="" width="32" height="32" class="rounded-circle">
+                              <span class="fw-semibold text-truncate" style="max-width: 120px; font-size:13px">{{ $trx->user->name ?? '-' }}</span>
+                            </div>
+                          </td>
+                          <td><span class="text-truncate d-inline-block" style="max-width: 130px;" title="{{ $trx->tryout->title ?? '-' }}">{{ $trx->tryout->title ?? '-' }}</span></td>
+                          <td class="fw-semibold">Rp {{ number_format($trx->total_amount, 0, ',', '.') }}</td>
+                          <td>
+                            @php
+                              $statusClass = match(strtolower($trx->status)) {
+                                'success' => 'badge-success-soft',
+                                'verifying' => 'badge-warning-soft',
+                                'pending' => 'badge-info-soft',
+                                default => 'badge-danger-soft',
+                              };
+                              $statusLabel = match(strtolower($trx->status)) {
+                                'success' => 'Lunas',
+                                'verifying' => 'Verifikasi',
+                                'pending' => 'Pending',
+                                default => ucfirst($trx->status),
+                              };
+                            @endphp
+                            <span class="badge badge-status {{ $statusClass }}">{{ $statusLabel }}</span>
+                          </td>
+                          <td><small class="text-muted">{{ $trx->created_at->format('d M Y') }}</small></td>
+                        </tr>
+                        @empty
+                        <tr>
+                          <td colspan="5" class="text-center text-muted py-4">Belum ada transaksi</td>
+                        </tr>
+                        @endforelse
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
-              <a href="{{ route('admin.transactions.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                Lihat Semua <i class="fe fe-arrow-right ms-1"></i>
-              </a>
             </div>
-            <div class="card-body px-0 pt-0 pb-2">
-              <div class="table-responsive">
-                <table class="table table-hover text-nowrap mb-0">
-                  <thead>
-                    <tr>
-                      <th>User</th>
-                      <th>Paket</th>
-                      <th>Jumlah</th>
-                      <th>Status</th>
-                      <th>Tanggal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @forelse($latestTransactions as $trx)
-                    <tr>
-                      <td>
-                        <div class="d-flex align-items-center gap-2">
-                          <img src="https://ui-avatars.com/api/?name={{ urlencode($trx->user->name ?? '-') }}&background=random&color=fff&size=32&bold=true&rounded=true" alt="" width="32" height="32" class="rounded-circle">
-                          <span class="fw-semibold" style="font-size:13px">{{ $trx->user->name ?? '-' }}</span>
-                        </div>
-                      </td>
-                      <td>{{ $trx->tryout->title ?? '-' }}</td>
-                      <td class="fw-semibold">Rp {{ number_format($trx->total_amount, 0, ',', '.') }}</td>
-                      <td>
-                        @php
-                          $statusClass = match(strtolower($trx->status)) {
-                            'success' => 'badge-success-soft',
-                            'verifying' => 'badge-warning-soft',
-                            'pending' => 'badge-info-soft',
-                            default => 'badge-danger-soft',
-                          };
-                          $statusLabel = match(strtolower($trx->status)) {
-                            'success' => 'Lunas',
-                            'verifying' => 'Verifikasi',
-                            'pending' => 'Pending',
-                            default => ucfirst($trx->status),
-                          };
-                        @endphp
-                        <span class="badge badge-status {{ $statusClass }}">{{ $statusLabel }}</span>
-                      </td>
-                      <td><small class="text-muted">{{ $trx->created_at->format('d M Y') }}</small></td>
-                    </tr>
-                    @empty
-                    <tr>
-                      <td colspan="5" class="text-center text-muted py-4">Belum ada transaksi</td>
-                    </tr>
-                    @endforelse
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
 
-          {{-- ══════════════════════════════════════════════ --}}
-          {{-- BARIS 4: User Terbaru (full width)             --}}
-          {{-- ══════════════════════════════════════════════ --}}
-          <div class="card dash-table shadow-sm mb-4">
-            <div class="card-header bg-white border-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center">
-              <div>
-                <h5 class="fw-bold mb-0">User Terbaru</h5>
-                <small class="text-muted">5 pendaftaran terakhir</small>
-              </div>
-              <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                Lihat Semua <i class="fe fe-arrow-right ms-1"></i>
-              </a>
-            </div>
-            <div class="card-body px-0 pt-0 pb-2">
-              <div class="table-responsive">
-                <table class="table table-hover text-nowrap mb-0">
-                  <thead>
-                    <tr>
-                      <th>User</th>
-                      <th>Email</th>
-                      <th>Bergabung</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @forelse($latestUsers as $u)
-                    <tr>
-                      <td>
-                        <div class="d-flex align-items-center gap-2">
-                          <img src="https://ui-avatars.com/api/?name={{ urlencode($u->name) }}&background=random&color=fff&size=32&bold=true&rounded=true" alt="" width="32" height="32" class="rounded-circle">
-                          <span class="fw-semibold" style="font-size:13px">{{ $u->name }}</span>
-                        </div>
-                      </td>
-                      <td><small class="text-muted">{{ $u->email }}</small></td>
-                      <td><small class="text-muted">{{ $u->created_at->diffForHumans() }}</small></td>
-                    </tr>
-                    @empty
-                    <tr>
-                      <td colspan="3" class="text-center text-muted py-4">Belum ada user</td>
-                    </tr>
-                    @endforelse
-                  </tbody>
-                </table>
+            {{-- User Terbaru --}}
+            <div class="col-12 col-xl-5">
+              <div class="card dash-table shadow-sm h-100">
+                <div class="card-header bg-white border-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5 class="fw-bold mb-0">User Terbaru</h5>
+                    <small class="text-muted">5 pendaftaran terakhir</small>
+                  </div>
+                  <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                    Lihat Semua <i class="fe fe-arrow-right ms-1"></i>
+                  </a>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                  <div class="table-responsive">
+                    <table class="table table-hover text-nowrap mb-0">
+                      <thead>
+                        <tr>
+                          <th>User</th>
+                          <th>Email</th>
+                          <th>Bergabung</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @forelse($latestUsers as $u)
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center gap-2">
+                              <img src="https://ui-avatars.com/api/?name={{ urlencode($u->name) }}&background=random&color=fff&size=32&bold=true&rounded=true" alt="" width="32" height="32" class="rounded-circle">
+                              <span class="fw-semibold text-truncate" style="max-width: 120px; font-size:13px">{{ $u->name }}</span>
+                            </div>
+                          </td>
+                          <td><small class="text-muted text-truncate d-inline-block" style="max-width: 140px;" title="{{ $u->email }}">{{ $u->email }}</small></td>
+                          <td><small class="text-muted">{{ $u->created_at->diffForHumans() }}</small></td>
+                        </tr>
+                        @empty
+                        <tr>
+                          <td colspan="3" class="text-center text-muted py-4">Belum ada user</td>
+                        </tr>
+                        @endforelse
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -455,7 +482,7 @@
 
       // ─── Grafik User Baru Harian ───
       const userCtx = document.getElementById('userChart').getContext('2d');
-      const userGradient = userCtx.createLinearGradient(0, 0, 0, 180);
+      const userGradient = userCtx.createLinearGradient(0, 0, 0, 240);
       userGradient.addColorStop(0, 'rgba(79, 70, 229, 0.2)');
       userGradient.addColorStop(1, 'rgba(79, 70, 229, 0.01)');
 

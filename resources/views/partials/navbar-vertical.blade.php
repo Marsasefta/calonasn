@@ -1,5 +1,7 @@
 <!-- Top Loading Progress Bar (Feedback Instan Saat Klik Menu) -->
 <div id="adminTopProgressBar"></div>
+<!-- Mobile Sidebar Backdrop Overlay -->
+<div id="adminSidebarBackdrop" class="admin-sidebar-backdrop"></div>
 
 <nav class="navbar-vertical navbar shadow-sm" id="adminSidebar">
   <div class="vh-100 d-flex flex-column w-100">
@@ -25,8 +27,8 @@
     <div class="flex-grow-1 py-3 overflow-y-auto" id="sidebarMenuScroll">
       <ul class="navbar-nav px-3 gap-1" id="sideNavbar">
 
-        <!-- KELOMPOK UTAMA -->
-        <li class="nav-item mt-1 mb-1 px-3">
+        <!-- 1. KELOMPOK UTAMA -->
+        <li class="nav-item section-heading-item px-3">
           <span class="section-heading-text">Utama</span>
         </li>
 
@@ -44,9 +46,16 @@
           </a>
         </li>
 
-        <!-- KELOMPOK TRYOUT -->
-        <li class="nav-item mt-3 mb-1 px-3">
-          <span class="section-heading-text">Manajemen Tryout</span>
+        <!-- 2. KELOMPOK KONTEN & UJIAN -->
+        <li class="nav-item section-heading-item px-3">
+          <span class="section-heading-text">Konten & Ujian</span>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.learning.*') ? 'active' : '' }}" href="{{ route('admin.learning.index') }}">
+            <i class="fe fe-book-open me-2.5"></i>
+            <span>Materi Pembelajaran</span>
+          </a>
         </li>
 
         <li class="nav-item">
@@ -77,23 +86,9 @@
           </a>
         </li>
 
-        <!-- KELOMPOK PEMASARAN -->
-        <li class="nav-item mt-3 mb-1 px-3">
-          <span class="section-heading-text">Pemasaran & Konten</span>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.blog.*') ? 'active' : '' }}" href="{{ route('admin.blog.index') }}">
-            <i class="fe fe-edit-3 me-2.5"></i>
-            <span>Artikel & Berita</span>
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.learning.*') ? 'active' : '' }}" href="{{ route('admin.learning.index') }}">
-            <i class="fe fe-book-open me-2.5"></i>
-            <span>Materi Pembelajaran</span>
-          </a>
+        <!-- 3. KELOMPOK TRANSAKSI & LAPORAN -->
+        <li class="nav-item section-heading-item px-3">
+          <span class="section-heading-text">Transaksi & Laporan</span>
         </li>
 
         <li class="nav-item">
@@ -101,6 +96,18 @@
             <i class="fe fe-credit-card me-2.5"></i>
             <span>Transaksi & Keuangan</span>
           </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.reports.*') ? 'active' : '' }}" href="{{ route('admin.reports.index') }}">
+            <i class="fe fe-bar-chart-2 me-2.5"></i>
+            <span>Laporan & Peringkat</span>
+          </a>
+        </li>
+
+        <!-- 4. KELOMPOK PEMASARAN & PUBLIKASI -->
+        <li class="nav-item section-heading-item px-3">
+          <span class="section-heading-text">Pemasaran & Publikasi</span>
         </li>
 
         <li class="nav-item">
@@ -118,15 +125,15 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.reports.*') ? 'active' : '' }}" href="{{ route('admin.reports.index') }}">
-            <i class="fe fe-bar-chart-2 me-2.5"></i>
-            <span>Laporan & Peringkat</span>
+          <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.blog.*') ? 'active' : '' }}" href="{{ route('admin.blog.index') }}">
+            <i class="fe fe-edit-3 me-2.5"></i>
+            <span>Artikel & Berita</span>
           </a>
         </li>
 
-        <!-- KELOMPOK SISTEM -->
-        <li class="nav-item mt-3 mb-1 px-3">
-          <span class="section-heading-text">Sistem & Debug</span>
+        <!-- 5. KELOMPOK SISTEM -->
+        <li class="nav-item section-heading-item px-3">
+          <span class="section-heading-text">Sistem</span>
         </li>
 
         <li class="nav-item">
@@ -197,20 +204,34 @@
     background: rgba(255, 255, 255, 0.3);
   }
 
-  /* Heading Kategori Menu */
-  .section-heading-text {
-    text-transform: uppercase;
-    color: #64748b !important;
-    font-weight: 700;
-    font-size: 10.5px;
-    letter-spacing: 1.1px;
-    display: block;
-    user-select: none;
+  /* Heading Kategori Menu (Warna Berbeda & Kontras Tinggi) */
+  .section-heading-item {
+    margin-top: 1.15rem !important;
+    margin-bottom: 0.25rem !important;
+    padding-top: 0.65rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  /* Nav Links (GPU-accelerated, Tidak Geser Padding) */
+  .section-heading-item:first-of-type {
+    margin-top: 0.25rem !important;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .section-heading-text {
+    text-transform: uppercase;
+    color: #38bdf8 !important; /* Sky Blue cerah, sangat kontras dan mudah dibedakan */
+    font-weight: 700;
+    font-size: 10.5px;
+    letter-spacing: 1.3px;
+    display: inline-block;
+    user-select: none;
+    opacity: 0.95;
+  }
+
+  /* Nav Links (Teks Terang & Jelas sebagai Menu Klik) */
   .navbar-vertical .nav-link {
-    color: #94a3b8;
+    color: #cbd5e1; /* Slate-300 yang cerah, kontras dengan kategori Sky Blue */
     font-size: 13.5px;
     font-weight: 500;
     transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
@@ -222,7 +243,7 @@
 
   .navbar-vertical .nav-link i {
     font-size: 15px;
-    color: #64748b;
+    color: #94a3b8; /* Ikon slate netral yang serasi */
     transition: color 0.15s ease;
   }
 
@@ -265,6 +286,32 @@
   #db-wrapper {
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
+
+  /* Mobile Sidebar Backdrop Overlay */
+  .admin-sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(2px);
+    z-index: 1040;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  @media (max-width: 767.98px) {
+    .navbar-vertical {
+      z-index: 1050 !important;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.45);
+    }
+    #db-wrapper.toggled .admin-sidebar-backdrop {
+      display: block;
+      opacity: 1;
+    }
+  }
 </style>
 
 <script>
@@ -282,12 +329,20 @@
       }, { passive: true });
     }
 
-    // 2. Ingat Status Sidebar Toggled (Buka/Tutup) di LocalStorage
+    // 2. Ingat Status Sidebar Toggled (Buka/Tutup) di LocalStorage (HANYA UNTUK DESKTOP)
     const dbWrapper = document.getElementById('db-wrapper');
+    const backdrop = document.getElementById('adminSidebarBackdrop');
+
     if (dbWrapper) {
-      const isToggled = localStorage.getItem('admin_sidebar_toggled') === 'true';
-      if (isToggled) {
-        dbWrapper.classList.add('toggled');
+      const isDesktop = window.innerWidth >= 768;
+      if (isDesktop) {
+        const isToggled = localStorage.getItem('admin_sidebar_toggled') === 'true';
+        if (isToggled) {
+          dbWrapper.classList.add('toggled');
+        }
+      } else {
+        // Pada mobile, selalu pastikan default tertutup saat awal muat
+        dbWrapper.classList.remove('toggled');
       }
 
       // Deteksi klik pada tombol toggle navbar
@@ -295,9 +350,28 @@
         const toggleBtn = e.target.closest('#nav-toggle');
         if (toggleBtn) {
           setTimeout(() => {
-            localStorage.setItem('admin_sidebar_toggled', dbWrapper.classList.contains('toggled'));
+            if (window.innerWidth >= 768) {
+              localStorage.setItem('admin_sidebar_toggled', dbWrapper.classList.contains('toggled'));
+            }
           }, 60);
         }
+      });
+
+      // Tutup sidebar saat backdrop di-klik di mobile
+      if (backdrop) {
+        backdrop.addEventListener('click', function() {
+          dbWrapper.classList.remove('toggled');
+        });
+      }
+
+      // Tutup sidebar otomatis di mobile saat menu di-klik
+      const sidebarLinks = document.querySelectorAll('#sideNavbar .nav-link');
+      sidebarLinks.forEach(function(link) {
+        link.addEventListener('click', function() {
+          if (window.innerWidth < 768) {
+            dbWrapper.classList.remove('toggled');
+          }
+        });
       });
     }
 

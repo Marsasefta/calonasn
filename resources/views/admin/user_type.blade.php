@@ -44,6 +44,37 @@
             padding: 1.25rem 1.5rem;
         }
 
+        /* Responsive DataTables Controls on Mobile */
+        @media (max-width: 767.98px) {
+            div.dataTables_wrapper div.dataTables_length,
+            div.dataTables_wrapper div.dataTables_filter {
+                text-align: left;
+                padding: 0.75rem 1rem;
+            }
+
+            div.dataTables_wrapper div.dataTables_filter label,
+            div.dataTables_wrapper div.dataTables_length label {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.35rem;
+            }
+
+            div.dataTables_wrapper div.dataTables_filter input {
+                width: 100% !important;
+                margin-left: 0 !important;
+            }
+
+            div.dataTables_wrapper div.dataTables_info,
+            div.dataTables_wrapper div.dataTables_paginate {
+                padding: 0.75rem 1rem;
+                text-align: center;
+                display: flex;
+                justify-content: center;
+            }
+        }
+
         /* Avatar Inisial */
         .user-avatar-circle {
             width: 40px;
@@ -90,7 +121,15 @@
             border: 1px solid #e2e8f0;
             background: #ffffff;
             box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
-            overflow: hidden;
+            overflow: visible;
+        }
+
+        #usersTable tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        .table-responsive {
+            min-height: 280px;
         }
 
         /* Action Buttons Hover */
@@ -292,7 +331,7 @@
         <main id="page-content">
             @include('partials.dashboard-header')
 
-            <section class="container-fluid p-4">
+            <section class="container-fluid p-3 p-md-4">
                 <!-- Page Header -->
                 <div class="row mb-4">
                     <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
@@ -449,7 +488,7 @@
                                     <th>Status Paket</th>
                                     <th>Kontak WhatsApp</th>
                                     <th>Terdaftar</th>
-                                    <th class="text-end pe-4" style="width: 140px;">Aksi</th>
+                                    <th class="text-end pe-4" style="width: 115px;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -526,20 +565,13 @@
                                                 <div class="user-avatar-circle" style="background-color: {{ $avatarStyle['bg'] }}; color: {{ $avatarStyle['text'] }};">
                                                     {{ $initials }}
                                                 </div>
-                                                <div class="d-flex flex-column">
-                                                    <div class="d-flex align-items-center gap-2">
-                                                        <a href="{{ route('admin.users.show', $user->id) }}" class="fw-bold text-dark text-decoration-none hover-primary">
-                                                            {{ $user->name }}
-                                                        </a>
-                                                        @if ($user->role === 'admin')
-                                                             <span class="badge badge-admin-tag rounded-pill px-2 py-0.5" style="font-size: 0.65rem;">
-                                                                ADMIN
-                                                            </span>
-                                                        @endif
-                                                    </div>
-                                                    <span class="text-muted small d-inline-flex align-items-center gap-1">
-                                                        <i class="fe fe-mail text-secondary" style="font-size: 0.75rem;"></i>
-                                                        <span>{{ $user->email }}</span>
+                                                <div class="d-flex flex-column" style="min-width: 0; max-width: 210px;">
+                                                    <a href="{{ route('admin.users.show', $user->id) }}" class="fw-bold text-dark text-decoration-none hover-primary text-truncate d-block" title="{{ $user->name }}">
+                                                        {{ $user->name }}
+                                                    </a>
+                                                    <span class="text-muted small d-inline-flex align-items-center gap-1 text-truncate" title="{{ $user->email }}">
+                                                        <i class="fe fe-mail text-secondary" style="font-size: 0.75rem; flex-shrink: 0;"></i>
+                                                        <span class="text-truncate">{{ $user->email }}</span>
                                                     </span>
                                                 </div>
                                             </div>
@@ -585,8 +617,8 @@
                                                     </span>
                                                 @endif
 
-                                                <!-- Quick Toggle Switch -->
-                                                <div class="form-check form-switch mb-0 ms-1" title="Klik untuk ubah status Premium instan">
+                                                <!-- Quick Toggle Switch with Tooltip -->
+                                                <div class="form-check form-switch mb-0 ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $user->is_premium ? 'Akses Manual PRO Aktif (Klik untuk nonaktifkan)' : 'Beri Akses Manual PRO instan' }}">
                                                     <input class="form-check-input premium-toggle-switch" type="checkbox" role="switch"
                                                            data-user-id="{{ $user->id }}"
                                                            {{ $user->is_premium ? 'checked' : '' }} />
@@ -628,12 +660,12 @@
                                         </td>
 
                                         <!-- Terdaftar -->
-                                        <td>
+                                        <td data-order="{{ $user->created_at ? $user->created_at->timestamp : $user->id }}">
                                             <span class="d-block fw-semibold text-dark small">
-                                                {{ $user->created_at->diffForHumans() }}
+                                                {{ $user->created_at ? $user->created_at->diffForHumans() : '-' }}
                                             </span>
                                             <span class="text-muted" style="font-size: 0.75rem;">
-                                                {{ $user->created_at->format('d M Y, H:i') }}
+                                                {{ $user->created_at ? $user->created_at->format('d M Y, H:i') : '-' }}
                                             </span>
                                         </td>
 
@@ -647,27 +679,43 @@
                                                 </a>
                                                 <a href="{{ route('admin.users.edit', $user->id) }}" 
                                                    class="btn btn-sm btn-outline-secondary btn-action-icon" 
-                                                   title="Edit Peserta">
+                                                   title="Edit Data Peserta">
                                                     <i class="fe fe-edit-2"></i>
                                                 </a>
-                                                <button type="button" 
-                                                        class="btn btn-sm btn-outline-warning btn-action-icon btn-reset-password"
-                                                        data-user-id="{{ $user->id }}"
-                                                        data-user-name="{{ $user->name }}"
-                                                        title="Reset Password (Pass1234!)">
-                                                    <i class="fe fe-key"></i>
-                                                </button>
-                                                <form id="delete-form-{{ $user->id }}" action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
+                                                <div class="dropdown d-inline-block">
                                                     <button type="button" 
-                                                            class="btn btn-sm btn-outline-danger btn-action-icon btn-delete-user"
-                                                            data-user-id="{{ $user->id }}"
-                                                            data-user-name="{{ $user->name }}"
-                                                            title="Hapus Akun">
-                                                        <i class="fe fe-trash-2"></i>
+                                                            class="btn btn-sm btn-outline-secondary btn-action-icon" 
+                                                            data-bs-toggle="dropdown" 
+                                                            aria-expanded="false" 
+                                                            title="Menu Lainnya">
+                                                        <i class="fe fe-more-vertical"></i>
                                                     </button>
-                                                </form>
+                                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 py-2" style="font-size: 0.85rem; border-radius: 10px; z-index: 1060;">
+                                                        <li>
+                                                            <button type="button" 
+                                                                    class="dropdown-item d-flex align-items-center gap-2 py-2 btn-reset-password"
+                                                                    data-user-id="{{ $user->id }}"
+                                                                    data-user-name="{{ $user->name }}">
+                                                                <i class="fe fe-key text-warning" style="font-size: 0.95rem;"></i>
+                                                                <span>Reset Password</span>
+                                                            </button>
+                                                        </li>
+                                                        <li><hr class="dropdown-divider my-1"></li>
+                                                        <li>
+                                                            <form id="delete-form-{{ $user->id }}" action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="button" 
+                                                                        class="dropdown-item d-flex align-items-center gap-2 py-2 text-danger btn-delete-user"
+                                                                        data-user-id="{{ $user->id }}"
+                                                                        data-user-name="{{ $user->name }}">
+                                                                    <i class="fe fe-trash-2" style="font-size: 0.95rem;"></i>
+                                                                    <span>Hapus Akun</span>
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
@@ -799,6 +847,7 @@
                 "responsive": true,
                 "pageLength": 15,
                 "lengthMenu": [10, 15, 25, 50, 100],
+                "order": [[5, 'desc']], // Urutkan default berdasarkan kolom Terdaftar (paling baru di atas)
                 "language": {
                     "search": "",
                     "searchPlaceholder": "Cari nama, email, telp...",
@@ -815,8 +864,22 @@
                     }
                 },
                 "columnDefs": [
-                    { "orderable": false, "targets": [6] } // Matikan sorting pada kolom Aksi
+                    { "orderable": false, "targets": [0, 6] } // Matikan sorting pada kolom # dan Aksi
                 ]
+            });
+
+            // Auto renumber kolom # agar selalu urut 1, 2, 3... & aktifkan tooltip Bootstrap
+            dataTable.on('draw.dt', function () {
+                const pageInfo = dataTable.page.info();
+                dataTable.column(0, { page: 'current' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1 + pageInfo.start;
+                });
+
+                // Inisialisasi ulang tooltip pada baris tabel baru
+                const tooltipTriggerList = document.querySelectorAll('#usersTable [data-bs-toggle="tooltip"]');
+                tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                    new bootstrap.Tooltip(tooltipTriggerEl);
+                });
             });
 
             // Quick Filter Pills Handler
