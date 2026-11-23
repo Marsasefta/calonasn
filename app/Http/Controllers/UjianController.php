@@ -18,6 +18,7 @@ class UjianController extends Controller
     public function checkUserAccess($tryoutId)
     {
         $userId = auth()->id();
+        $user = auth()->user();
 
         // 1. Ambil transaksi sukses terbaru untuk MASING-MASING ID paket
         // Menggunakan LOWER agar aman dari salah ketik 'Success' atau 'success' di database
@@ -25,40 +26,45 @@ class UjianController extends Controller
         $trx2 = Transaction::where('user_id', $userId)->where('tryout_id', 2)->whereRaw('LOWER(status) = ?', ['success'])->latest()->first();
         $trx3 = Transaction::where('user_id', $userId)->where('tryout_id', 3)->whereRaw('LOWER(status) = ?', ['success'])->latest()->first();
 
+        // Cek status Paket Lengkap (Beli Paket 2 langsung, atau Upgrade Paket 1 + Paket 3, atau manual is_premium)
+        $isUnlimited = $trx2 || ($trx1 && $trx3) || ($user && $user->is_premium);
+
+        // JIKA USER MEMILIKI PAKET 2 (LENGKAP/UNLIMITED):
+        // Akses untuk Tryout 1 sepuasnya tanpa batas dan tidak pernah terkunci
+        if ($tryoutId == 1 && $isUnlimited) {
+            return [
+                'status' => 'unlocked',
+                'is_unlimited' => true,
+                'message' => 'Akses Unlimited (Paket Lengkap) aktif.'
+            ];
+        }
+
         $hasAccess = false;
         $lastTransactionTime = null;
 
-        // 2. Tentukan Hak Akses & Ambil Waktu Pembelian Terakhir
+        // 2. Tentukan Hak Akses & Ambil Waktu Pembelian Terakhir (Untuk Paket Mandiri / Non-Unlimited)
         if ($tryoutId == 1) {
-            // Tryout 1 TERBUKA jika punya Paket 1 ATAU Paket 2 (Premium)
-            if ($trx2) {
-                $hasAccess = true;
-                $lastTransactionTime = $trx2->updated_at;
-            }
-            // Jika trx1 lebih baru dari trx2 (misal dia beli paket 1 lagi untuk ngulang), gunakan waktu trx1
-            if ($trx1 && (!$lastTransactionTime || $trx1->updated_at > $lastTransactionTime)) {
+            if ($trx1) {
                 $hasAccess = true;
                 $lastTransactionTime = $trx1->updated_at;
             }
         } elseif ($tryoutId == 2) {
-            // Tryout 2 TERBUKA jika punya Paket 2 ATAU hasil Upgrade (Paket 1 + Paket 3)
-            if ($trx2) {
-                $hasAccess = true;
-                $lastTransactionTime = $trx2->updated_at;
-            }
-            if ($trx1 && $trx3) {
-                $hasAccess = true;
-                // Waktu efektif adalah waktu saat dia melakukan upgrade (trx3)
-                $upgradeTime = $trx3->updated_at > $trx1->updated_at ? $trx3->updated_at : $trx1->updated_at;
-                if (!$lastTransactionTime || $upgradeTime > $lastTransactionTime) {
-                    $lastTransactionTime = $upgradeTime;
-                }
+            if ($isUnlimited) {
+                return [
+                    'status' => 'unlocked',
+                    'is_unlimited' => true,
+                    'message' => 'Akses Paket Lengkap aktif.'
+                ];
             }
         }
 
         // Jika setelah dicek ternyata tidak punya akses sama sekali
         if (!$hasAccess) {
-            return ['status' => 'locked', 'message' => 'Silakan miliki paket yang sesuai terlebih dahulu.'];
+            return [
+                'status' => 'locked',
+                'is_unlimited' => false,
+                'message' => 'Silakan miliki paket yang sesuai terlebih dahulu.'
+            ];
         }
 
         // 3. Cari sesi ujian terbaru yang SUDAH SELESAI (berdasarkan tryout yang mau diakses)
@@ -68,20 +74,30 @@ class UjianController extends Controller
             ->latest()
             ->first();
 
-        // --- LOGIKA KUNCI (RETRY EXAM) ---
+        // --- LOGIKA KUNCI (RETRY EXAM UNTUK PAKET MANDIRI / NON-UNLIMITED) ---
         // Jika belum pernah selesai ujian ini sama sekali, akses TERBUKA.
         if (!$lastFinishedSession) {
-            return ['status' => 'unlocked'];
+            return [
+                'status' => 'unlocked',
+                'is_unlimited' => false,
+            ];
         }
 
         // Jika waktu pembelian paket (yang valid) LEBIH BARU daripada waktu selesai ujian terakhir, 
         // berarti dia sudah "Beli Lagi", maka akses TERBUKA.
         if ($lastTransactionTime > $lastFinishedSession->end_time) {
-            return ['status' => 'unlocked'];
+            return [
+                'status' => 'unlocked',
+                'is_unlimited' => false,
+            ];
         }
 
         // Selain itu, akses TERKUNCI (Berarti kuota transaksi sudah "dipakai" / hangus).
-        return ['status' => 'locked', 'message' => 'Sesi ujian telah selesai. Beli lagi paket ini untuk mencoba ulang.'];
+        return [
+            'status' => 'locked',
+            'is_unlimited' => false,
+            'message' => 'Sesi ujian telah selesai. Beli lagi paket ini untuk mencoba ulang.'
+        ];
     }
 
     // Halaman "Gerbang" sebelum masuk ke soal

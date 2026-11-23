@@ -37,15 +37,23 @@
                                         <i class="fe fe-unlock"></i>
                                     </div>
                                     <h3 class="fw-bold">Akses Terbuka!</h3>
-                                    <p class="text-muted">Pembayaran berhasil diverifikasi. Anda memiliki satu
-                                        kesempatan untuk mengerjakan tryout ini sekarang.</p>
+                                    @if (!empty($access['is_unlimited']))
+                                        <p class="text-muted">Selamat! Anda memiliki akses <strong>Unlimited (Paket Lengkap)</strong>. Anda dapat mencoba dan mengerjakan simulasi tryout ini berkali-kali tanpa batas.</p>
+                                    @else
+                                        <p class="text-muted">Pembayaran berhasil diverifikasi. Anda memiliki satu
+                                            kesempatan untuk mengerjakan tryout ini sekarang.</p>
+                                    @endif
                                 </div>
 
                                 <div class="alert alert-info border-0 shadow-sm mb-4">
                                     <ul class="text-start mb-0 small">
                                         <li>Pastikan koneksi internet stabil.</li>
                                         <li>Ujian akan otomatis berhenti jika waktu habis.</li>
-                                        <li>Satu kali klik "Selesai", akses akan terkunci kembali.</li>
+                                        @if (!empty($access['is_unlimited']))
+                                            <li>Setelah selesai, Anda dapat mengulang tryout ini kapan saja tanpa harus membeli lagi.</li>
+                                        @else
+                                            <li>Satu kali klik "Selesai", akses akan terkunci kembali.</li>
+                                        @endif
                                     </ul>
                                 </div>
 
