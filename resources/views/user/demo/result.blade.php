@@ -285,13 +285,13 @@
                             </div>
 
                             <ul class="list-unstyled d-flex flex-column gap-3 text-dark fw-medium mb-4">
-                                <li class="d-flex align-items-start small">
-                                    <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
-                                    <span><strong>110 Soal CAT Lengkap SKD</strong> (TWK, TIU, TKP) berstandar kisi-kisi resmi BKN 2024/2026</span>
+                                <li class="d-flex align-items-start small p-2 bg-primary-soft rounded-3">
+                                    <i class="bi bi-infinity text-primary me-2 mt-1 fs-5"></i>
+                                    <span class="text-primary"><strong>Akses Tryout Unlimited (Tanpa Batas):</strong> Ulangi simulasi tryout berkali-kali sepuasnya tanpa biaya tambahan</span>
                                 </li>
                                 <li class="d-flex align-items-start small">
                                     <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
-                                    <span><strong>Kunci Jawaban Resmi & Pembahasan Rinci</strong> per butir soal dengan trik eliminasi cepat</span>
+                                    <span><strong>110 Soal CAT Lengkap SKD</strong> (TWK, TIU, TKP) berstandar kisi-kisi resmi BKN 2024/2026</span>
                                 </li>
                                 <li class="d-flex align-items-start small p-2 bg-primary-soft rounded-3">
                                     <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>

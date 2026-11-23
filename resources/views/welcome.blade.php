@@ -827,13 +827,17 @@
 
                             <!-- Features List -->
                             <ul class="list-unstyled d-flex flex-column gap-3 text-dark mb-5 small">
-                                <li class="d-flex align-items-start gap-2.5">
-                                    <i class="fe fe-check-circle text-primary fs-5 mt-0.5"></i>
-                                    <span><strong>Semua Fitur di Paket Tryout Mandiri</strong> (110 Soal CAT BKN)</span>
+                                <li class="d-flex align-items-start gap-2.5 p-2 rounded-3 border border-primary border-opacity-25" style="background: #f0f7ff;">
+                                    <i class="fe fe-infinity text-primary fs-5 mt-0.5"></i>
+                                    <span><strong class="text-primary">Akses Tryout Unlimited (Tanpa Batas)</strong> — Bisa dicoba & diulang sepuasnya kapan saja</span>
                                 </li>
                                 <li class="d-flex align-items-start gap-2.5 p-2 rounded-3 border border-primary border-opacity-25" style="background: #f0f7ff;">
                                     <i class="fe fe-star text-primary fs-5 mt-0.5"></i>
                                     <span class="text-primary fw-bold">Akses Penuh Ratusan Modul Materi (Micro-Learning)</span>
+                                </li>
+                                <li class="d-flex align-items-start gap-2.5">
+                                    <i class="fe fe-check-circle text-primary fs-5 mt-0.5"></i>
+                                    <span><strong>110 Soal CAT Lengkap Standar BKN</strong> (TWK, TIU, TKP)</span>
                                 </li>
                                 <li class="d-flex align-items-start gap-2.5">
                                     <i class="fe fe-check-circle text-primary fs-5 mt-0.5"></i>
@@ -1333,7 +1337,11 @@
                                 </h2>
                                 <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
                                     <div class="accordion-body px-4 pb-4 pt-0 text-muted" style="line-height: 1.7;">
-                                        Sistem kami sangat bersahabat: <strong class="text-dark">Beli sesuai kebutuhan tanpa langganan bulanan mahal!</strong> Satu kali pembayaran memberi hak ujian 1 paket Tryout lengkap (110 butir soal).
+                                        Tergantung paket yang Anda pilih:
+                                        <ul class="mt-2 mb-2 ps-3">
+                                            <li><strong class="text-dark">Paket Mandiri (Rp 13.000):</strong> Mendapatkan 1 kali pengerjaan simulasi ujian lengkap (110 soal). Pembahasan, skor, dan kunci jawaban dapat diakses kembali selamanya.</li>
+                                            <li><strong class="text-primary">Paket Super Lengkap (Rp 42.000 / Rp 49.000):</strong> Mendapatkan akses <strong class="text-primary">Unlimited Tryout</strong> — Anda bisa mengulang dan mengerjakan simulasi tryout berkali-kali sepuasnya tanpa harus membeli lagi, plus akses penuh ke ratusan modul materi belajar!</li>
+                                        </ul>
                                         <div class="mt-2 p-3 rounded-3 bg-light border-start border-3 border-primary">
                                             <i class="fe fe-check-circle text-primary me-1"></i> Setelah selesai ujian, akses ke <strong>Skor, Analisis Passing Grade, Kunci Jawaban, dan Trik Pembahasan Cepat</strong> terbuka <strong>selamanya</strong> untuk dipelajari ulang kapan pun kamu mau.
                                         </div>

@@ -132,13 +132,17 @@
                         </div>
 
                         <ul class="list-unstyled d-flex flex-column gap-3 text-dark fw-medium mb-5">
-                            <li class="d-flex align-items-start small">
-                                <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
-                                <span>Semua Fitur Paket Tryout Mandiri</span>
+                            <li class="d-flex align-items-start small p-2 bg-primary-soft rounded-3">
+                                <i class="bi bi-infinity text-primary me-2 mt-1 fs-5"></i>
+                                <span class="text-primary"><strong>Akses Tryout Unlimited</strong> — Kerjakan berkali-kali sepuasnya</span>
                             </li>
                             <li class="d-flex align-items-start small p-2 bg-primary-soft rounded-3">
                                 <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
                                 <span class="text-primary"><strong>Akses Penuh Materi Pembelajaran</strong></span>
+                            </li>
+                            <li class="d-flex align-items-start small">
+                                <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
+                                <span>110 Soal CAT Standar BKN (TWK, TIU, TKP)</span>
                             </li>
                             <li class="d-flex align-items-start small">
                                 <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
