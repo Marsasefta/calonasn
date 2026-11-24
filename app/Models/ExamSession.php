@@ -18,7 +18,17 @@ class ExamSession extends Model
         'score_tiu', 
         'score_tkp', 
         'total_score',
+        'certificate_token',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function ($session) {
+            if (empty($session->certificate_token)) {
+                $session->certificate_token = strtolower(\Illuminate\Support\Str::random(10));
+            }
+        });
+    }
 
     protected $casts = [
         'start_time' => 'datetime',

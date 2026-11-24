@@ -102,7 +102,7 @@
                                         <th class="text-center py-3">TKP</th>
                                         <th class="text-center py-3">Total Skor</th>
                                         <th class="text-center py-3">Status SKD</th>
-                                        <th class="text-end pe-3 py-3" style="min-width: 220px;">Aksi</th>
+                                        <th class="text-end pe-4 py-3" style="width: 320px; min-width: 310px;">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -157,8 +157,8 @@
                                                     </span>
                                                 @endif
                                             </td>
-                                            <td class="text-end pe-3">
-                                                <div class="d-inline-flex align-items-center gap-1.5 flex-wrap justify-content-end">
+                                            <td class="text-end pe-4">
+                                                <div class="d-inline-flex align-items-center gap-1.5 flex-nowrap justify-content-end">
                                                     {{-- TOMBOL LANGSUNG: RAPOR & PEMBAHASAN --}}
                                                     @if ($isTerbaru)
                                                         <a href="{{ route('ujian.hasil', $item->id) }}"
@@ -172,8 +172,10 @@
                                                             <i class="fe fe-book-open me-1"></i>Pembahasan
                                                         </a>
                                                     @else
-                                                        <span class="badge bg-light text-muted border rounded-pill px-2.5 py-1 small" title="Pembahasan hanya tersedia untuk sesi terbaru">
-                                                            <i class="fe fe-lock me-1"></i>Terkunci
+                                                        <span class="badge rounded-pill px-2.5 py-1 text-nowrap fw-semibold d-inline-flex align-items-center"
+                                                            style="background-color: #e2e8f0 !important; color: #334155 !important; border: 1px solid #cbd5e1 !important; font-size: 12px;"
+                                                            title="Rapor & Pembahasan hanya tersedia untuk sesi terbaru">
+                                                            <i class="fe fe-lock me-1 text-secondary"></i>Terkunci
                                                         </span>
                                                     @endif
 

@@ -467,13 +467,22 @@ class UjianController extends Controller
         // 4. Ambil detail Soal, Opsi, dan Kategorinya
         $questionIds = $examAnswers->pluck('question_id')->toArray();
         
-        $questions = \App\Models\Question::with(['options', 'category'])
-            ->whereIn('id', $questionIds)
-            ->get()
-            ->sortBy(function ($q) use ($questionIds) {
-                return array_search($q->id, $questionIds);
-            })
-            ->values();
+        if (empty($questionIds)) {
+            $questions = \App\Models\Question::with(['options', 'category'])
+                ->where('tryout_id', $sessionDb->tryout_id)
+                ->orderBy('category_id', 'asc')
+                ->orderBy('id', 'asc')
+                ->take(110)
+                ->get();
+        } else {
+            $questions = \App\Models\Question::with(['options', 'category'])
+                ->whereIn('id', $questionIds)
+                ->get()
+                ->sortBy(function ($q) use ($questionIds) {
+                    return array_search($q->id, $questionIds);
+                })
+                ->values();
+        }
 
         return view('user.ujian.ujian_pembahasan', [
             'questions' => $questions,
@@ -586,7 +595,7 @@ class UjianController extends Controller
             return redirect()->route('sertifikat.riwayat')->with('error', 'Sesi ujian ini belum memenuhi syarat kelulusan Passing Grade SKD BKN (TWK 65, TIU 80, TKP 166).');
         }
 
-        // 3. Susun format skor untuk dilempar ke Blade Sertifikat
+        // 3. Susun format skor & metadata untuk dilempar ke Blade Sertifikat
         $totalSkorReal = $session->total_score ?? ($twk + $tiu + $tkp);
         $skorFormat = [
             'TWK' => $twk,
@@ -595,10 +604,69 @@ class UjianController extends Controller
             'TOTAL' => $totalSkorReal
         ];
 
+        $tahun = $session->end_time ? $session->end_time->format('Y') : date('Y');
+        $noSertifikat = 'CASN-' . $tahun . '/SKD/' . str_pad($session->id, 5, '0', STR_PAD_LEFT);
+
         return view('user.ujian.sertifikat', [
             'user' => auth()->user(),
+            'session' => $session,
             'skor' => $skorFormat,
+            'noSertifikat' => $noSertifikat,
+            'token' => $session->certificate_token ?? strtolower(\Illuminate\Support\Str::random(10)),
             'tanggal' => $session->end_time ? $session->end_time->format('d F Y') : date('d F Y')
         ]);
-    }    
+    }
+
+    /**
+     * Halaman Publik Verifikasi Sertifikat Resmi (Akses Terbuka & Aman Menggunakan Token Acak Unik)
+     */
+    public function verifikasiSertifikat($identifier)
+    {
+        // 1. Cari berdasarkan certificate_token (random unguessable slug, e.g. dc750jiihh)
+        $session = \App\Models\ExamSession::with(['user', 'tryout'])
+            ->where('certificate_token', $identifier)
+            ->first();
+
+        // 2. Jika tidak ditemukan, coba cari berdasarkan format nomor registrasi resmi (CASN-2026/SKD/00022)
+        if (!$session && preg_match('/(\d+)$/', $identifier, $matches)) {
+            $session = \App\Models\ExamSession::with(['user', 'tryout'])->find(intval($matches[1]));
+        }
+
+        // 3. Fallback jika numeric ID
+        if (!$session && is_numeric($identifier)) {
+            $session = \App\Models\ExamSession::with(['user', 'tryout'])->find($identifier);
+        }
+
+        if (!$session) {
+            return view('user.ujian.verifikasi', [
+                'isValid' => false,
+                'message' => 'Sertifikat tidak ditemukan atau kode verifikasi tidak valid di database CalonASN.id.'
+            ]);
+        }
+
+        $twk = $session->score_twk ?? 0;
+        $tiu = $session->score_tiu ?? 0;
+        $tkp = $session->score_tkp ?? 0;
+        $isLulus = ($twk >= 65 && $tiu >= 80 && $tkp >= 166);
+
+        $tahun = $session->end_time ? $session->end_time->format('Y') : ($session->created_at ? $session->created_at->format('Y') : date('Y'));
+        $noSertifikat = 'CASN-' . $tahun . '/SKD/' . str_pad($session->id, 5, '0', STR_PAD_LEFT);
+
+        return view('user.ujian.verifikasi', [
+            'isValid' => true,
+            'isLulus' => $isLulus,
+            'session' => $session,
+            'user' => $session->user,
+            'tryout' => $session->tryout,
+            'noSertifikat' => $noSertifikat,
+            'token' => $session->certificate_token,
+            'skor' => [
+                'TWK' => $twk,
+                'TIU' => $tiu,
+                'TKP' => $tkp,
+                'TOTAL' => $session->total_score ?? ($twk + $tiu + $tkp)
+            ],
+            'tanggal' => $session->end_time ? $session->end_time->format('d F Y') : date('d F Y')
+        ]);
+    }
 }

@@ -50,6 +50,11 @@ Route::view('/demo-cat', 'demo')->name('demo.cat');
 Route::get('/redeem', [App\Http\Controllers\RedeemController::class, 'index'])->name('redeem.index');
 Route::post('/redeem', [App\Http\Controllers\RedeemController::class, 'process'])->name('redeem.process');
 
+// Route Publik Verifikasi Keaslian Sertifikat (Akses Terbuka & Aman Menggunakan Token Acak Unik)
+Route::get('/v/{token}', [UjianController::class, 'verifikasiSertifikat'])->name('sertifikat.verifikasi.short');
+Route::get('/sertifikat/{token}', [UjianController::class, 'verifikasiSertifikat'])->name('sertifikat.verifikasi.token');
+Route::get('/verifikasi/{token}', [UjianController::class, 'verifikasiSertifikat'])->name('sertifikat.verifikasi');
+
 // --- TAMBAHAN ROUTE GOOGLE AUTHENTICATION ---
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
