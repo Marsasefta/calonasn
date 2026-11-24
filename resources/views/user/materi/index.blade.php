@@ -39,16 +39,19 @@
                         <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
                             <h2 class="fw-bold text-dark mb-0">Ruang Belajar SKD</h2>
                             @if ($hasFullAccess)
-                                <span class="badge bg-success-soft text-success border border-success rounded-pill px-3 py-1 fw-bold small">
+                                <span
+                                    class="badge bg-success-soft text-success border border-success rounded-pill px-3 py-1 fw-bold small">
                                     <i class="bi bi-patch-check-fill me-1"></i> Modul Lengkap Aktif
                                 </span>
                             @else
-                                <span class="badge bg-primary-soft text-primary border border-primary rounded-pill px-3 py-1 fw-bold small">
+                                <span
+                                    class="badge bg-primary-soft text-primary border border-primary rounded-pill px-3 py-1 fw-bold small">
                                     <i class="bi bi-book-half me-1"></i> Free Trial Modul
                                 </span>
                             @endif
                         </div>
-                        <p class="text-muted fs-6 mb-0">Pahami konsep dasar kisi-kisi resmi sebelum bertempur di simulasi Tryout CAT.</p>
+                        <p class="text-muted fs-6 mb-0">Pahami konsep dasar kisi-kisi resmi sebelum bertempur di
+                            simulasi Tryout CAT.</p>
                     </div>
                 </div>
             </div>
@@ -76,11 +79,15 @@
                                                 {{ $category->materials_count }} Materi
                                             </span>
                                             @if ($hasFullAccess)
-                                                <span class="badge bg-success-soft text-success border border-success fw-semibold" style="font-size: 0.72rem;">
+                                                <span
+                                                    class="badge bg-success-soft text-success border border-success fw-semibold"
+                                                    style="font-size: 0.72rem;">
                                                     <i class="bi bi-patch-check-fill me-1"></i> Full Akses
                                                 </span>
                                             @else
-                                                <span class="badge bg-danger-soft text-danger border border-danger border-opacity-25 fw-semibold" style="font-size: 0.72rem;">
+                                                <span
+                                                    class="badge bg-danger-soft text-danger border border-danger border-opacity-25 fw-semibold"
+                                                    style="font-size: 0.72rem;">
                                                     <i class="bi bi-unlock-fill me-1"></i> Bab 1 Free
                                                 </span>
                                             @endif
@@ -96,12 +103,15 @@
                                 <div class="mb-4">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <span class="small fw-semibold text-muted">Progres Membaca</span>
-                                        <span class="small fw-bold text-{{ $category->color_theme }}">{{ $category->completed_count ?? 0 }}/{{ $category->materials_count }} Selesai ({{ $category->progress_percent ?? 0 }}%)</span>
+                                        <span
+                                            class="small fw-bold text-{{ $category->color_theme }}">{{ $category->completed_count ?? 0 }}/{{ $category->materials_count }}
+                                            Selesai ({{ $category->progress_percent ?? 0 }}%)</span>
                                     </div>
                                     <div class="progress" style="height: 6px;">
-                                        <div class="progress-bar bg-{{ $category->color_theme }}" role="progressbar" 
-                                             style="width: {{ $category->progress_percent ?? 0 }}%;" 
-                                             aria-valuenow="{{ $category->progress_percent ?? 0 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        <div class="progress-bar bg-{{ $category->color_theme }}" role="progressbar"
+                                            style="width: {{ $category->progress_percent ?? 0 }}%;"
+                                            aria-valuenow="{{ $category->progress_percent ?? 0 }}" aria-valuemin="0"
+                                            aria-valuemax="100"></div>
                                     </div>
                                 </div>
 
