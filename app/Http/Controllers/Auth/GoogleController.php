@@ -50,7 +50,7 @@ class GoogleController extends Controller
                 return redirect()->route('admin.dashboard')->with('login_success', 'Selamat Datang Admin!');
             }
 
-            return redirect()->route('user.pilih-paket')->with('login_success', 'Selamat Datang! Anda berhasil masuk menggunakan Google.');
+            return redirect()->route('dashboard')->with('login_success', 'Selamat Datang! Anda berhasil masuk menggunakan Google.');
         } catch (Exception $e) {
             return redirect()->route('login')->with('error', 'Gagal masuk menggunakan Google.');
         }

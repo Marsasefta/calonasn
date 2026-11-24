@@ -118,6 +118,6 @@ class RegisteredUserController extends Controller
             return redirect()->route('admin.dashboard');
         }
         
-        return redirect()->route('user.pilih-paket');
+        return redirect()->route('dashboard');
     }
 }
