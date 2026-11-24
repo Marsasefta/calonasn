@@ -36,8 +36,19 @@
                         </svg>
                     </div>
                     <div>
-                        <h2 class="fw-bold text-dark mb-0">Ruang Belajar SKD</h2>
-                        <p class="text-muted fs-6 mb-0">Pahami konsep dasarnya sebelum bertempur di simulasi Tryout.</p>
+                        <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                            <h2 class="fw-bold text-dark mb-0">Ruang Belajar SKD</h2>
+                            @if ($hasFullAccess)
+                                <span class="badge bg-success-soft text-success border border-success rounded-pill px-3 py-1 fw-bold small">
+                                    <i class="bi bi-patch-check-fill me-1"></i> Modul Lengkap Aktif
+                                </span>
+                            @else
+                                <span class="badge bg-primary-soft text-primary border border-primary rounded-pill px-3 py-1 fw-bold small">
+                                    <i class="bi bi-book-half me-1"></i> Free Trial Modul
+                                </span>
+                            @endif
+                        </div>
+                        <p class="text-muted fs-6 mb-0">Pahami konsep dasar kisi-kisi resmi sebelum bertempur di simulasi Tryout CAT.</p>
                     </div>
                 </div>
             </div>
@@ -59,10 +70,21 @@
                                     </div>
 
                                     <div>
-                                        <span
-                                            class="badge bg-{{ $category->color_theme }}-subtle text-{{ $category->color_theme }} fw-semibold mb-2 border border-{{ $category->color_theme }}">
-                                            {{ $category->materials_count }} Materi
-                                        </span>
+                                        <div class="d-flex align-items-center gap-1.5 mb-2 flex-wrap">
+                                            <span
+                                                class="badge bg-{{ $category->color_theme }}-subtle text-{{ $category->color_theme }} fw-semibold border border-{{ $category->color_theme }}">
+                                                {{ $category->materials_count }} Materi
+                                            </span>
+                                            @if ($hasFullAccess)
+                                                <span class="badge bg-success-soft text-success border border-success fw-semibold" style="font-size: 0.72rem;">
+                                                    <i class="bi bi-patch-check-fill me-1"></i> Full Akses
+                                                </span>
+                                            @else
+                                                <span class="badge bg-danger-soft text-danger border border-danger border-opacity-25 fw-semibold" style="font-size: 0.72rem;">
+                                                    <i class="bi bi-unlock-fill me-1"></i> Bab 1 Free
+                                                </span>
+                                            @endif
+                                        </div>
                                         <h4 class="fw-bold mb-0 text-dark">{{ $category->name }}</h4>
                                     </div>
                                 </div>

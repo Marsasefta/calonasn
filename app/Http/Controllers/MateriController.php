@@ -16,8 +16,31 @@ class MateriController extends Controller
     // Method untuk halaman Lobby (Menampilkan 3 Kategori)
     public function index()
     {
-        $userId = auth()->id();
+        $user = auth()->user();
+        $userId = $user ? $user->id : null;
         $categories = LearningCategory::withCount('materials')->get();
+
+        $hasFullAccess = false;
+        $sudahBeliPaket1 = false;
+        if ($user) {
+            $hasPaketLengkap = Transaction::where('user_id', $user->id)
+                                            ->where('tryout_id', 2)
+                                            ->whereRaw('LOWER(status) = ?', ['success'])
+                                            ->exists();
+
+            $sudahBeliPaket1 = Transaction::where('user_id', $user->id)
+                                        ->where('tryout_id', 1)
+                                        ->whereRaw('LOWER(status) = ?', ['success'])
+                                        ->exists();
+                                        
+            $hasPaket3 = Transaction::where('user_id', $user->id)
+                                        ->where('tryout_id', 3)
+                                        ->whereRaw('LOWER(status) = ?', ['success'])
+                                        ->exists();
+
+            $hasPaketUpgrade = $sudahBeliPaket1 && $hasPaket3;
+            $hasFullAccess = $hasPaketLengkap || $hasPaketUpgrade || ($user && $user->is_premium);
+        }
 
         $completedMaterialIds = $userId 
             ? UserMaterialProgress::where('user_id', $userId)->pluck('learning_material_id')->toArray()
@@ -32,7 +55,7 @@ class MateriController extends Controller
             $category->progress_percent = $totalInCat > 0 ? round(($completedInCat / $totalInCat) * 100) : 0;
         }
 
-        return view('user.materi.index', compact('categories'));
+        return view('user.materi.index', compact('categories', 'hasFullAccess', 'sudahBeliPaket1'));
     }
 
     // Method untuk halaman Micro-Learning (Saat salah satu kategori diklik)
@@ -41,11 +64,12 @@ class MateriController extends Controller
         $category = LearningCategory::where('slug', $categorySlug)->firstOrFail();
         $chapters = $category->chapters()->with('materials')->orderBy('order_number')->get();
 
-        // 1. CEK HAK AKSES USER (Apakah punya Paket 2: Tryout + PDF Kit)
+        // 1. CEK HAK AKSES USER (Apakah punya Paket 2 / Paket 3 / is_premium)
         $user = auth()->user();
         $hasFullAccess = false;
+        $sudahBeliPaket1 = false;
 
-       if ($user) {
+        if ($user) {
             // 1. Cek Paket 2 (Beli Langsung 49rb)
             $hasPaketLengkap = Transaction::where('user_id', $user->id)
                                             ->where('tryout_id', 2)
@@ -53,7 +77,7 @@ class MateriController extends Controller
                                             ->exists();
 
             // 2. Cek Paket 1 + Paket 3 (Beli Bertahap 20rb + 29rb)
-            $hasPaket1 = Transaction::where('user_id', $user->id)
+            $sudahBeliPaket1 = Transaction::where('user_id', $user->id)
                                         ->where('tryout_id', 1)
                                         ->whereRaw('LOWER(status) = ?', ['success'])
                                         ->exists();
@@ -63,11 +87,16 @@ class MateriController extends Controller
                                         ->whereRaw('LOWER(status) = ?', ['success'])
                                         ->exists();
 
-            $hasPaketUpgrade = $hasPaket1 && $hasPaket3;
+            $hasPaketUpgrade = $sudahBeliPaket1 && $hasPaket3;
 
             // Gabungkan: Beli Paket Lengkap / Hasil Upgrade / Akun is_premium
             $hasFullAccess = $hasPaketLengkap || $hasPaketUpgrade || ($user && $user->is_premium);
         }
+
+        // Tentukan rute & label upgrade dinamis
+        $upgradeRoute = $sudahBeliPaket1 ? route('checkout', 3) : route('checkout', 2);
+        $upgradeLabel = $sudahBeliPaket1 ? 'Upgrade ke Paket Lengkap (Rp 29.000)' : 'Beli Paket Lengkap (Rp 49.000)';
+        $upgradePrice = $sudahBeliPaket1 ? 'Rp 29.000' : 'Rp 49.000';
 
         // 2. TENTUKAN MATERI AKTIF
         if ($materialSlug) {
@@ -79,9 +108,10 @@ class MateriController extends Controller
         // 3. KEAMANAN BACKEND (Mencegah user nakal ketik URL manual)
         // Jika materi ini dilock (is_locked == 1) DAN user tidak punya Full Access
         if ($currentMaterial->is_locked == 1 && !$hasFullAccess) {
-            // Lempar langsung ke halaman checkout Paket 2 (Upselling paksa)
-            return redirect()->route('checkout', 2)
-                ->with('error', 'Materi ini eksklusif untuk member Paket Tryout + PDF Kit. Silakan upgrade paket Anda.');
+            $msg = $sudahBeliPaket1 
+                ? 'Materi ini eksklusif untuk member Paket Lengkap. Upgrade sekarang seharga Rp 29.000 untuk membuka semua bab.' 
+                : 'Materi ini eksklusif untuk member Paket Lengkap. Silakan aktifkan paket untuk membuka semua materi.';
+            return redirect($upgradeRoute)->with('error', $msg);
         }
 
         // 4. LOGIKA PINTAR: Cari materi berikutnya
@@ -105,14 +135,6 @@ class MateriController extends Controller
             }
         }
 
-        // --- LOGIKA TOMBOL UPGRADE ---
-        $sudahBeliPaket1 = \App\Models\Transaction::where('user_id', auth()->id())
-                            ->where('tryout_id', 1)
-                            ->where('status', 'Success')->exists();
-
-        $upgradeRoute = $sudahBeliPaket1 ? route('checkout', 3) : route('checkout', 2);
-        $upgradeLabel = $sudahBeliPaket1 ? 'Upgrade ke Paket Lengkap (29rb)' : 'Beli Paket Lengkap (49rb)';
-
         $tryout = Tryout::find(1) ?? Tryout::first();
 
         // Riwayat materi yang sudah diselesaikan user dalam kategori ini
@@ -134,8 +156,10 @@ class MateriController extends Controller
             'currentMaterial',
             'nextMaterial',
             'hasFullAccess',
+            'sudahBeliPaket1',
             'upgradeRoute',
             'upgradeLabel',
+            'upgradePrice',
             'tryout',
             'completedMaterialIds',
             'isCurrentCompleted',
