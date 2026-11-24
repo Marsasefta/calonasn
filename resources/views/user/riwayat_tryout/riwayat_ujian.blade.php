@@ -4,7 +4,7 @@
 <head>
     @include('partials.head')
 
-    <title>Riwayat & Pembahasan</title>
+    <title>Riwayat Nilai & Sertifikat | CalonASN.id</title>
 </head>
 
 <body>
@@ -13,134 +13,200 @@
     <!-- Sidebar -->
     @include('partials.navbar-student')
 
-    <div class="db-content">
+    <div class="db-content text-dark">
         <div class="container mb-4">
-            <div class="row mb-5">
+            <!-- Header Halaman -->
+            <div class="row align-items-center mb-4">
                 <div class="col-12">
-                    <h1 class="h2 mb-0">Riwayat Nilai & Sertifikat</h1>
-                    <p class="text-muted">Pantau progres belajar kamu dan unduh sertifikat kelulusan.</p>
+                    <h1 class="h2 mb-1 fw-bold text-dark"><i class="fe fe-award text-primary me-2"></i>Riwayat Nilai & Sertifikat</h1>
+                    <p class="text-muted small mb-0">Pantau progres pengerjaan simulasi CAT CPNS Anda dan unduh sertifikat resmi kelulusan SKD.</p>
                 </div>
             </div>
+
+            <!-- Flash Message Alert -->
+            @if (session('error'))
+                <div class="alert alert-danger border-0 shadow-sm rounded-4 d-flex align-items-center gap-2 mb-4 p-3" role="alert">
+                    <i class="fe fe-alert-circle fs-4 text-danger flex-shrink-0"></i>
+                    <span class="small">{{ session('error') }}</span>
+                </div>
+            @endif
+
+            @if (session('success'))
+                <div class="alert alert-success border-0 shadow-sm rounded-4 d-flex align-items-center gap-2 mb-4 p-3" role="alert">
+                    <i class="fe fe-check-circle fs-4 text-success flex-shrink-0"></i>
+                    <span class="small">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            <!-- 3 Kartu Statistik Ringkas Pengguna -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4 col-12">
+                    <div class="card border-0 shadow-sm rounded-4 bg-white p-3 h-100">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-primary-soft text-primary p-3 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                                <i class="fe fe-file-text fs-3"></i>
+                            </div>
+                            <div>
+                                <span class="text-muted small fw-medium d-block text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">TOTAL SIMULASI</span>
+                                <h3 class="fw-bolder text-dark mb-0 lh-1">{{ $totalTryout ?? count($riwayatUjian) }} <span class="fs-6 text-muted fw-normal">Sesi</span></h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-12">
+                    <div class="card border-0 shadow-sm rounded-4 bg-white p-3 h-100">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-success-soft text-success p-3 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                                <i class="fe fe-trending-up fs-3"></i>
+                            </div>
+                            <div>
+                                <span class="text-muted small fw-medium d-block text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">SKOR TERTINGGI SAYA</span>
+                                <h3 class="fw-bolder text-success mb-0 lh-1">{{ $skorTertinggi ?? 0 }} <span class="fs-6 text-muted fw-normal">Poin</span></h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-12">
+                    <div class="card border-0 shadow-sm rounded-4 bg-white p-3 h-100">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-warning-soft text-warning p-3 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                                <i class="fe fe-award fs-3"></i>
+                            </div>
+                            <div>
+                                <span class="text-muted small fw-medium d-block text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">SERTIFIKAT KELULUSAN</span>
+                                <h3 class="fw-bolder text-dark mb-0 lh-1">{{ $totalLulus ?? 0 }} <span class="fs-6 text-muted fw-normal">Sertifikat</span></h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Riwayat Ujian & Sertifikat -->
             <div class="row">
                 <div class="col-12">
-                    <div class="card shadow-sm border-0">
+                    <div class="card shadow-sm border-0 rounded-4 overflow-hidden bg-white">
+                        <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <h5 class="mb-0 fw-bold text-dark"><i class="fe fe-clock text-primary me-2"></i>Daftar Riwayat Ujian</h5>
+                            <span class="text-muted small">Passing Grade Resmi: TWK 65 | TIU 80 | TKP 166</span>
+                        </div>
                         <div class="table-responsive">
-                            <table class="table text-nowrap mb-0 table-hover">
+                            <table class="table text-nowrap mb-0 table-hover align-middle">
                                 <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3 py-3">Tanggal & Waktu</th>
+                                        <th class="py-3">Nama Paket Tryout</th>
+                                        <th class="text-center py-3">TWK</th>
+                                        <th class="text-center py-3">TIU</th>
+                                        <th class="text-center py-3">TKP</th>
+                                        <th class="text-center py-3">Total Skor</th>
+                                        <th class="text-center py-3">Status SKD</th>
+                                        <th class="text-end pe-3 py-3" style="min-width: 220px;">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($riwayatUjian as $item)
+                                        @php
+                                            // 1. Cek apakah baris ini adalah percobaan terbaru
+                                            $isTerbaru = in_array($item->id, $sessionTerbaruPerTryout);
+
+                                            // 2. Standar kelulusan Passing Grade BKN (harus lulus semua kategori)
+                                            $passTWK = ($item->score_twk ?? 0) >= 65;
+                                            $passTIU = ($item->score_tiu ?? 0) >= 80;
+                                            $passTKP = ($item->score_tkp ?? 0) >= 166;
+                                            $isLulus = $passTWK && $passTIU && $passTKP;
+                                        @endphp
+
                                         <tr>
-                                            <th>Tanggal</th>
-                                            <th>Nama Tryout</th>
-                                            <th class="text-center">TWK</th>
-                                            <th class="text-center">TIU</th>
-                                            <th class="text-center">TKP</th>
-                                            <th class="text-center">Total</th>
-                                            <th>Status</th>
-                                            <th class="text-end">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($riwayatUjian as $item)
-                                            @php
-                                                // 1. Cek apakah baris ini adalah percobaan terbaru
-                                                $isTerbaru = in_array($item->id, $sessionTerbaruPerTryout);
-
-                                                // 2. PERBAIKAN LOGIKA: Harus memenuhi SEMUA ambang batas masing-masing kategori
-                                                $passTWK = ($item->score_twk ?? 0) >= 65;
-                                                $passTIU = ($item->score_tiu ?? 0) >= 80;
-                                                $passTKP = ($item->score_tkp ?? 0) >= 166;
-
-                                                // User hanya lulus jika ketiga kategori di atas bernilai true
-                                                $isLulus = $passTWK && $passTIU && $passTKP;
-                                            @endphp
-
-                                            <tr>
-                                                <td class="align-middle">
-                                                    {{ $item->end_time->format('d M Y H:i') }}
+                                            <td class="ps-3 text-muted small">
+                                                <i class="fe fe-calendar me-1"></i>{{ $item->end_time ? $item->end_time->format('d M Y, H:i') : '-' }}
+                                                @if ($isTerbaru)
+                                                    <span class="badge bg-primary ms-1" style="font-size: 10px;">Terbaru</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <h6 class="mb-0 text-dark fw-bold">{{ $item->tryout->title ?? 'Simulasi CAT CPNS' }}</h6>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="{{ $passTWK ? 'text-success fw-bold' : 'text-danger' }}">
+                                                    {{ $item->score_twk ?? '-' }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="{{ $passTIU ? 'text-success fw-bold' : 'text-danger' }}">
+                                                    {{ $item->score_tiu ?? '-' }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="{{ $passTKP ? 'text-success fw-bold' : 'text-danger' }}">
+                                                    {{ $item->score_tkp ?? '-' }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center fw-bolder fs-6 text-primary">
+                                                {{ $item->total_score ?? '-' }}
+                                            </td>
+                                            <td class="text-center">
+                                                @if ($isLulus)
+                                                    <span class="badge bg-success-subtle text-success border border-success rounded-pill px-2.5 py-1 small fw-bold">
+                                                        <i class="fe fe-check-circle me-1"></i>LULUS PG
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-danger-subtle text-danger border border-danger rounded-pill px-2.5 py-1 small fw-bold">
+                                                        <i class="fe fe-x-circle me-1"></i>TIDAK LULUS
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="text-end pe-3">
+                                                <div class="d-inline-flex align-items-center gap-1.5 flex-wrap justify-content-end">
+                                                    {{-- TOMBOL LANGSUNG: RAPOR & PEMBAHASAN --}}
                                                     @if ($isTerbaru)
-                                                        <span class="badge bg-primary ms-1"
-                                                            style="font-size: 10px;">Terbaru</span>
-                                                    @endif
-                                                </td>
-                                                <td class="align-middle">
-                                                    <h5 class="mb-0 text-dark">{{ $item->tryout->title }}</h5>
-                                                </td>
-                                                <td class="align-middle text-center">{{ $item->score_twk ?? '-' }}</td>
-                                                <td class="align-middle text-center">{{ $item->score_tiu ?? '-' }}</td>
-                                                <td class="align-middle text-center">{{ $item->score_tkp ?? '-' }}</td>
-                                                <td class="align-middle text-center fw-bold text-primary">
-                                                    {{ $item->total_score }}
-                                                </td>
-                                                <td class="align-middle">
-                                                    @if ($isLulus)
-                                                        <span class="badge bg-success-soft text-success">LULUS</span>
-                                                    @else
-                                                        <span class="badge bg-danger-soft text-danger">TIDAK
-                                                            LULUS</span>
-                                                    @endif
-                                                </td>
-                                                <td class="align-middle text-end">
-                                                    <div class="dropdown">
-                                                        <a class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                                            href="#" role="button" data-bs-toggle="dropdown"
-                                                            aria-expanded="false">
-                                                            Opsi
+                                                        <a href="{{ route('ujian.hasil', $item->id) }}"
+                                                            class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1 text-nowrap fw-medium"
+                                                            title="Lihat Rapor Detail Nilai">
+                                                            <i class="fe fe-bar-chart-2 me-1"></i>Rapor
                                                         </a>
-                                                        <ul class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ route('ujian.pembahasan', $item->id) }}"
+                                                            class="btn btn-sm btn-outline-success rounded-pill px-2.5 py-1 text-nowrap fw-medium"
+                                                            title="Buka Pembahasan Soal">
+                                                            <i class="fe fe-book-open me-1"></i>Pembahasan
+                                                        </a>
+                                                    @else
+                                                        <span class="badge bg-light text-muted border rounded-pill px-2.5 py-1 small" title="Pembahasan hanya tersedia untuk sesi terbaru">
+                                                            <i class="fe fe-lock me-1"></i>Terkunci
+                                                        </span>
+                                                    @endif
 
-                                                            {{-- TOMBOL DETAIL & PEMBAHASAN HANYA MUNCUL DI DATA TERBARU --}}
-                                                            @if ($isTerbaru)
-                                                                <li>
-                                                                    <a class="dropdown-item"
-                                                                        href="{{ route('ujian.hasil', $item->id) }}">
-                                                                        <i class="fe fe-bar-chart-2 me-2"></i>Lihat
-                                                                        Detail
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="dropdown-item"
-                                                                        href="{{ route('ujian.pembahasan', $item->id) }}">
-                                                                        <i class="fe fe-book-open me-2"></i>Pembahasan
-                                                                    </a>
-                                                                </li>
-                                                            @else
-                                                                <li>
-                                                                    <span class="dropdown-item text-muted"
-                                                                        style="font-size: 12px; font-style: italic;">
-                                                                        <i class="fe fe-lock me-2"></i>Terkunci (Data
-                                                                        Lama)
-                                                                    </span>
-                                                                </li>
-                                                            @endif
-
-                                                            {{-- TOMBOL SERTIFIKAT TETAP MUNCUL JIKA LULUS --}}
-                                                            @if ($isLulus)
-                                                                <li>
-                                                                    <hr class="dropdown-divider">
-                                                                </li>
-                                                                <li>
-                                                                    <a class="dropdown-item text-primary fw-bold"
-                                                                        href="{{ route('ujian.sertifikat', $item->id) }}">
-                                                                        <i class="fe fe-award me-2"></i>Unduh Sertifikat
-                                                                    </a>
-                                                                </li>
-                                                            @endif
-
-                                                        </ul>
+                                                    {{-- TOMBOL LANGSUNG: SERTIFIKAT (JIKA LULUS) --}}
+                                                    @if ($isLulus)
+                                                        <a href="{{ route('ujian.sertifikat', $item->id) }}"
+                                                            target="_blank"
+                                                            class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-2.5 py-1 shadow-xs text-nowrap"
+                                                            title="Buka & Cetak Sertifikat Kelulusan Resmi">
+                                                            <i class="fe fe-award me-1"></i>Sertifikat
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center py-5">
+                                                <div class="py-4">
+                                                    <div class="rounded-circle bg-light d-inline-flex p-3 mb-3">
+                                                        <i class="fe fe-database fs-1 text-muted"></i>
                                                     </div>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="8" class="text-center py-5">
-                                                    <div class="text-muted">
-                                                        <i class="fe fe-database fs-1 d-block mb-2"></i>
-                                                        Belum ada riwayat ujian.
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                                                    <h5 class="fw-bold text-dark mb-1">Belum Ada Riwayat Ujian</h5>
+                                                    <p class="text-muted small mb-3">Mulai simulasi CAT pertama Anda sekarang untuk menguji kemampuan dan raih sertifikat resmi kelulusan!</p>
+                                                    <a href="{{ route('ujian.persiapan', 1) }}" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm">
+                                                        <i class="fe fe-play me-2"></i>Mulai Tryout Sekarang
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

@@ -368,20 +368,68 @@ class UjianController extends Controller
     }
 
 
-    // FUNGSI HASIL
+    // FUNGSI HASIL (Mendukung ID Sesi Ujian maupun ID Tryout)
     public function hasil($id)
     {
-        $hasil = session('hasilUjian');
-        
-        if (!$hasil) {
-            return redirect()->route('ujian.persiapan', $id);
+        $userId = auth()->id();
+
+        // 1. Cek apakah $id adalah ID ExamSession langsung
+        $session = \App\Models\ExamSession::where('user_id', $userId)
+            ->where('id', $id)
+            ->whereNotNull('end_time')
+            ->first();
+
+        // 2. Jika bukan ID ExamSession, cari sesi terbaru berdasarkan tryout_id
+        if (!$session) {
+            $session = \App\Models\ExamSession::where('user_id', $userId)
+                ->where('tryout_id', $id)
+                ->whereNotNull('end_time')
+                ->latest()
+                ->first();
         }
 
+        // 3. Jika sesi tidak ditemukan di database:
+        if (!$session) {
+            return redirect()->route('dashboard')->with('error', 'Riwayat sesi ujian tidak ditemukan.');
+        }
+
+        // 4. Susun data hasil per kategori langsung dari database (Permanen & Tidak bergantung pada flash session)
+        $categories = \App\Models\Category::all()->keyBy('id');
+        $twkId = $categories->where('name', 'TWK')->first()->id ?? 1;
+        $tiuId = $categories->where('name', 'TIU')->first()->id ?? 2;
+        $tkpId = $categories->where('name', 'TKP')->first()->id ?? 3;
+
+        $scoreTwk = $session->score_twk ?? 0;
+        $scoreTiu = $session->score_tiu ?? 0;
+        $scoreTkp = $session->score_tkp ?? 0;
+        $totalSkor = $session->total_score ?? ($scoreTwk + $scoreTiu + $scoreTkp);
+
+        $hasilPerKategori = [
+            $twkId => [
+                'name' => 'TWK',
+                'skor' => $scoreTwk,
+                'passing_grade' => 65
+            ],
+            $tiuId => [
+                'name' => 'TIU',
+                'skor' => $scoreTiu,
+                'passing_grade' => 80
+            ],
+            $tkpId => [
+                'name' => 'TKP',
+                'skor' => $scoreTkp,
+                'passing_grade' => 166
+            ],
+        ];
+
+        $lulus = ($scoreTwk >= 65 && $scoreTiu >= 80 && $scoreTkp >= 166);
+
         return view('user.ujian.ujian_hasil', [
-            'id' => $id,
-            'hasilPerKategori' => $hasil['skorPerKategori'],
-            'totalSkor' => $hasil['total_score'],
-            'lulus' => $hasil['lulus']
+            'id' => $session->id, // Kirim ID sesi ujian agar tombol pembahasan & sertifikat akurat
+            'tryoutId' => $session->tryout_id,
+            'hasilPerKategori' => $hasilPerKategori,
+            'totalSkor' => $totalSkor,
+            'lulus' => $lulus
         ]);
     }
 
@@ -389,14 +437,26 @@ class UjianController extends Controller
     {
         $userId = auth()->id();
 
-        // 1. Ambil sesi ujian yang sudah SELESAI
+        // 1. Cek apakah $id ini adalah ID ExamSession langsung
         $sessionDb = \App\Models\ExamSession::where('user_id', $userId)
-            ->where('tryout_id', $id)
+            ->where('id', $id)
             ->whereNotNull('end_time')
-            ->latest()
-            ->firstOrFail();
+            ->first();
 
-        // 2. Ambil riwayat jawaban user dari database (Urutkan dari ID terkecil agar konsisten saat di-insert)
+        // 2. Jika bukan ID ExamSession, cari sesi terbaru berdasarkan tryout_id
+        if (!$sessionDb) {
+            $sessionDb = \App\Models\ExamSession::where('user_id', $userId)
+                ->where('tryout_id', $id)
+                ->whereNotNull('end_time')
+                ->latest()
+                ->first();
+        }
+
+        if (!$sessionDb) {
+            return redirect()->route('dashboard')->with('error', 'Sesi ujian untuk pembahasan tidak ditemukan.');
+        }
+
+        // 3. Ambil riwayat jawaban user dari database
         $examAnswers = \App\Models\ExamAnswer::where('exam_session_id', $sessionDb->id)
             ->orderBy('id', 'asc')
             ->get();
@@ -404,19 +464,22 @@ class UjianController extends Controller
         // Ubah menjadi array [ID_Soal => ID_Opsi_Yang_Dipilih] agar mudah dibaca di Blade
         $jawabanUser = $examAnswers->pluck('option_id', 'question_id')->toArray();
 
-        // 3. Ambil detail Soal, Opsi, dan Kategorinya
+        // 4. Ambil detail Soal, Opsi, dan Kategorinya
         $questionIds = $examAnswers->pluck('question_id')->toArray();
         
-        // KUNCI PERBAIKAN: Gunakan sortBy agar data soal dipaksa mengikuti urutan array $questionIds
         $questions = \App\Models\Question::with(['options', 'category'])
             ->whereIn('id', $questionIds)
             ->get()
             ->sortBy(function ($q) use ($questionIds) {
                 return array_search($q->id, $questionIds);
             })
-            ->values(); // Mengembalikan indeks array menjadi 0, 1, 2, dst.
+            ->values();
 
-        return view('user.ujian.ujian_pembahasan', compact('questions', 'jawabanUser', 'id'));
+        return view('user.ujian.ujian_pembahasan', [
+            'questions' => $questions,
+            'jawabanUser' => $jawabanUser,
+            'id' => $sessionDb->id
+        ]);
     }    
 
     public function simpanJawabanTemp(Request $request)
@@ -480,48 +543,55 @@ class UjianController extends Controller
         // 2. Mencari ID sesi terbaru untuk masing-masing Tryout
         $sessionTerbaruPerTryout = $riwayatUjian->groupBy('tryout_id')
             ->map(function ($group) {
-                // Karena $riwayatUjian di atas sudah diurutkan (latest), 
-                // maka urutan pertama (first) di setiap grup pasti adalah data yang paling baru.
                 return $group->first()->id; 
             })->toArray();
 
-        // 3. Lempar kedua variabel ke file View
-        return view('user.riwayat_tryout.riwayat_ujian', compact('riwayatUjian', 'sessionTerbaruPerTryout'));
+        // 3. Hitung Statistik Ringkasan Pengguna
+        $totalTryout = $riwayatUjian->count();
+        $skorTertinggi = $riwayatUjian->max('total_score') ?? 0;
+        $totalLulus = $riwayatUjian->filter(function ($item) {
+            return ($item->score_twk >= 65 && $item->score_tiu >= 80 && $item->score_tkp >= 166);
+        })->count();
+
+        // 4. Lempar variabel ke file View
+        return view('user.riwayat_tryout.riwayat_ujian', compact(
+            'riwayatUjian', 
+            'sessionTerbaruPerTryout', 
+            'totalTryout', 
+            'skorTertinggi', 
+            'totalLulus'
+        ));
     }
 
     public function sertifikat($id)
     {
         $userId = auth()->id();
 
-        // 1. Ambil data BERDASARKAN ID SESI UJIAN LANGSUNG (bukan tryout_id)
+        // 1. Ambil data sesi ujian berdasarkan ID sesi ujian & milik user aktif
         $session = \App\Models\ExamSession::where('user_id', $userId)
-            ->where('id', $id) // Tembak langsung ke primary key id session-nya
+            ->where('id', $id)
             ->first();
 
-        // 🔴 TEPAT DI SINI KITA PASANG ALAT DETEKTIF (DEBBUGING)
-        // Jika kamu masih mental ke dashboard, hapus tanda komentar (//) pada baris dd di bawah ini:
-        // dd($session->toArray());
-
         if (!$session) {
-            return redirect()->route('dashboard')->with('error', 'Sesi ujian tidak ditemukan.');
+            return redirect()->route('sertifikat.riwayat')->with('error', 'Sesi ujian tidak ditemukan.');
         }
 
-        // 2. Kalkulasi aman untuk mengantisipasi data lama yang total_score-nya masih 0
-        $totalSkorReal = $session->total_score;
-        if (!$totalSkorReal || $totalSkorReal == 0) {
-            $totalSkorReal = ($session->score_twk ?? 0) + ($session->score_tiu ?? 0) + ($session->score_tkp ?? 0);
+        // 2. Cek apakah memenuhi ambang batas (Passing Grade) resmi BKN untuk masing-masing kategori
+        $twk = $session->score_twk ?? 0;
+        $tiu = $session->score_tiu ?? 0;
+        $tkp = $session->score_tkp ?? 0;
+        $isLulus = ($twk >= 65 && $tiu >= 80 && $tkp >= 166);
+
+        if (!$isLulus) {
+            return redirect()->route('sertifikat.riwayat')->with('error', 'Sesi ujian ini belum memenuhi syarat kelulusan Passing Grade SKD BKN (TWK 65, TIU 80, TKP 166).');
         }
 
-        // 3. Cek passing grade total
-        if ($totalSkorReal < 311) {
-            return redirect()->route('dashboard')->with('error', 'Skor Anda (' . $totalSkorReal . ') belum memenuhi passing grade kelulusan.');
-        }
-
-        // 4. Susun format untuk dilempar ke Blade Sertifikat
+        // 3. Susun format skor untuk dilempar ke Blade Sertifikat
+        $totalSkorReal = $session->total_score ?? ($twk + $tiu + $tkp);
         $skorFormat = [
-            'TWK' => $session->score_twk ?? 0,
-            'TIU' => $session->score_tiu ?? 0,
-            'TKP' => $session->score_tkp ?? 0,
+            'TWK' => $twk,
+            'TIU' => $tiu,
+            'TKP' => $tkp,
             'TOTAL' => $totalSkorReal
         ];
 
