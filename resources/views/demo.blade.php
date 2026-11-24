@@ -304,12 +304,12 @@
 @endpush
 
 @section('content')
-    <div class="py-5 bg-light">
-        <div class="container-fluid px-md-5">
+    <div class="py-3 py-md-5 bg-light">
+        <div class="container-fluid px-2 px-sm-3 px-md-5">
 
-            <div class="row align-items-center mb-4 bg-white p-3 rounded-3 shadow-sm border mx-1 mx-md-0">
+            <div class="row align-items-center mb-3 mb-md-4 bg-white p-3 rounded-3 shadow-sm border mx-1 mx-md-0">
                 <div class="col-md-6 col-12 text-center text-md-start mb-2 mb-md-0">
-                    <h4 class="mb-1 text-dark fw-bold"><i class="fe fe-monitor text-primary me-2"></i>SIMULASI CAT CPNS
+                    <h4 class="fs-5 fs-md-4 mb-1 text-dark fw-bold"><i class="fe fe-monitor text-primary me-2"></i>SIMULASI CAT CPNS
                         (HALAMAN DEMO)</h4>
                     <p class="text-muted small mb-0">Materi Campuran: TWK, TIU, TKP | <span
                             class="badge bg-danger-soft text-danger fw-bold">PRO-VERSION TEASER</span></p>
@@ -323,46 +323,46 @@
                 </div>
             </div>
 
-            <div class="row g-4">
+            <div class="row g-3 g-md-4">
 
                 <div class="col-lg-9 col-12">
                     <div
-                        class="card shadow-sm border-0 rounded-3 min-vh-50 d-flex flex-column justify-content-between p-4 bg-white">
+                        class="card shadow-sm border-0 rounded-3 min-vh-50 d-flex flex-column justify-content-between p-3 p-md-4 bg-white">
                         <div>
-                            <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
-                                <h5 class="text-primary fw-bold mb-0" id="soal-materi">Menghitung...</h5>
-                                <span class="badge bg-secondary text-white fw-bold py-2 px-3" id="soal-nomor-badge">Soal No
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom pb-3 mb-3 mb-md-4">
+                                <h5 class="text-primary fw-bold mb-0 fs-6 fs-md-5" id="soal-materi">Menghitung...</h5>
+                                <span class="badge bg-secondary text-white fw-bold py-1.5 py-md-2 px-2.5 px-md-3" id="soal-nomor-badge">Soal No
                                     1</span>
                             </div>
 
-                            <div class="mb-4 text-dark fs-4 lh-base fw-medium" id="soal-teks" style="text-align: justify;">
+                            <div class="mb-4 text-dark fs-5 fs-md-4 lh-base fw-medium text-start text-md-justify" id="soal-teks">
                                 Loading text...
                             </div>
 
-                            <div class="d-flex flex-column gap-3 mb-5" id="soal-opsi">
+                            <div class="d-flex flex-column gap-2.5 gap-md-3 mb-4 mb-md-5" id="soal-opsi">
                             </div>
                         </div>
 
-                        <div class="d-flex flex-wrap justify-content-between align-items-center border-top pt-4 gap-2">
-                            <button class="btn btn-outline-secondary btn-lg px-4" id="btn-prev"
+                        <div class="d-flex flex-wrap justify-content-between align-items-center border-top pt-3 pt-md-4 gap-2">
+                            <button class="btn btn-outline-secondary px-3 px-md-4 py-2 py-md-2.5 fs-6 flex-grow-1 flex-md-grow-0 text-center" id="btn-prev"
                                 onclick="changeQuestion(-1)">
-                                <i class="fe fe-arrow-left me-2"></i> Sebelumnya
+                                <i class="fe fe-arrow-left me-1 me-md-2"></i> Sebelumnya
                             </button>
 
-                            <button class="btn btn-warning text-white btn-lg px-4 fw-bold" id="btn-ragu"
+                            <button class="btn btn-warning text-white px-3 px-md-4 py-2 py-md-2.5 fs-6 fw-bold flex-grow-1 flex-md-grow-0 text-center" id="btn-ragu"
                                 onclick="toggleRaguRagu()">
-                                <i class="fe fe-help-circle me-2"></i> Ragu-Ragu
+                                <i class="fe fe-help-circle me-1 me-md-2"></i> Ragu-Ragu
                             </button>
 
-                            <button class="btn btn-primary btn-lg px-4" id="btn-next" onclick="changeQuestion(1)">
-                                Selanjutnya <i class="fe fe-arrow-right ms-2"></i>
+                            <button class="btn btn-primary px-3 px-md-4 py-2 py-md-2.5 fs-6 flex-grow-1 flex-md-grow-0 text-center" id="btn-next" onclick="changeQuestion(1)">
+                                Selanjutnya <i class="fe fe-arrow-right ms-1 ms-md-2"></i>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-12">
-                    <div class="card shadow-sm border-0 rounded-3 p-4 bg-white text-center">
+                    <div class="card shadow-sm border-0 rounded-3 p-3 p-md-4 bg-white text-center">
                         <h5 class="fw-bold text-dark mb-3 text-start border-bottom pb-2">Navigasi Soal</h5>
 
                         <div class="d-flex flex-wrap justify-content-start gap-2 mb-4" id="grid-navigasi">
@@ -398,76 +398,138 @@
         </div>
     </div>
 
+    <!-- MODAL PENAWARAN & HASIL SKOR DEMO (SIMPLE, CLEAN & HIGH CONVERTING) -->
     <div class="modal fade" id="closingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 540px;">
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-                <div
-                    class="modal-header bg-primary text-white py-4 justify-content-center text-center border-bottom-0 position-relative">
-                    <div>
-                        <h3 class="modal-title fw-bold text-white mb-1">🎯 Ujian Selesai!</h3>
-                        <p class="mb-0 text-white opacity-75 small">Kerja bagus, simulasi pemanasan telah diselesaikan.</p>
+                <div class="modal-body p-3 p-md-4 text-center position-relative">
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+
+                    <!-- 1. Box Skor Demo Jelas & Menonjol -->
+                    <div class="d-flex align-items-center justify-content-center gap-2 gap-sm-3 p-2.5 p-sm-3 bg-light rounded-4 border mb-3 text-start">
+                        <div class="text-center px-2 px-sm-3 border-end">
+                            <span class="text-muted small fw-bold d-block text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px;">SKOR DEMO</span>
+                            <div class="d-flex align-items-baseline justify-content-center gap-1">
+                                <h1 class="display-6 display-sm-5 fw-bolder text-primary mb-0 lh-1" id="modal-skor-akhir">0</h1>
+                                <span class="fs-6 fs-sm-5 text-muted fw-bold">/ 25</span>
+                            </div>
+                        </div>
+                        <div class="ps-1">
+                            <span id="modal-evaluasi-ringkas" class="badge bg-warning-subtle text-dark border border-warning px-2.5 py-1 rounded-pill small fw-bold mb-1">
+                                ⚡ Zona Rawan, Perlu Pemantapan
+                            </span>
+                            <h6 class="fw-bold text-dark mb-0 fs-6">Mau Cek Pembahasan 5 Soal Tadi?</h6>
+                            <span class="text-muted small d-block" style="font-size: 0.74rem; line-height: 1.35;">
+                                Pelajari trik jawab <strong>&lt; 1 menit</strong> & kuasai 110 Soal HOTS BKN 2026:
+                            </span>
+                        </div>
                     </div>
-                </div>
 
-                <div class="modal-body p-4 p-md-5 text-center">
-                    <div class="bg-light rounded-circle d-flex flex-column align-items-center justify-content-center mx-auto mb-4 border shadow-sm"
-                        style="width: 140px; height: 140px;">
-                        <span class="text-muted small text-uppercase fw-semibold tracking-wider">SKOR DEMO</span>
-                        <h1 class="display-4 fw-bolder text-primary mb-0" id="modal-skor-akhir">0</h1>
-                        <span class="text-muted small fw-medium">Max: 25</span>
-                    </div>
+                    <!-- 2. Hero Offer: Paket Super Lengkap Unlimited (Pilihan Utama) -->
+                    <div class="card border-2 border-primary rounded-4 p-3 text-start mb-3 shadow-xs position-relative overflow-hidden"
+                        style="background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);">
+                        
+                        <div class="position-absolute top-0 end-0 bg-primary text-white px-2.5 px-sm-3 py-1 fw-bold small"
+                            style="border-bottom-left-radius: 12px; font-size: 0.65rem; letter-spacing: 0.5px;">
+                            ⭐ REKOMENDASI 95% PESERTA
+                        </div>
 
-                    <h4 class="text-dark fw-bold mb-2">Yakin Skor Segini Sudah Aman untuk Lolos?</h4>
-                    <p class="text-muted fs-5 mb-4">
-                        Jutaan pesaingmu sedang belajar mati-matian. Jangan berhenti di sini! Buka <b>Kunci Jawaban & Trik
-                            Cepat</b> soal tadi, dan hajar <b>110 Soal Prediksi HOTS CPNS 2026</b> di Paket Premium
-                        sekarang.
-                    </p>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge bg-primary-soft text-primary rounded-pill px-2.5 py-0.5 fw-bold small">
+                                PAKET SUPER LENGKAP
+                            </span>
+                        </div>
 
-                    <div class="p-3 bg-light rounded border mb-4 text-center position-relative">
-                        <span
-                            class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-warning text-dark px-3 py-2 fw-bold shadow-sm">
-                            PROMO TERBATAS
+                        <!-- Harga & Kupon Diskon -->
+                        <div class="d-flex align-items-baseline gap-2 my-1 flex-wrap">
+                            <span class="text-muted text-decoration-line-through small">Rp 49.000</span>
+                            <h3 class="fw-bolder text-primary mb-0 lh-1">Rp 42.000</h3>
+                            <span class="badge bg-success-subtle text-success border border-success rounded-pill px-2 py-0.5 small fw-bold" style="font-size: 0.7rem;">
+                                Hemat Rp 7rb (Kupon: <strong>ASN2026</strong>)
+                            </span>
+                        </div>
+                        <span class="text-muted small d-block mb-2.5" style="font-size: 0.74rem;">
+                            Sekali bayar, aktif selamanya tanpa biaya langganan bulanan.
                         </span>
-                        <div class="mt-2">
-                            <span class="text-muted text-decoration-line-through small d-block mb-1">Harga Normal: Rp
-                                49.000</span>
 
-                            <h2 class="fw-xl-bolder fw-bold text-dark mb-0">Rp 20.000 <span
-                                    class="fs-5 text-muted fw-normal">/ Paket Tryout</span></h2>
-                            <span class="small text-muted d-block mb-2">*(1x Pengerjaan CAT + Akses Pembahasan
-                                Selamanya)*</span>
+                        <!-- 3 Poin Keunggulan Utama -->
+                        <ul class="list-unstyled d-flex flex-column gap-2 text-dark small mb-3">
+                            <li class="d-flex align-items-start gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary flex-shrink-0 mt-0.5"><path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-4.585 0-4.585 8 0 8 5.606 0 7.644-8 12.74-8z"/></svg>
+                                <span><strong class="text-primary">Akses Tryout UNLIMITED:</strong> Ulangi simulasi sepuasnya tanpa batas kuota!</span>
+                            </li>
+                            <li class="d-flex align-items-start gap-2">
+                                <i class="fe fe-book-open text-primary fs-5 flex-shrink-0 mt-0.5"></i>
+                                <span><strong>Ratusan Modul Micro-Learning:</strong> Rangkuman materi resmi TWK, TIU, TKP</span>
+                            </li>
+                            <li class="d-flex align-items-start gap-2">
+                                <i class="fe fe-check-circle text-success fs-5 flex-shrink-0 mt-0.5"></i>
+                                <span><strong>110 Soal CAT BKN + Pembahasan Trik &lt; 1 Menit</strong> + Ranking Nasional</span>
+                            </li>
+                        </ul>
 
-                            <div
-                                class="bg-success bg-opacity-10 border border-success rounded p-3 pt-4 mt-4 text-center position-relative shadow-sm">
+                        <!-- Tombol Beli Paket Lengkap -->
+                        @guest
+                            <a href="{{ route('register', ['package' => 'tryout-pdf']) }}"
+                                class="btn btn-primary rounded-pill py-2.5 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 w-100 text-nowrap"
+                                style="font-size: 0.93rem;">
+                                <span>Amankan Akses Unlimited • Rp 42.000</span>
+                                <i class="fe fe-arrow-right"></i>
+                            </a>
+                        @else
+                            <a href="{{ route('checkout', 2) }}"
+                                class="btn btn-primary rounded-pill py-2.5 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 w-100 text-nowrap"
+                                style="font-size: 0.93rem;">
+                                <span>Amankan Akses Unlimited • Rp 42.000</span>
+                                <i class="fe fe-arrow-right"></i>
+                            </a>
+                        @endguest
+                    </div>
 
-                                <span
-                                    class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger text-white px-3 py-2 fw-bold shadow-sm">
-                                    LEBIH MURAH LAGI!
+                    <!-- 3. Alternatif Pilihan Simple: Paket Latihan Mandiri 13rb (Voucher Card Kuning Menarik) -->
+                    <div class="card rounded-4 p-2.5 p-sm-3 text-start mb-3 shadow-xs position-relative"
+                        style="background: linear-gradient(135deg, #fffdf5 0%, #fef3c7 100%); border: 1.5px dashed #f59e0b !important;">
+                        <div class="d-flex align-items-center justify-content-between gap-2 gap-sm-3">
+                            <div class="pe-1">
+                                <div class="mb-1">
+                                    <span class="badge rounded-pill fw-bold me-1"
+                                        style="background: #f59e0b; color: #ffffff; font-size: 0.62rem; padding: 3px 6px; letter-spacing: 0.5px;">
+                                        🔥 OPSI HEMAT
+                                    </span>
+                                    <strong class="text-dark small align-middle">Tryout Mandiri (1x Latihan)</strong>
+                                </div>
+                                <span class="text-dark opacity-75 d-block" style="font-size: 0.72rem; line-height: 1.3;">
+                                    1x CAT BKN (110 Soal) + Kunci & Pembahasan
                                 </span>
-
-                                <span class="d-block fw-bolder text-dark fs-4 mb-2">CUKUP BAYAR Rp 13.000</span>
-
-                                <span class="small text-dark fw-medium d-block">
-                                    Masukkan kode
-                                    <strong
-                                        class="user-select-all text-danger bg-white border border-danger px-2 py-1 rounded mx-1 shadow-sm">ASN2026</strong>
-                                    saat checkout!
-                                </span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 gap-sm-2.5 flex-shrink-0">
+                                <div class="text-end">
+                                    <span class="text-muted text-decoration-line-through d-block" style="font-size: 0.68rem; line-height: 1.2;">Rp 20.000</span>
+                                    <span class="fw-bolder text-dark fs-5 lh-1">Rp 13.000</span>
+                                </div>
+                                @guest
+                                    <a href="{{ route('register', ['package' => 'tryout-only']) }}"
+                                        class="btn btn-dark btn-sm rounded-pill fw-bold px-2.5 px-sm-3 py-1.5 shadow-xs text-nowrap"
+                                        style="font-size: 0.78rem;">
+                                        Pilih <i class="fe fe-arrow-right ms-1"></i>
+                                    </a>
+                                @else
+                                    <a href="{{ route('checkout', 1) }}"
+                                        class="btn btn-dark btn-sm rounded-pill fw-bold px-2.5 px-sm-3 py-1.5 shadow-xs text-nowrap"
+                                        style="font-size: 0.78rem;">
+                                        Pilih <i class="fe fe-arrow-right ms-1"></i>
+                                    </a>
+                                @endguest
                             </div>
                         </div>
                     </div>
 
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('register') }}"
-                            class="btn btn-primary btn-lg py-3 fw-bold shadow pulse-animation">
-                            Daftar & Amankan NIP Sekarang <i class="fe fe-arrow-right ms-2"></i>
-                        </a>
-                        <a href="{{ url('/') }}" class="btn btn-link text-muted btn-sm mt-2">
-                            Nanti saja, saya rela digeser pesaing
-                        </a>
-                    </div>
+                    <!-- Trust Footer -->
+                    <span class="d-block text-muted opacity-75 small text-center" style="font-size: 0.72rem;">
+                        <i class="fe fe-shield text-success me-1"></i>Akses instan aktif otomatis • Pembayaran aman via QRIS & Transfer Bank
+                    </span>
                 </div>
             </div>
         </div>
@@ -599,9 +661,37 @@
                 btnRagu.classList.add('btn-warning');
             }
 
-            // Atur visibilitas tombol Navigasi Pojok
+            // Atur visibilitas tombol Navigasi Pojok & Tombol Selesai Ujian
             document.getElementById('btn-prev').disabled = currentIdx === 0;
-            document.getElementById('btn-next').disabled = currentIdx === bankSoal.length - 1;
+
+            const allAnswered = bankSoal.every((_, i) => jawabanUser[i] !== null);
+            const isLastQuestion = (currentIdx === bankSoal.length - 1);
+            const btnNext = document.getElementById('btn-next');
+
+            if (isLastQuestion) {
+                if (allAnswered) {
+                    btnNext.innerHTML = '<i class="fe fe-check-square me-1 me-md-2"></i> Selesai Ujian';
+                    btnNext.className = 'btn btn-danger px-3 px-md-4 py-2 py-md-2.5 fs-6 fw-bold shadow-sm flex-grow-1 flex-md-grow-0 text-center';
+                    btnNext.disabled = false;
+                    btnNext.onclick = function() {
+                        finishExamPrompt();
+                    };
+                } else {
+                    btnNext.innerHTML = 'Selanjutnya <i class="fe fe-arrow-right ms-1 ms-md-2"></i>';
+                    btnNext.className = 'btn btn-primary px-3 px-md-4 py-2 py-md-2.5 fs-6 flex-grow-1 flex-md-grow-0 text-center';
+                    btnNext.disabled = true;
+                    btnNext.onclick = function() {
+                        changeQuestion(1);
+                    };
+                }
+            } else {
+                btnNext.innerHTML = 'Selanjutnya <i class="fe fe-arrow-right ms-1 ms-md-2"></i>';
+                btnNext.className = 'btn btn-primary px-3 px-md-4 py-2 py-md-2.5 fs-6 flex-grow-1 flex-md-grow-0 text-center';
+                btnNext.disabled = false;
+                btnNext.onclick = function() {
+                    changeQuestion(1);
+                };
+            }
 
             // Render ulang kotak navigasi kanan agar sinkron warnanya
             renderNavGrid();
@@ -714,6 +804,21 @@
 
             // Lempar skor ke dalam Modal pop-up closing
             document.getElementById('modal-skor-akhir').innerText = totalSkor;
+
+            // Evaluasi skor dinamis ringkas (Tetap mempertahankan styling badge pill elegan)
+            const evaluasiRingkas = document.getElementById('modal-evaluasi-ringkas');
+            if (evaluasiRingkas) {
+                if (totalSkor >= 20) {
+                    evaluasiRingkas.className = 'badge bg-success-subtle text-success border border-success rounded-pill px-2.5 py-1 small fw-bold mb-1';
+                    evaluasiRingkas.innerText = '🔥 Potensi Bagus, Siap Lolos!';
+                } else if (totalSkor >= 12) {
+                    evaluasiRingkas.className = 'badge bg-warning-subtle text-dark border border-warning px-2.5 py-1 rounded-pill small fw-bold mb-1';
+                    evaluasiRingkas.innerText = '⚡ Zona Rawan, Perlu Pemantapan';
+                } else {
+                    evaluasiRingkas.className = 'badge bg-danger-subtle text-danger border border-danger rounded-pill px-2.5 py-1 small fw-bold mb-1';
+                    evaluasiRingkas.innerText = '⚠️ Waspada, Butuh Latihan Rutin';
+                }
+            }
 
             // Panggil modal Bootstrap secara otomatis tanpa jQuery
             var closingModal = new bootstrap.Modal(document.getElementById('closingModal'));
