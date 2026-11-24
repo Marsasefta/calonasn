@@ -66,6 +66,16 @@
                             <i class="fe fe-home nav-icon"></i> Dashboard
                         </a>
                     </li>
+                    @php
+                        $userNav = auth()->user();
+                        $hasFullMateriNav = false;
+                        if ($userNav) {
+                            $hasFullMateriNav = $userNav->is_premium 
+                                || \App\Models\Transaction::where('user_id', $userNav->id)->where('tryout_id', 2)->whereRaw('LOWER(status) = ?', ['success'])->exists()
+                                || (\App\Models\Transaction::where('user_id', $userNav->id)->where('tryout_id', 1)->whereRaw('LOWER(status) = ?', ['success'])->exists() 
+                                    && \App\Models\Transaction::where('user_id', $userNav->id)->where('tryout_id', 3)->whereRaw('LOWER(status) = ?', ['success'])->exists());
+                        }
+                    @endphp
                     <li class="nav-item">
                         <a class="nav-link {{ request()->is('materi*') ? 'active' : '' }}"
                             href="{{ url('/materi-belajar') }}">
@@ -74,8 +84,10 @@
                                     <i class="fe fe-book-open nav-icon me-2"></i>
                                     <span class="nav-link-text">Materi Belajar</span>
                                 </div>
-                                <span class="badge bg-warning text-dark rounded-pill shadow-sm"
-                                    style="font-size: 0.65rem;">FREE TRIAL</span>
+                                @if (!$hasFullMateriNav)
+                                    <span class="badge bg-warning text-dark rounded-pill shadow-sm"
+                                        style="font-size: 0.65rem;">FREE TRIAL</span>
+                                @endif
                             </div>
                         </a>
                     </li>
