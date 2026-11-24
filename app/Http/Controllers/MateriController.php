@@ -49,25 +49,24 @@ class MateriController extends Controller
             // 1. Cek Paket 2 (Beli Langsung 49rb)
             $hasPaketLengkap = Transaction::where('user_id', $user->id)
                                             ->where('tryout_id', 2)
-                                            ->where('status', 'Success')
+                                            ->whereRaw('LOWER(status) = ?', ['success'])
                                             ->exists();
 
             // 2. Cek Paket 1 + Paket 3 (Beli Bertahap 20rb + 29rb)
-            // Kita cek secara spesifik: apakah punya ID 1 DAN ID 3?
             $hasPaket1 = Transaction::where('user_id', $user->id)
                                         ->where('tryout_id', 1)
-                                        ->where('status', 'Success')
+                                        ->whereRaw('LOWER(status) = ?', ['success'])
                                         ->exists();
                                         
             $hasPaket3 = Transaction::where('user_id', $user->id)
                                         ->where('tryout_id', 3)
-                                        ->where('status', 'Success')
+                                        ->whereRaw('LOWER(status) = ?', ['success'])
                                         ->exists();
 
             $hasPaketUpgrade = $hasPaket1 && $hasPaket3;
 
-            // Gabungkan
-            $hasFullAccess = $hasPaketLengkap || $hasPaketUpgrade;
+            // Gabungkan: Beli Paket Lengkap / Hasil Upgrade / Akun is_premium
+            $hasFullAccess = $hasPaketLengkap || $hasPaketUpgrade || ($user && $user->is_premium);
         }
 
         // 2. TENTUKAN MATERI AKTIF

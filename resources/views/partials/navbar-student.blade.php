@@ -74,8 +74,8 @@
                                     <i class="fe fe-book-open nav-icon me-2"></i>
                                     <span class="nav-link-text">Materi Belajar</span>
                                 </div>
-                                <span class="badge bg-danger rounded-pill shadow-sm"
-                                    style="font-size: 0.65rem;">GRATIS</span>
+                                <span class="badge bg-warning text-dark rounded-pill shadow-sm"
+                                    style="font-size: 0.65rem;">FREE TRIAL</span>
                             </div>
                         </a>
                     </li>

@@ -46,14 +46,12 @@
                             <div class="mb-3 mb-md-0">
                                 <div class="mb-3">
                                     @if ($isPaketLengkapPdf)
-                                        {{-- Diubah dari "Tryout + PDF Kit" menjadi "Tryout + Materi Pembelajaran" --}}
                                         <span class="badge bg-white text-primary px-3 py-2 rounded-pill shadow-sm">
-                                            <i class="bi bi-star-fill text-warning me-1"></i> Member Tryout + Materi
-                                            Pembelajaran
+                                            <i class="bi bi-star-fill text-warning me-1"></i> Member Tryout Unlimited + Materi Full
                                         </span>
                                     @elseif($isPaketTryoutSaja)
                                         <span class="badge bg-white text-success px-3 py-2 rounded-pill shadow-sm">
-                                            <i class="bi bi-check-circle-fill me-1"></i> Member Tryout Mandiri
+                                            <i class="bi bi-check-circle-fill me-1"></i> Member Tryout Mandiri (1x)
                                         </span>
                                     @else
                                         <span class="badge bg-dark bg-opacity-25 text-white px-3 py-2 rounded-pill">
@@ -158,21 +156,35 @@
                                 </div>
                             </div>
 
-                            <p class="text-dark fs-5 mb-4">
-                                Pembayaran berhasil diverifikasi. Anda memiliki <strong>satu kesempatan</strong>
-                                untuk mengerjakan tryout ini sekarang.
-                            </p>
+                            @if (isset($access['is_unlimited']) && $access['is_unlimited'])
+                                <p class="text-dark fs-5 mb-4">
+                                    <strong>Akses Tryout Unlimited Aktif:</strong> Anda bebas mengulang tryout ini sepuasnya untuk mematangkan latihan dan mencetak skor terbaik.
+                                </p>
 
-                            <div class="alert alert-info border-0 rounded-4 py-3 px-4 mb-4 shadow-sm">
-                                <ul class="text-start mb-0 small fw-medium ps-3">
-                                    <li class="mb-1">Pastikan koneksi internet stabil.</li>
-                                    <li class="mb-1">Ujian akan otomatis berhenti jika waktu habis.</li>
-                                    <li>Satu kali klik "Selesai", akses akan terkunci kembali.</li>
-                                </ul>
-                            </div>
+                                <div class="alert alert-success bg-success-subtle border-0 rounded-4 py-3 px-4 mb-4 shadow-sm">
+                                    <ul class="text-start mb-0 small fw-medium ps-3 text-success-emphasis">
+                                        <li class="mb-1"><strong>Simulasi Tanpa Batas:</strong> Kerjakan berkali-kali kapan saja.</li>
+                                        <li class="mb-1"><strong>Evaluasi Terupdate:</strong> Rapor, grafik perkembangan, ranking & sertifikat diperbarui tiap sesi.</li>
+                                        <li>Pastikan koneksi internet stabil sebelum memulai ujian.</li>
+                                    </ul>
+                                </div>
+                            @else
+                                <p class="text-dark fs-5 mb-4">
+                                    Pembayaran berhasil diverifikasi. Anda memiliki <strong>1x kesempatan</strong>
+                                    untuk mengerjakan simulasi tryout ini sekarang.
+                                </p>
+
+                                <div class="alert alert-info border-0 rounded-4 py-3 px-4 mb-4 shadow-sm">
+                                    <ul class="text-start mb-0 small fw-medium ps-3">
+                                        <li class="mb-1">Pastikan koneksi internet stabil.</li>
+                                        <li class="mb-1">Ujian akan otomatis berhenti jika waktu habis (100 Menit).</li>
+                                        <li>Satu kali klik "Selesai", kesempatan tryout ini akan terpakai.</li>
+                                    </ul>
+                                </div>
+                            @endif
 
                             <div class="mt-auto">
-                                <a href="{{ route('ujian.mulai', $tryout->id ?? 1) }}"
+                                <a href="{{ route('ujian.persiapan', $tryout->id ?? 1) }}"
                                     class="btn btn-warning text-dark btn-lg rounded-pill fw-bold px-4 py-3 shadow-sm w-100">
                                     Mulai Ujian Sekarang
                                     <i class="fe fe-play ms-2"></i>

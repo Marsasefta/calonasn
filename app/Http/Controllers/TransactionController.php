@@ -324,13 +324,13 @@ class TransactionController extends Controller
     {
         $user = auth()->user();
 
-        // 1. Cek status kepemilikan paket
-        $hasPaket1 = Transaction::where('user_id', $user->id)->where('tryout_id', 1)->where('status', 'Success')->exists();
-        $hasPaket3 = Transaction::where('user_id', $user->id)->where('tryout_id', 3)->where('status', 'Success')->exists();
-        $hasPaketLengkap = Transaction::where('user_id', $user->id)->where('tryout_id', 2)->where('status', 'Success')->exists();
+        // 1. Cek status kepemilikan paket (Case-insensitive)
+        $hasPaket1 = Transaction::where('user_id', $user->id)->where('tryout_id', 1)->whereRaw('LOWER(status) = ?', ['success'])->exists();
+        $hasPaket3 = Transaction::where('user_id', $user->id)->where('tryout_id', 3)->whereRaw('LOWER(status) = ?', ['success'])->exists();
+        $hasPaketLengkap = Transaction::where('user_id', $user->id)->where('tryout_id', 2)->whereRaw('LOWER(status) = ?', ['success'])->exists();
 
-        // User dianggap sudah punya Paket Lengkap jika beli langsung (ID 2) atau hasil upgrade (ID 1 + 3)
-        $isLengkap = $hasPaketLengkap || ($hasPaket1 && $hasPaket3);
+        // User dianggap sudah punya Paket Lengkap jika beli langsung (ID 2), hasil upgrade (ID 1 + 3), atau akun is_premium
+        $isLengkap = $hasPaketLengkap || ($hasPaket1 && $hasPaket3) || ($user && $user->is_premium);
 
         // 2. Ambil Data Judul Paket dari Database
         // Menggunakan path lengkap \App\Models\Tryout untuk berjaga-jaga jika kamu belum menambahkan 'use App\Models\Tryout;' di atas

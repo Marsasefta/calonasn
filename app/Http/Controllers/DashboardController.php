@@ -136,17 +136,17 @@ class DashboardController extends Controller
             ));
         }
 
-       // 1. Cek semua status paket secara independen
-        $hasPaket1 = Transaction::where('user_id', $user->id)->where('tryout_id', 1)->where('status', 'Success')->exists();
-        $hasPaket2 = Transaction::where('user_id', $user->id)->where('tryout_id', 2)->where('status', 'Success')->exists();
-        $hasPaket3 = Transaction::where('user_id', $user->id)->where('tryout_id', 3)->where('status', 'Success')->exists();
+       // 1. Cek semua status paket secara independen (Case-insensitive)
+        $hasPaket1 = Transaction::where('user_id', $user->id)->where('tryout_id', 1)->whereRaw('LOWER(status) = ?', ['success'])->exists();
+        $hasPaket2 = Transaction::where('user_id', $user->id)->where('tryout_id', 2)->whereRaw('LOWER(status) = ?', ['success'])->exists();
+        $hasPaket3 = Transaction::where('user_id', $user->id)->where('tryout_id', 3)->whereRaw('LOWER(status) = ?', ['success'])->exists();
 
         // 2. Tentukan status badge berdasarkan kombinasi
-        // Lengkap jika: Beli Paket 2 (Langsung) OR (Beli Paket 1 AND Beli Paket 3)
-        $isPaketLengkapPdf = $hasPaket2 || ($hasPaket1 && $hasPaket3);
+        // Lengkap jika: Beli Paket 2 (Langsung) OR (Beli Paket 1 AND Beli Paket 3) OR user memiliki status is_premium
+        $isPaketLengkapPdf = $hasPaket2 || ($hasPaket1 && $hasPaket3) || ($user && $user->is_premium);
         
-        // Mandiri jika: Beli Paket 1 AND BELUM punya Paket 3 AND BELUM punya Paket 2
-        $isPaketTryoutSaja = $hasPaket1 && !$hasPaket3 && !$hasPaket2;
+        // Mandiri jika: Beli Paket 1 AND BELUM punya Paket 3 AND BELUM punya Paket 2 AND bukan is_premium
+        $isPaketTryoutSaja = $hasPaket1 && !$hasPaket3 && !$hasPaket2 && !($user && $user->is_premium);
 
         // B. Data Tryout
         $tryout = Tryout::find(1) ?? Tryout::first();
