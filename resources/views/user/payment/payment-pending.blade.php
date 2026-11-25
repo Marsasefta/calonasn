@@ -132,12 +132,19 @@
     <script src="assets/js/vendors/chart.js"></script>
     <script src="assets/js/vendors/navbar-nav.js"></script>
 
-    @if (session('purchase_pixel'))
+    @if (session('purchase_pixel') && $transaction)
         <script>
-            fbq('track', 'Purchase', {
-                value: {{ $transaction->amount }},
-                currency: 'IDR'
-            });
+            if (typeof fbq === 'function') {
+                fbq('track', 'Purchase', {
+                    content_name: @json($transaction->tryout->title ?? 'Paket Tryout CPNS'),
+                    content_ids: [@json((string) ($transaction->tryout_id ?? ''))],
+                    content_type: 'product',
+                    value: {{ (int) ($transaction->total_amount ?? $transaction->amount ?? 0) }},
+                    currency: 'IDR'
+                }, {
+                    eventID: @json($transaction->invoice_number ?? $transaction->order_id ?? '')
+                });
+            }
         </script>
     @endif
 

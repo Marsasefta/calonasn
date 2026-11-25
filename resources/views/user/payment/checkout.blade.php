@@ -194,6 +194,16 @@
                     document.getElementById('btn-apply-promo').disabled = false;
                 });
         });
+
+        if (typeof fbq === 'function') {
+            fbq('track', 'InitiateCheckout', {
+                content_name: @json($tryout->title ?? 'Paket Tryout CPNS'),
+                content_ids: [@json((string) ($tryout->id ?? ''))],
+                content_type: 'product',
+                value: {{ (int) ($tryout->price ?? 50000) }},
+                currency: 'IDR'
+            });
+        }
     </script>
 </body>
 

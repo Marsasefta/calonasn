@@ -278,6 +278,16 @@
                 const textElement = document.getElementById('file-name');
                 textElement.innerHTML = `<strong class="text-primary">${fileName}</strong>`;
             }
+
+            if (typeof fbq === 'function') {
+                fbq('track', 'AddPaymentInfo', {
+                    content_name: @json($transaction->tryout->title ?? 'Paket Tryout CPNS'),
+                    content_ids: [@json((string) ($transaction->tryout_id ?? ''))],
+                    content_type: 'product',
+                    value: {{ (int) ($transaction->total_amount ?? $transaction->amount ?? 0) }},
+                    currency: 'IDR'
+                });
+            }
         </script>
     @endif
 
