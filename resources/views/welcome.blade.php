@@ -467,7 +467,7 @@
                             </h1>
 
                             <p class="text-muted fs-5 lh-base mb-2">
-                                Rasakan pengalaman ujian CAT BKN sesungguhnya. Bank soal HOTS ter-update, hitung mundur presisi, sistem penilaian otomatis, dan kunci pembahasan trik 1 menit.
+                                Rasakan pengalaman ujian CAT BKN sesungguhnya. Bank soal HOTS ter-update, hitung mundur presisi, sistem penilaian otomatis, serta kunci jawaban dan pembahasan soal lengkap.
                             </p>
 
                             <!-- Mini Offer Pill -->
@@ -1059,19 +1059,19 @@
                         </div>
                     </div>
 
-                    <!-- Bento 4: Trik Solusi Cepat < 1 Menit (col-lg-6) -->
+                    <!-- Bento 4: Kunci Jawaban & Pembahasan Soal Lengkap (col-lg-6) -->
                     <div class="col-lg-6 col-12">
                         <div class="card h-100 rounded-4 border-0 shadow-sm p-4 p-md-5 overflow-hidden position-relative hover-lift bg-white"
                              style="border: 1px solid rgba(226, 232, 240, 0.8) !important;">
                             <div class="d-flex align-items-start gap-3">
                                 <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 shadow-xs" 
                                      style="width: 52px; height: 52px; background: #ffe6e6; color: #dc2626;">
-                                    <i class="fe fe-zap fs-3"></i>
+                                    <i class="fe fe-file-text fs-3"></i>
                                 </div>
                                 <div>
-                                    <h3 class="h4 fw-bold text-dark mb-1">Trik Eliminasi Opsi & Solusi Cepat</h3>
+                                    <h3 class="h4 fw-bold text-dark mb-1">Kunci Jawaban & Pembahasan Soal Lengkap</h3>
                                     <p class="text-muted small mb-0">
-                                        Waktu SKD sangat singkat (110 soal dalam 100 menit). Di setiap pembahasan, Anda dibekali metode eliminasi opsi jawaban salah dan rumus cepat untuk menghemat 30–45 detik per soal.
+                                        Setiap selesai ujian, Anda dapat langsung meninjau kunci jawaban, rincian poin per soal, dan pembahasan mendalam sebagai bahan evaluasi belajar.
                                     </p>
                                 </div>
                             </div>
@@ -1136,9 +1136,9 @@
                             <span class="badge rounded-pill px-2.5 py-0.5 fw-bold mb-2 align-self-start" style="background: #fef3c7; color: #92400e !important; font-size: 0.72rem;">
                                 PENGUASAAN MATERI
                             </span>
-                            <h3 class="h4 fw-bold text-dark mb-2">Pahami Teori & Trik Cepat</h3>
+                            <h3 class="h4 fw-bold text-dark mb-2">Pelajari Materi Terstruktur</h3>
                             <p class="text-muted small mb-0 lh-base">
-                                Pelajari konsep materi terstruktur di HP atau laptop. Kuasai trik eliminasi jawaban salah dan rumus cepat untuk menghemat 30–45 detik di tiap butir soal.
+                                Pelajari konsep dan rangkuman materi TWK, TIU, serta TKP langsung dari HP atau laptop untuk memperkuat pemahaman sebelum simulasi.
                             </p>
                         </div>
                     </div>
@@ -1336,7 +1336,7 @@
                                             <li><strong class="text-primary">Paket Super Lengkap (Rp 42.000 / Rp 49.000):</strong> Mendapatkan akses <strong class="text-primary">Unlimited Tryout</strong> — Anda bisa mengulang dan mengerjakan simulasi tryout berkali-kali sepuasnya tanpa harus membeli lagi, plus akses penuh ke ratusan modul materi belajar!</li>
                                         </ul>
                                         <div class="mt-2 p-3 rounded-3 bg-light border-start border-3 border-primary">
-                                            <i class="fe fe-check-circle text-primary me-1"></i> Setelah selesai ujian, akses ke <strong>Skor, Analisis Passing Grade, Kunci Jawaban, dan Trik Pembahasan Cepat</strong> terbuka <strong>selamanya</strong> untuk dipelajari ulang kapan pun kamu mau.
+                                            <i class="fe fe-check-circle text-primary me-1"></i> Setelah selesai ujian, akses ke <strong>Skor, Analisis Passing Grade, Kunci Jawaban, dan Pembahasan Soal Lengkap</strong> terbuka <strong>selamanya</strong> untuk dipelajari ulang kapan pun kamu mau.
                                         </div>
                                     </div>
                                 </div>
@@ -1353,7 +1353,7 @@
                                 </h2>
                                 <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
                                     <div class="accordion-body px-4 pb-4 pt-0 text-muted" style="line-height: 1.7;">
-                                        Begitu waktu habis atau tombol "Selesai Ujian" diklik, sistem mesin kami secara otomatis mengkalkulasi skormu secara instan: bobot benar 5/0 untuk TWK & TIU, serta skala 1–5 untuk TKP. Kamu langsung mengetahui status <strong class="text-dark">Lolos / Tidak Lolos Passing Grade</strong> beserta kunci dan rumus eliminasi opsi trik 1 menit.
+                                        Begitu waktu habis atau tombol "Selesai Ujian" diklik, sistem mesin kami secara otomatis mengkalkulasi skormu secara instan: bobot benar 5/0 untuk TWK & TIU, serta skala 1–5 untuk TKP. Kamu langsung mengetahui status <strong class="text-dark">Lolos / Tidak Lolos Passing Grade</strong> beserta kunci jawaban dan pembahasan lengkap di setiap soal.
                                     </div>
                                 </div>
                             </div>
