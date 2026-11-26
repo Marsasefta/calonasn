@@ -439,6 +439,58 @@
             color: #93c5fd !important;
             border-color: rgba(59, 130, 246, 0.4) !important;
         }
+
+        .landing-surface-section {
+            background-color: #ffffff;
+        }
+        .landing-surface-muted {
+            background-color: #f8fafc;
+        }
+        .landing-surface-card {
+            background-color: #ffffff !important;
+            border-color: rgba(226, 232, 240, 0.9) !important;
+        }
+        .landing-soft-box {
+            background-color: #f8fafc !important;
+        }
+        #mobileBottomBar {
+            background-color: #ffffff !important;
+            padding-bottom: max(0.55rem, env(safe-area-inset-bottom)) !important;
+        }
+        [data-bs-theme="dark"] .landing-surface-section {
+            background-color: #0f172a !important;
+        }
+        [data-bs-theme="dark"] .landing-surface-muted {
+            background-color: #0b1324 !important;
+        }
+        [data-bs-theme="dark"] .landing-surface-card,
+        [data-bs-theme="dark"] #mobileBottomBar {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] .landing-soft-box {
+            background-color: #0f172a !important;
+            border-color: #334155 !important;
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] .landing-mobile-price {
+            color: #34d399 !important;
+        }
+        [data-bs-theme="dark"] .landing-mobile-label {
+            color: #94a3b8 !important;
+        }
+        @media (max-width: 575.98px) {
+            .hero-section-2026 h1.display-4 {
+                font-size: 1.95rem !important;
+                line-height: 1.25 !important;
+            }
+            .cat-float-1 {
+                position: static !important;
+                margin-bottom: 0.75rem;
+                width: fit-content;
+            }
+        }
     </style>
 @endpush
 
@@ -471,7 +523,7 @@
                             </p>
 
                             <!-- Mini Offer Pill -->
-                            <div class="p-3 bg-white rounded-3 border border-success border-opacity-30 shadow-xs d-flex align-items-center gap-3 text-start mx-auto mx-lg-0" style="max-width: 520px;">
+                            <div class="p-3 landing-surface-card rounded-3 border border-success border-opacity-30 shadow-xs d-flex align-items-center gap-3 text-start mx-auto mx-lg-0" style="max-width: 520px;">
                                 <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
                                     <i class="fe fe-gift fs-5"></i>
                                 </div>
@@ -486,7 +538,7 @@
                                 @guest
                                     <a href="{{ route('register') }}" class="btn btn-primary btn-lg px-4 py-3 fw-bold rounded-pill shadow-sm d-inline-flex align-items-center gap-2">
                                         <i class="fe fe-user-plus"></i>
-                                        <span>Daftar & Mulai Gratis</span>
+                                        <span>Daftar &amp; Mulai Gratis</span>
                                     </a>
                                     <a href="{{ route('demo.cat') }}" class="btn btn-outline-dark btn-lg px-4 py-3 fw-bold rounded-pill d-inline-flex align-items-center gap-2">
                                         <i class="fe fe-play-circle text-primary"></i>
@@ -503,7 +555,7 @@
                                 @endguest
                             </div>
 
-                            <!-- Trust Badges -->
+                            <!-- Trust Badges + Real Platform Stats -->
                             <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 gap-md-4 pt-2 text-muted small">
                                 <span class="d-flex align-items-center gap-1.5">
                                     <i class="fe fe-check-circle text-success fs-6"></i> Standar Resmi BKN 2026
@@ -512,8 +564,16 @@
                                     <i class="fe fe-check-circle text-success fs-6"></i> Tanpa Perlu Install Aplikasi
                                 </span>
                                 <span class="d-flex align-items-center gap-1.5">
-                                    <i class="fe fe-check-circle text-success fs-6"></i> Skor & Pembahasan Instan
+                                    <i class="fe fe-check-circle text-success fs-6"></i> Skor &amp; Pembahasan Instan
                                 </span>
+                            </div>
+
+                            <div class="d-inline-flex flex-wrap justify-content-center justify-content-lg-start align-items-center gap-3 pt-2 border-top border-light-subtle small text-muted">
+                                <span><strong class="text-dark">{{ number_format($totalUsers ?? 180) }}+</strong> Pejuang ASN Terdaftar</span>
+                                <span class="opacity-50">•</span>
+                                <span><strong class="text-dark">{{ $totalQuestions ?? 211 }}</strong> Bank Soal HOTS</span>
+                                <span class="opacity-50">•</span>
+                                <span><strong class="text-dark">{{ $totalMaterials ?? 26 }}</strong> Modul Materi SKD</span>
                             </div>
                         </div>
                     </div>
@@ -589,8 +649,8 @@
                                 <!-- Question Area & Mini Navigation -->
                                 <div class="p-3 p-sm-4 text-start">
                                     <div class="row g-3">
-                                        <!-- Left: Question Body (8 cols) -->
-                                        <div class="col-8">
+                                        <!-- Left: Question Body (responsive col-12 col-sm-8) -->
+                                        <div class="col-12 col-sm-8">
                                             <div class="d-flex align-items-center justify-content-between mb-2">
                                                 <span class="badge bg-primary text-white px-2 py-1 rounded fw-bold" style="font-size: 0.7rem;">
                                                     Soal No. 42
@@ -628,8 +688,8 @@
                                             </div>
                                         </div>
 
-                                        <!-- Right: Mini Number Palette (4 cols) -->
-                                        <div class="col-4">
+                                        <!-- Right: Mini Number Palette (responsive col-12 col-sm-4) -->
+                                        <div class="col-12 col-sm-4">
                                             <div class="p-2 rounded-3 border border-secondary border-opacity-25 h-100 d-flex flex-column justify-content-between" style="background: #090d16;">
                                                 <div>
                                                     <div class="text-center text-secondary small fw-bold text-uppercase mb-2" style="font-size: 0.62rem; color: #94a3b8 !important;">Nomor Soal (110)</div>
@@ -660,6 +720,14 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Interactive CTA bar inside Hero CAT Mockup -->
+                                    <div class="mt-3 pt-2.5 border-top border-secondary border-opacity-25 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                        <span class="small" style="font-size: 0.72rem; color: #94a3b8 !important;">Penasaran rasanya? Coba 5 soal tanpa login</span>
+                                        <a href="{{ route('demo.cat') }}" class="btn btn-success btn-sm rounded-pill px-3 py-1 fw-bold text-white" style="font-size: 0.72rem;">
+                                            <i class="fe fe-play me-1"></i> Coba Demo CAT Sekarang
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -686,7 +754,7 @@
                         </p>
 
                         <!-- Copyable Promo Voucher Banner -->
-                        <div class="d-inline-flex flex-wrap justify-content-center align-items-center gap-2 p-2 px-3 bg-white rounded-pill border border-success border-opacity-50 shadow-sm mt-2" 
+                        <div class="d-inline-flex flex-wrap justify-content-center align-items-center gap-2 p-2 px-3 landing-surface-card rounded-pill border border-success border-opacity-50 shadow-sm mt-2" 
                              style="cursor: pointer;" 
                              onclick="copyPromoCode()" 
                              id="promoBanner" 
@@ -705,7 +773,7 @@
                     
                     <!-- Card 1: Paket Latihan (Reguler) -->
                     <div class="col-lg-5 col-md-6 d-flex">
-                        <div class="card w-100 border-0 shadow-sm rounded-4 p-4 p-xl-5 d-flex flex-column bg-white transition-hover hover-lift" 
+                        <div class="card w-100 border-0 shadow-sm rounded-4 p-4 p-xl-5 d-flex flex-column landing-surface-card transition-hover hover-lift" 
                              style="border: 1px solid rgba(226, 232, 240, 0.9) !important;">
                             <div class="mb-4">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -714,10 +782,10 @@
                                     </span>
                                 </div>
                                 <h3 class="fw-bold text-dark mb-1">Tryout Premium Mandiri</h3>
-                                <p class="text-muted small">Khusus untuk latihan manajemen waktu dan uji simulasi CAT.</p>
+                                <p class="text-muted small">Khusus untuk latihan manajemen waktu dengan 1x simulasi CAT.</p>
 
                                 <!-- Price Box -->
-                                <div class="mt-4 p-3 rounded-3 border border-light-subtle" style="background: #f8fafc;">
+                                <div class="mt-4 p-3 rounded-3 border border-light-subtle landing-soft-box">
                                     <div class="d-flex align-items-center gap-2 mb-1">
                                         <span class="text-muted text-decoration-line-through small">Rp 20.000</span>
                                         <span class="badge bg-success text-white rounded-pill px-2.5 py-1 fw-bold shadow-xs" style="font-size: 0.72rem;">
@@ -739,7 +807,7 @@
                             <ul class="list-unstyled d-flex flex-column gap-3 text-dark mb-5 small">
                                 <li class="d-flex align-items-start gap-2.5">
                                     <i class="fe fe-check-circle text-success fs-5 mt-0.5"></i>
-                                    <span><strong>110 Soal CAT Lengkap</strong> (TWK, TIU, TKP Standar BKN)</span>
+                                    <span><strong>1x Kesempatan Simulasi 110 Soal CAT</strong> (TWK, TIU, TKP Standar BKN)</span>
                                 </li>
                                 <li class="d-flex align-items-start gap-2.5">
                                     <i class="fe fe-check-circle text-success fs-5 mt-0.5"></i>
@@ -781,7 +849,7 @@
 
                     <!-- Card 2: Paket Super Lengkap (Hero / Best Seller) -->
                     <div class="col-lg-5 col-md-6 d-flex">
-                        <div class="card w-100 rounded-4 p-4 p-xl-5 d-flex flex-column bg-white position-relative overflow-hidden hover-lift shadow-lg"
+                        <div class="card w-100 rounded-4 p-4 p-xl-5 d-flex flex-column landing-surface-card position-relative overflow-hidden hover-lift shadow-lg"
                              style="border: 2px solid #2563eb !important; box-shadow: 0 20px 40px -15px rgba(37, 99, 235, 0.2) !important;">
                             
                             <!-- Top Right Banner Badge -->
@@ -824,8 +892,8 @@
                             <!-- Features List -->
                             <ul class="list-unstyled d-flex flex-column gap-3 text-dark mb-5 small">
                                 <li class="d-flex align-items-start gap-2.5 p-2 rounded-3 border border-primary border-opacity-25" style="background: #f0f7ff;">
-                                    <i class="fe fe-infinity text-primary fs-5 mt-0.5"></i>
-                                    <span><strong class="text-primary">Akses Tryout Unlimited (Tanpa Batas)</strong> — Bisa dicoba & diulang sepuasnya kapan saja</span>
+                                    <i class="fa-solid fa-infinity text-primary fs-5 mt-0.5"></i>
+                                    <span><strong class="text-primary">Akses Tryout Unlimited (Tanpa Batas)</strong> — Bisa dicoba &amp; diulang sepuasnya kapan saja</span>
                                 </li>
                                 <li class="d-flex align-items-start gap-2.5 p-2 rounded-3 border border-primary border-opacity-25" style="background: #f0f7ff;">
                                     <i class="fe fe-star text-primary fs-5 mt-0.5"></i>
@@ -877,65 +945,65 @@
 
 
 
-        {{-- <section class="py-xl-8 py-6 bg-white">
-            <div class="container">
-                <!-- HEADER SECTION: Fokus ke Copywriting yang "Menampar" -->
-                <div class="row justify-content-center text-center mb-5">
-                    <div class="col-lg-8">
-                        <!-- Badge ditekankan dengan ikon hadiah dan nama brand -->
-                        <span
-                            class="badge bg-danger text-white px-4 py-2 fw-bold text-uppercase rounded-pill mb-3 fs-6 animate__animated animate__pulse animate__infinite shadow-sm">
-                            <i class="bi bi-gift-fill me-1"></i> SPESIAL DARI CALONASN.ID: 100% GRATIS!
-                        </span>
-
-                        <h2 class="display-4 fw-bold text-dark mb-3">Akses Ratusan Materi Rahasia Tanpa Biaya</h2>
-
-                        <p class="lead text-muted px-md-4">
-                            Gak perlu mikir biaya. Cukup buat akun gratis dalam 1 menit, dan materi terstruktur TWK, TIU,
-                            dan TKP ini otomatis terbuka untukmu selamanya!
-                        </p>
+        <!-- SECTION ETALASE MATERI SKD 2026 -->
+        @if (isset($categories) && $categories->count() > 0)
+            <section id="materi-skd" class="py-xl-8 py-6 landing-surface-muted position-relative">
+                <div class="container">
+                    <div class="row justify-content-center text-center mb-5">
+                        <div class="col-lg-8">
+                            <div class="d-inline-flex align-items-center gap-2 bg-primary-soft text-primary px-3 py-1.5 rounded-pill border border-primary border-opacity-20 shadow-xs mb-3">
+                                <i class="fe fe-book-open"></i>
+                                <span class="fw-semibold small text-uppercase tracking-wider">Ruang Belajar Micro-Learning</span>
+                            </div>
+                            <h2 class="display-5 fw-bold text-dark mb-3">Kuasai Konsep Materi TWK, TIU &amp; TKP</h2>
+                            <p class="text-muted fs-5 mb-0" style="max-width: 640px; margin: 0 auto;">
+                                Daftar gratis dalam 1 menit dan langsung baca <strong>materi Bab 1 secara gratis</strong>. Seluruh {{ $totalMaterials ?? 26 }} modul lengkap terbuka di Paket Super Lengkap.
+                            </p>
+                        </div>
                     </div>
-                </div>
 
-                <!-- KARTU MATERI -->
-                <div class="row g-4">
-                    @foreach ($categories as $category)
-                        <div class="col-lg-4 col-md-6">
-                            <div class="card h-100 border-2 border-success shadow-sm rounded-4 overflow-hidden hover-lift">
-                                <div class="card-body p-4 text-center">
+                    <div class="row g-4">
+                        @foreach ($categories as $category)
+                            <div class="col-lg-4 col-md-6 col-12">
+                                <div class="card h-100 border-0 shadow-sm rounded-4 landing-surface-card hover-lift">
+                                    <div class="card-body p-4 d-flex flex-column">
+                                        <div class="d-flex align-items-center gap-3 mb-3">
+                                            <div class="bg-{{ $category->color_theme }} text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+                                                style="width: 56px; height: 56px;">
+                                                <i class="{{ $category->icon }} fs-3"></i>
+                                            </div>
+                                            <div>
+                                                <span class="badge bg-{{ $category->color_theme }}-subtle text-{{ $category->color_theme }} border border-{{ $category->color_theme }} rounded-pill mb-1">
+                                                    {{ $category->materials_count }} Modul Materi
+                                                </span>
+                                                <h4 class="fw-bold text-dark mb-0 fs-5">{{ $category->name }}</h4>
+                                            </div>
+                                        </div>
 
-                                    <!-- Icon Kategori -->
-                                    <div class="bg-{{ $category->color_theme }} text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 shadow-sm"
-                                        style="width: 70px; height: 70px;">
-                                        <i class="{{ $category->icon }} fs-2"></i>
+                                        <p class="text-muted small mb-4 flex-grow-1 lh-base">{{ $category->description }}</p>
+
+                                        <div class="mt-auto">
+                                            @guest
+                                                <a href="{{ route('register') }}" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold w-100">
+                                                    Daftar &amp; Coba Gratis <i class="fe fe-arrow-right ms-1"></i>
+                                                </a>
+                                            @else
+                                                <a href="{{ route('materi.show', $category->slug) }}" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold w-100">
+                                                    Buka Materi {{ strtoupper($category->slug) }} <i class="fe fe-arrow-right ms-1"></i>
+                                                </a>
+                                            @endguest
+                                        </div>
                                     </div>
-
-                                    <h3 class="fw-bold mb-2">{{ $category->name }}</h3>
-
-                                    <!-- Deskripsi Materi -->
-                                    <p class="text-muted mb-4">{{ $category->description }}</p>
-
-                                    <!-- Tombol Call to Action (Ajakan Daftar) -->
-                                    <!-- Menggunakan outline-dark sesuai selera eleganmu, tapi text-nya lebih agresif -->
-                                    <a href="{{ route('register') }}"
-                                        class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold w-100">
-                                        <i class="bi bi-unlock me-1"></i> Daftar & Buka Aksesnya
-                                    </a>
-
-                                    <!-- Teks garansi kecil di bawah tombol untuk meyakinkan lagi -->
-                                    <p class="small text-danger fw-semibold mt-3 mb-0">
-                                        <i class="bi bi-check-circle-fill me-1"></i> Bebas Akses Selamanya
-                                    </p>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
-            </div>
-        </section>         --}}
+            </section>
+        @endif
 
         <!-- SECTION BENTO GRID KEUNGGULAN 2026 -->
-        <section id="keunggulan" class="py-xl-9 py-6 bg-white position-relative overflow-hidden">
+        <section id="keunggulan" class="py-xl-9 py-6 landing-surface-section position-relative overflow-hidden">
             <div class="container">
                 <!-- Header -->
                 <div class="row justify-content-center text-center mb-5">
@@ -972,7 +1040,7 @@
                             </p>
 
                             <!-- Mini Interactive Showcase Box inside Bento 1 -->
-                            <div class="p-3 bg-white rounded-3 shadow-xs border border-light-subtle d-flex flex-wrap gap-2 align-items-center justify-content-between mt-auto">
+                            <div class="p-3 landing-surface-card rounded-3 shadow-xs border d-flex flex-wrap gap-2 align-items-center justify-content-between mt-auto">
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 0.75rem;">
                                         <i class="fe fe-check"></i>
@@ -1000,7 +1068,7 @@
 
                     <!-- Bento 2: Analisis Skor Real-Time (col-lg-5) -->
                     <div class="col-lg-5 col-12">
-                        <div class="card h-100 rounded-4 border-0 shadow-sm p-4 p-md-5 overflow-hidden position-relative hover-lift bg-white"
+                        <div class="card h-100 rounded-4 border-0 shadow-sm p-4 p-md-5 overflow-hidden position-relative hover-lift landing-surface-card"
                              style="border: 1px solid rgba(226, 232, 240, 0.8) !important;">
                             <div class="d-inline-flex align-items-center justify-content-center bg-success-soft text-success rounded-3 mb-3 shadow-xs" style="width: 48px; height: 48px; background-color: #e6f7ed;">
                                 <i class="fe fe-bar-chart-2 fs-4 text-success"></i>
@@ -1012,7 +1080,7 @@
                             </p>
 
                             <!-- Score Breakdown Preview -->
-                            <div class="p-3 rounded-3 border border-light-subtle d-flex flex-column gap-2 mt-auto" style="background: #f8fafc;">
+                            <div class="p-3 rounded-3 border border-light-subtle d-flex flex-column gap-2 mt-auto landing-soft-box">
                                 <div class="d-flex justify-content-between align-items-center small">
                                     <span class="fw-semibold text-dark">TWK (Wawasan Kebangsaan)</span>
                                     <span class="badge bg-success text-white rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">115 / 65 PG</span>
@@ -1042,7 +1110,7 @@
 
                     <!-- Bento 3: Bank Soal HOTS 2026 (col-lg-6) -->
                     <div class="col-lg-6 col-12">
-                        <div class="card h-100 rounded-4 border-0 shadow-sm p-4 p-md-5 overflow-hidden position-relative hover-lift bg-white"
+                        <div class="card h-100 rounded-4 border-0 shadow-sm p-4 p-md-5 overflow-hidden position-relative hover-lift landing-surface-card"
                              style="border: 1px solid rgba(226, 232, 240, 0.8) !important;">
                             <div class="d-flex align-items-start gap-3">
                                 <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 shadow-xs" 
@@ -1061,7 +1129,7 @@
 
                     <!-- Bento 4: Kunci Jawaban & Pembahasan Soal Lengkap (col-lg-6) -->
                     <div class="col-lg-6 col-12">
-                        <div class="card h-100 rounded-4 border-0 shadow-sm p-4 p-md-5 overflow-hidden position-relative hover-lift bg-white"
+                        <div class="card h-100 rounded-4 border-0 shadow-sm p-4 p-md-5 overflow-hidden position-relative hover-lift landing-surface-card"
                              style="border: 1px solid rgba(226, 232, 240, 0.8) !important;">
                             <div class="d-flex align-items-start gap-3">
                                 <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 shadow-xs" 
@@ -1082,7 +1150,7 @@
         </section>
 
         <!-- SECTION 3 LANGKAH MUDAH 2026 -->
-        <section id="cara-mulai" class="py-xl-9 py-6 position-relative overflow-hidden bg-light">
+        <section id="cara-mulai" class="py-xl-9 py-6 position-relative overflow-hidden landing-surface-muted">
             <div class="container position-relative" style="z-index: 1;">
                 <div class="row justify-content-center text-center mb-5">
                     <div class="col-lg-7 col-12">
@@ -1101,7 +1169,7 @@
                 <div class="row g-4 text-start position-relative">
                     <!-- Step 1 -->
                     <div class="col-lg-4 col-12">
-                        <div class="card h-100 rounded-4 border-0 shadow-sm p-4 p-xl-5 bg-white position-relative hover-lift"
+                        <div class="card h-100 rounded-4 border-0 shadow-sm p-4 p-xl-5 landing-surface-card position-relative hover-lift"
                              style="border: 1px solid rgba(226, 232, 240, 0.9) !important;">
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <div class="rounded-3 d-flex align-items-center justify-content-center text-primary shadow-xs"
@@ -1122,7 +1190,7 @@
 
                     <!-- Step 2 -->
                     <div class="col-lg-4 col-12">
-                        <div class="card h-100 rounded-4 border-0 shadow-sm p-4 p-xl-5 bg-white position-relative hover-lift"
+                        <div class="card h-100 rounded-4 border-0 shadow-sm p-4 p-xl-5 landing-surface-card position-relative hover-lift"
                              style="border: 1px solid rgba(226, 232, 240, 0.9) !important;">
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <div class="rounded-3 d-flex align-items-center justify-content-center shadow-xs"
@@ -1145,7 +1213,7 @@
 
                     <!-- Step 3 -->
                     <div class="col-lg-4 col-12">
-                        <div class="card h-100 rounded-4 border-0 shadow-sm p-4 p-xl-5 bg-white position-relative hover-lift"
+                        <div class="card h-100 rounded-4 border-0 shadow-sm p-4 p-xl-5 landing-surface-card position-relative hover-lift"
                              style="border: 1px solid rgba(226, 232, 240, 0.9) !important;">
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <div class="rounded-3 d-flex align-items-center justify-content-center text-success shadow-xs"
@@ -1269,7 +1337,7 @@
         </section>
         --}}
         <!-- SECTION FAQ 2026 -->
-        <section id="faq" class="py-xl-9 py-6 bg-white position-relative">
+        <section id="faq" class="py-xl-9 py-6 landing-surface-section position-relative">
             <div class="container py-xl-4">
                 <div class="row justify-content-center">
                     <div class="col-lg-8 col-12">
@@ -1377,7 +1445,7 @@
                         </div>
 
                         <!-- FAQ Bottom Help Desk Card -->
-                        <div class="text-center mt-5 p-4 rounded-4 border bg-white shadow-xs d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3"
+                        <div class="text-center mt-5 p-4 rounded-4 border landing-surface-card shadow-xs d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3"
                              style="border: 1px solid rgba(226, 232, 240, 0.9) !important;">
                             <div class="text-center text-sm-start">
                                 <h4 class="fw-bold text-dark mb-1 fs-5">Masih punya pertanyaan lain?</h4>
@@ -1472,19 +1540,22 @@
     </main>
 
     <!-- Sticky Mobile Bottom CTA Bar (Khusus Layar HP) -->
-    <div id="mobileBottomBar" class="d-block d-md-none position-fixed bottom-0 start-0 end-0 bg-white border-top p-2 px-3" 
+    <div id="mobileBottomBar" class="d-block d-md-none position-fixed bottom-0 start-0 end-0 border-top p-2 px-3" 
          style="z-index: 1040; transform: translateY(120%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.12) !important;">
-        <div class="d-flex align-items-center justify-content-between">
-            <div>
-                <span class="d-block" style="font-size: 0.72rem; color: #64748b !important; font-weight: 500;">Tryout CAT CPNS 2026</span>
-                <div class="d-flex align-items-baseline gap-1.5">
-                    <span class="fw-bold" style="font-size: 1rem; color: #059669 !important;">Mulai Rp 13.000</span>
-                    <span class="text-decoration-line-through" style="font-size: 0.72rem; color: #94a3b8 !important;">Rp 20.000</span>
+        <div class="d-flex align-items-center justify-content-between gap-2">
+            <div class="min-w-0">
+                <span class="d-block landing-mobile-label" style="font-size: 0.7rem; color: #64748b; font-weight: 500;">Tryout CAT 2026</span>
+                <div class="d-flex align-items-baseline gap-1.5 flex-wrap">
+                    <span class="fw-bold landing-mobile-price" style="font-size: 0.95rem; color: #059669;">Mulai Rp 13rb</span>
+                    <span class="text-decoration-line-through" style="font-size: 0.7rem; color: #94a3b8;">Rp 20rb</span>
                 </div>
             </div>
-            <div>
-                <a href="#paket" class="btn btn-primary btn-sm rounded-pill px-3 py-2 fw-bold shadow-sm d-inline-flex align-items-center gap-1.5"
-                   style="background: #2563eb !important; border-color: #2563eb !important; color: #ffffff !important;">
+            <div class="d-flex align-items-center gap-1.5 flex-shrink-0">
+                <a href="{{ route('demo.cat') }}" class="btn btn-outline-primary btn-sm rounded-pill px-2.5 py-2 fw-bold text-nowrap" style="font-size: 0.75rem;">
+                    Demo Gratis
+                </a>
+                <a href="#paket" class="btn btn-primary btn-sm rounded-pill px-3 py-2 fw-bold shadow-sm d-inline-flex align-items-center gap-1 text-nowrap"
+                   style="background: #2563eb !important; border-color: #2563eb !important; color: #ffffff !important; font-size: 0.75rem;">
                     <span>Pilih Paket</span>
                     <i class="fe fe-arrow-right"></i>
                 </a>

@@ -34,11 +34,13 @@
                         <span class="badge bg-danger-soft text-danger me-1">Demo</span> Simulasi
                     </a>
                 </li>
+                {{-- Di-hide sementara
                 <li class="nav-item">
                     <a class="nav-link px-3 py-2 rounded-pill hover-bg-light transition {{ request()->routeIs('blog.*') ? 'text-primary fw-bold active' : 'text-dark' }}" href="{{ route('blog.index') }}">
                         Info & Tips
                     </a>
                 </li>
+                --}}
                 <li class="nav-item">
                     <a class="nav-link text-dark px-3 py-2 rounded-pill hover-bg-light transition" href="{{ url('/') }}#faq">
                         FAQ

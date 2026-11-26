@@ -33,11 +33,14 @@ Route::get('/', function () {
                         ->take(3)
                         ->get();
 
-    // 2. Ambil kategori untuk etalase pembelajaran
+    // 2. Ambil kategori untuk etalase pembelajaran & statistik real social proof
     $categories = LearningCategory::withCount('materials')->get();
+    $totalUsers = \App\Models\User::where('role', '!=', 'admin')->count();
+    $totalQuestions = \App\Models\Question::count();
+    $totalMaterials = \App\Models\LearningMaterial::count();
 
-    // 3. Kirim keduanya ke welcome.blade.php
-    return view('welcome', compact('latestPosts', 'categories'));
+    // 3. Kirim ke welcome.blade.php
+    return view('welcome', compact('latestPosts', 'categories', 'totalUsers', 'totalQuestions', 'totalMaterials'));
 });
 
 // Di area publik (luar middleware admin)

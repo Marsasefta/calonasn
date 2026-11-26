@@ -39,11 +39,13 @@
                             Materi Micro-Learning
                         </a>
                     </li>
+                    {{-- Di-hide sementara
                     <li>
                         <a href="{{ route('blog.index') }}" class="footer-link text-decoration-none transition">
                             Info & Tips CPNS
                         </a>
                     </li>
+                    --}}
                     <li>
                         <a href="{{ url('/') }}#faq" class="footer-link text-decoration-none transition">
                             Tanya Jawab (FAQ)
@@ -162,7 +164,7 @@
     }
     @media (max-width: 767.98px) {
         footer.footer-2026 {
-            padding-bottom: 2rem !important;
+            padding-bottom: 5.5rem !important;
         }
     }
 </style>
