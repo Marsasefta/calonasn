@@ -26,8 +26,6 @@
                     @php
                         $promo24h = $promo24h ?? (auth()->check() ? auth()->user()->newMemberPromo() : null);
                         $originalPrice = (int) ($tryout->price ?? 50000);
-                        $initialDiscount = $promo24h ? min($originalPrice, (int) $promo24h['discount_amount']) : 0;
-                        $initialTotal = max(0, $originalPrice - $initialDiscount);
                     @endphp
 
                     @include('partials.promo-24h-banner', ['showCta' => false, 'compact' => true, 'promo24h' => $promo24h])
@@ -58,17 +56,10 @@
                                 <label class="form-label fw-bold">Punya Kode Promo?</label>
                                 <div class="input-group">
                                     <input type="text" id="promo_code_input" class="form-control text-uppercase"
-                                        value="{{ $promo24h['code'] ?? '' }}"
                                         placeholder="Masukkan kode promo...">
-                                    <button class="btn btn-dark" type="button" id="btn-apply-promo">
-                                        {{ $promo24h ? 'Diterapkan' : 'Terapkan' }}
-                                    </button>
+                                    <button class="btn btn-dark" type="button" id="btn-apply-promo">Terapkan</button>
                                 </div>
-                                <small id="promo-message" class="d-block mt-2 fw-bold">
-                                    @if ($promo24h)
-                                        <span class="text-success"><i class="fe fe-check-circle"></i> Diskon pendaftar baru ({{ $promo24h['code'] }} — berakhir {{ $promo24h['deadline_label'] ?? '23:59 WIB' }}) otomatis diterapkan!</span>
-                                    @endif
-                                </small>
+                                <small id="promo-message" class="d-block mt-2 fw-bold"></small>
                             </div>
 
                             <div class="mb-4 px-2">
@@ -78,9 +69,9 @@
                                         {{ number_format($originalPrice, 0, ',', '.') }}</span>
                                 </div>
 
-                                <div class="d-flex justify-content-between mb-2 text-success {{ $promo24h ? '' : 'd-none' }}" id="discount-row">
+                                <div class="d-flex justify-content-between mb-2 text-success d-none" id="discount-row">
                                     <span>Potongan Promo:</span>
-                                    <span class="fw-bold" id="discount-amount">- Rp {{ number_format($initialDiscount, 0, ',', '.') }}</span>
+                                    <span class="fw-bold" id="discount-amount">- Rp 0</span>
                                 </div>
 
                                 <hr>
@@ -88,7 +79,7 @@
                                 <div class="d-flex justify-content-between fs-4">
                                     <span class="fw-bold">Total Bayar:</span>
                                     <span class="fw-bold text-primary" id="total-price">
-                                        Rp {{ number_format($initialTotal, 0, ',', '.') }}
+                                        Rp {{ number_format($originalPrice, 0, ',', '.') }}
                                     </span>
                                 </div>
                             </div>
@@ -108,7 +99,7 @@
                                 <input type="hidden" name="tryout_id" value="{{ $tryout->id ?? 1 }}">
                                 <input type="hidden" name="amount" value="{{ $tryout->price ?? 50000 }}">
 
-                                <input type="hidden" name="promo_code_id" id="hidden_promo_id" value="{{ $promo24h['promo_id'] ?? '' }}">
+                                <input type="hidden" name="promo_code_id" id="hidden_promo_id" value="">
 
                                 <div class="d-grid mt-4">
                                     <button type="submit" class="btn btn-primary btn-lg py-3">
@@ -129,9 +120,9 @@
     @include('partials.btn-scroll-top')
     <!-- Scripts -->
     @include('partials.scripts')
-    <script src="assets/js/vendors/tnsSlider.js"></script>
-    <script src="assets/js/vendors/chart.js"></script>
-    <script src="assets/js/vendors/navbar-nav.js"></script>
+    <script src="/build/assets/js/vendors/tnsSlider.js"></script>
+    <script src="/build/assets/js/vendors/chart.js"></script>
+    <script src="/build/assets/js/vendors/navbar-nav.js"></script>
 
 
     <script>

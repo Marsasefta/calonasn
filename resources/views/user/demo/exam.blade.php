@@ -37,7 +37,7 @@
                     </button>
 
                     <div class="text-end">
-                        <h3 id="timerDisplay" class="mb-0 fw-bold text-danger lh-1">00:00</h3>
+                        <h3 id="timerDisplay" class="mb-0 fw-bold text-danger lh-1">10:00</h3>
                         <span class="small text-muted">Sisa Waktu</span>
                     </div>
                 </div>
@@ -57,18 +57,43 @@
                                             <span class="badge bg-primary fs-6">{{ $q['kategori'] }}</span>
                                             <span class="fw-bold">Soal Ke-{{ $q['id'] }}</span>
                                         </div>
-                                        <h5 class="mb-4 lh-base">{{ $q['pertanyaan'] }}</h5>
+                                        @if (!empty($q['pertanyaan']))
+                                            <h5 class="mb-4 lh-base">{{ $q['pertanyaan'] }}</h5>
+                                        @endif
+
+                                        @if (!empty($q['gambar']))
+                                            <div class="mb-4 text-center">
+                                                <img src="{{ asset('storage/' . $q['gambar']) }}"
+                                                    class="img-fluid rounded shadow-sm border" alt="Gambar Soal"
+                                                    style="max-height: 250px;">
+                                            </div>
+                                        @endif
 
                                         <div class="options">
                                             @foreach ($q['opsi'] as $optIndex => $opt)
                                                 <div class="form-check mb-3">
-                                                    <input class="form-check-input opsi-radio" type="radio"
-                                                        name="jawaban[{{ $q['id'] }}]" value="{{ $opt }}"
+                                                    <input class="form-check-input opsi-radio mt-3" type="radio"
+                                                        name="jawaban[{{ $q['id'] }}]" value="{{ $opt['id'] }}"
                                                         id="opt-{{ $q['id'] }}-{{ $optIndex }}"
                                                         data-soal-id="{{ $q['id'] }}">
-                                                    <label class="form-check-label w-100 p-2 border rounded"
+                                                    <label class="form-check-label w-100 p-3 border rounded shadow-sm"
+                                                        style="cursor: pointer;"
                                                         for="opt-{{ $q['id'] }}-{{ $optIndex }}">
-                                                        {{ chr(65 + $optIndex) }}. {{ $opt }}
+                                                        <div class="d-flex align-items-start">
+                                                            <span class="me-3 fw-bold fs-5">{{ chr(65 + $optIndex) }}.</span>
+                                                            <div class="flex-grow-1 mt-1">
+                                                                @if (!empty($opt['text']))
+                                                                    <div class="lh-base">{{ $opt['text'] }}</div>
+                                                                @endif
+                                                                @if (!empty($opt['image']))
+                                                                    <div class="mt-2">
+                                                                        <img src="{{ asset('storage/' . $opt['image']) }}"
+                                                                            class="img-fluid rounded border" alt="Opsi Jawaban"
+                                                                            style="max-height: 150px;">
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        </div>
                                                     </label>
                                                 </div>
                                             @endforeach
@@ -139,7 +164,35 @@
         let currentSoalId = 1;
         const totalSoal = {{ count($questions) }};
 
+        function updateNextButtonState() {
+            const btnNext = document.getElementById('btnNext');
+            if (!btnNext) return;
+
+            const answeredCount = new Set(
+                Array.from(document.querySelectorAll('.opsi-radio:checked')).map(el => el.getAttribute('data-soal-id'))
+            ).size;
+
+            if (totalSoal > 0 && answeredCount >= totalSoal) {
+                btnNext.disabled = false;
+                btnNext.classList.remove('btn-primary');
+                btnNext.classList.add('btn-danger');
+                btnNext.innerHTML = 'Selesai Ujicoba <i class="fe fe-check-circle ms-1"></i>';
+                btnNext.setAttribute('data-finish-mode', '1');
+            } else {
+                btnNext.removeAttribute('data-finish-mode');
+                btnNext.classList.remove('btn-danger');
+                btnNext.classList.add('btn-primary');
+                btnNext.innerHTML = 'Selanjutnya <i class="fe fe-arrow-right"></i>';
+                btnNext.disabled = (currentSoalId >= totalSoal);
+            }
+        }
+
         function gantiSoal(arah) {
+            const btnNext = document.getElementById('btnNext');
+            if (arah === 'next' && btnNext && btnNext.getAttribute('data-finish-mode') === '1') {
+                selesaiUjian();
+                return;
+            }
             if (arah === 'next' && currentSoalId < totalSoal) {
                 lompatKeSoal(currentSoalId + 1);
             } else if (arah === 'prev' && currentSoalId > 1) {
@@ -153,11 +206,11 @@
             currentSoalId = id;
             document.getElementById('soal-' + currentSoalId).style.display = 'block';
             document.getElementById('nav-btn-' + currentSoalId).classList.add('border-primary', 'border-3');
-            document.getElementById('btnPrev').disabled = (currentSoalId === 1);
-            document.getElementById('btnNext').disabled = (currentSoalId === totalSoal);
+            document.getElementById('btnPrev').disabled = (currentSoalId <= 1);
 
             let btnNav = document.getElementById('nav-btn-' + currentSoalId);
             document.getElementById('checkRagu').checked = btnNav.classList.contains('btn-warning');
+            updateNextButtonState();
         }
 
         document.querySelectorAll('.opsi-radio').forEach(radio => {
@@ -168,6 +221,7 @@
                     btnNav.classList.remove('btn-outline-secondary');
                     btnNav.classList.add('btn-success', 'text-white');
                 }
+                updateNextButtonState();
             });
         });
 
@@ -283,9 +337,9 @@
     @include('partials.btn-scroll-top')
     <!-- Scripts -->
     @include('partials.scripts')
-    <script src="assets/js/vendors/tnsSlider.js"></script>
-    <script src="assets/js/vendors/chart.js"></script>
-    <script src="assets/js/vendors/navbar-nav.js"></script>
+    <script src="/build/assets/js/vendors/tnsSlider.js"></script>
+    <script src="/build/assets/js/vendors/chart.js"></script>
+    <script src="/build/assets/js/vendors/navbar-nav.js"></script>
 </body>
 
 </html>

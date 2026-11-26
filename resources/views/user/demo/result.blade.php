@@ -56,7 +56,7 @@
                         <span class="badge bg-success-soft text-success px-2 py-1 rounded-pill fw-semibold">
                             <i class="bi bi-check-circle-fill me-1"></i> Simulasi Selesai
                         </span>
-                        <span class="badge bg-light text-muted border px-2 py-1 rounded-pill">10 Soal Acak Kisi BKN</span>
+                        <span class="badge bg-light border px-2 py-1 rounded-pill fw-semibold" style="color: #334155 !important; background-color: #f1f5f9 !important;">10 Soal Acak Kisi BKN</span>
                     </div>
                     <h3 class="mb-1 fw-bold text-dark">Hasil Evaluasi Simulasi Demo CAT</h3>
                     <p class="mb-0 text-muted small">
@@ -120,18 +120,24 @@
                     </div>
                 </div>
                 <div class="col-6 col-lg-3">
-                    <div class="card border-0 shadow-sm rounded-3 h-100 bg-gradient text-white" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+                    <div class="card border-0 shadow-sm rounded-3 h-100" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important; color: #ffffff !important;">
                         <div class="card-body p-3 d-flex flex-column justify-content-between">
                             <div>
                                 <span class="badge bg-warning text-dark px-2 py-1 rounded-pill small mb-2 fw-bold">
                                     <i class="bi bi-lightning-charge-fill"></i> SKD CAT Penuh
                                 </span>
-                                <h6 class="text-white mb-1 fw-bold">110 Soal Berstandar BKN</h6>
-                                <p class="small text-white-50 mb-0">Simulasi asli berdurasi 100 menit dengan Passing Grade BKN.</p>
+                                <h6 class="mb-1 fw-bold" style="color: #ffffff !important;">110 Soal Berstandar BKN</h6>
+                                <p class="small mb-0" style="color: rgba(255, 255, 255, 0.8) !important;">Simulasi asli berdurasi 100 menit dengan Passing Grade BKN.</p>
                             </div>
-                            <a href="#pilihan-paket" class="btn btn-warning btn-sm fw-bold mt-2 rounded-pill">
-                                Buka Paket Full <i class="bi bi-arrow-right ms-1"></i>
-                            </a>
+                            @if ($isLengkap || $hasPaket1)
+                                <a href="{{ route('ujian.persiapan', 1) }}" class="btn btn-warning btn-sm fw-bold mt-2 rounded-pill">
+                                    Masuk Simulasi Penuh <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            @else
+                                <a href="#pilihan-paket" class="btn btn-warning btn-sm fw-bold mt-2 rounded-pill">
+                                    Buka Paket Full <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -186,9 +192,9 @@
                                         {{ $item['pertanyaan'] }}...
                                     </p>
 
-                                    <div class="bg-white p-2 rounded border small mb-2">
-                                        <span class="text-muted">Pilihan Kamu:</span>
-                                        <strong class="text-dark ms-1">
+                                    <div class="p-2 rounded border small mb-2" style="background-color: #ffffff !important; color: #475569 !important;">
+                                        <span>Pilihan Kamu:</span>
+                                        <strong class="ms-1" style="color: #0f172a !important;">
                                             {{ $item['user'] ? \Illuminate\Support\Str::limit($item['user'], 45) : '(Tidak Dijawab)' }}
                                         </strong>
                                     </div>
@@ -200,7 +206,7 @@
                                             <strong>Pembahasan:</strong> Berdasarkan PermenPAN-RB No. 321 Tahun 2024 dan kisi-kisi resmi BKN, rumus cepat penyelesaian soal tipe ini menggunakan eliminasi pola logika beruntun...
                                         </div>
                                         <div class="lock-overlay-center">
-                                            <span class="badge bg-dark bg-opacity-90 text-white px-3 py-1 rounded-pill shadow-sm small">
+                                            <span class="badge px-3 py-1 rounded-pill shadow-sm small" style="background-color: #0f172a !important; color: #ffffff !important;">
                                                 <i class="bi bi-lock-fill text-warning me-1"></i> Kunci & Trik Lengkap Terkunci
                                             </span>
                                         </div>
@@ -260,7 +266,7 @@
                                             <span class="badge bg-danger text-white rounded-pill small">Hemat Rp 7.000</span>
                                         </div>
                                         <div class="mt-2 pt-2 border-top border-primary border-opacity-25 small text-primary fw-medium">
-                                            <i class="bi bi-tag-fill me-1 text-warning"></i> Kupon <strong class="text-dark bg-white px-2 py-0.5 rounded border">{{ $promo24h['code'] }}</strong> aktif s/d {{ $promo24h['deadline_label'] ?? '23:59 WIB' }}
+                                            <i class="bi bi-tag-fill me-1 text-warning"></i> Kupon <strong class="px-2 py-0.5 rounded border" style="background-color: #ffffff !important; color: #0f172a !important;">{{ $promo24h['code'] }}</strong> aktif s/d {{ $promo24h['deadline_label'] ?? '23:59 WIB' }}
                                         </div>
                                     @else
                                         <div class="d-flex align-items-baseline gap-2">
@@ -335,7 +341,7 @@
                                             <span class="badge bg-danger text-white rounded-pill small">Hemat Rp 7.000</span>
                                         </div>
                                         <div class="mt-2 pt-2 border-top border-secondary border-opacity-25 small text-muted">
-                                            <i class="bi bi-tag-fill me-1 text-success"></i> Kupon <strong class="text-dark bg-white px-2 py-0.5 rounded border">{{ $promo24h['code'] }}</strong> aktif s/d {{ $promo24h['deadline_label'] ?? '23:59 WIB' }}
+                                            <i class="bi bi-tag-fill me-1 text-success"></i> Kupon <strong class="px-2 py-0.5 rounded border" style="background-color: #ffffff !important; color: #0f172a !important;">{{ $promo24h['code'] }}</strong> aktif s/d {{ $promo24h['deadline_label'] ?? '23:59 WIB' }}
                                         </div>
                                     @else
                                         <div class="d-flex align-items-baseline gap-2">
@@ -350,7 +356,7 @@
                             <ul class="list-unstyled d-flex flex-column gap-3 text-dark fw-medium mb-4">
                                 <li class="d-flex align-items-start small">
                                     <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
-                                    <span><strong>110 Soal CAT Lengkap SKD</strong> (TWK, TIU, TKP) berstandar BKN</span>
+                                    <span><strong>1x Kesempatan Simulasi 110 Soal CAT SKD</strong> (TWK, TIU, TKP) berstandar BKN</span>
                                 </li>
                                 <li class="d-flex align-items-start small">
                                     <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>

@@ -201,8 +201,36 @@
         let timeInSeconds = {{ $durationInSeconds }};
         const tryoutId = {{ $tryout->id }};
 
+        function updateNextButtonState() {
+            const btnNext = document.getElementById('btnNext');
+            if (!btnNext) return;
+
+            const answeredCount = new Set(
+                Array.from(document.querySelectorAll('.opsi-radio:checked')).map(el => el.getAttribute('data-db-id'))
+            ).size;
+
+            if (totalSoal > 0 && answeredCount >= totalSoal) {
+                btnNext.disabled = false;
+                btnNext.classList.remove('btn-primary');
+                btnNext.classList.add('btn-danger');
+                btnNext.innerHTML = 'Selesai Ujian <i class="fe fe-check-circle ms-1"></i>';
+                btnNext.setAttribute('data-finish-mode', '1');
+            } else {
+                btnNext.removeAttribute('data-finish-mode');
+                btnNext.classList.remove('btn-danger');
+                btnNext.classList.add('btn-primary');
+                btnNext.innerHTML = 'Selanjutnya <i class="fe fe-arrow-right"></i>';
+                btnNext.disabled = (currentSoalId >= totalSoal);
+            }
+        }
+
         // 2. Fungsi Navigasi Tombol Prev & Next
         function gantiSoal(arah) {
+            const btnNext = document.getElementById('btnNext');
+            if (arah === 'next' && btnNext && btnNext.getAttribute('data-finish-mode') === '1') {
+                selesaiUjian();
+                return;
+            }
             if (arah === 'next' && currentSoalId < totalSoal) {
                 lompatKeSoal(currentSoalId + 1);
             } else if (arah === 'prev' && currentSoalId > 1) {
@@ -232,11 +260,12 @@
             if (newNavBtn) newNavBtn.classList.add('border-primary', 'border-3');
 
             // Matikan tombol jika mentok di awal/akhir
-            document.getElementById('btnPrev').disabled = (currentSoalId === 1);
-            document.getElementById('btnNext').disabled = (currentSoalId === totalSoal);
+            document.getElementById('btnPrev').disabled = (currentSoalId <= 1);
 
             // Sinkronkan status switch Ragu-ragu
-            document.getElementById('checkRagu').checked = newNavBtn.classList.contains('btn-warning');
+            document.getElementById('checkRagu').checked = newNavBtn ? newNavBtn.classList.contains('btn-warning') : false;
+
+            updateNextButtonState();
         }
 
         // 4. Fungsi Ragu-Ragu
@@ -332,6 +361,7 @@
                     btnNav.classList.remove('btn-outline-secondary');
                     btnNav.classList.add('btn-success', 'text-white');
                 }
+                updateNextButtonState();
 
                 fetch('{{ route('ujian.simpan_temp') }}', {
                     method: 'POST',

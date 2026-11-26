@@ -72,9 +72,9 @@
     @include('partials.btn-scroll-top')
     <!-- Scripts -->
     @include('partials.scripts')
-    <script src="assets/js/vendors/tnsSlider.js"></script>
-    <script src="assets/js/vendors/chart.js"></script>
-    <script src="assets/js/vendors/navbar-nav.js"></script>
+    <script src="/build/assets/js/vendors/tnsSlider.js"></script>
+    <script src="/build/assets/js/vendors/chart.js"></script>
+    <script src="/build/assets/js/vendors/navbar-nav.js"></script>
 </body>
 
 </html>

@@ -43,21 +43,26 @@ class DemoController extends Controller
         $nomor = 1;
 
         foreach ($allQuestions as $q) {
-            $opsiTexts = $q->options->pluck('option_text')->toArray();
-            
+            $opsiList = $q->options->map(fn ($opt) => [
+                'id'    => $opt->id,
+                'text'  => $opt->option_text,
+                'image' => $opt->option_image,
+            ])->values()->toArray();
+
             // CARI OPSI YANG POINT-NYA 5
-            $opsiBenar = $q->options->where('point', 5)->first();
-            
+            $opsiBenar = $q->options->where('point', 5)->first() ?? $q->options->first();
+
             $formattedQuestions[] = [
                 'id'         => $nomor,
                 'kategori'   => $q->category->name ?? 'UMUM',
                 'pertanyaan' => $q->question_text,
-                'opsi'       => $opsiTexts,
-                // Jika ketemu yang point 5, pakai itu. Jika tidak, pakai opsi pertama (index 0)
-                'kunci'      => $opsiBenar ? $opsiBenar->option_text : ($opsiTexts[0] ?? ''),
+                'gambar'     => $q->question_image,
+                'opsi'       => $opsiList,
+                'kunci_id'   => $opsiBenar?->id,
+                'kunci'      => $opsiBenar?->option_text ?? '',
                 'pembahasan' => $q->discussion ?? 'Pembahasan belum tersedia.'
             ];
-            
+
             $nomor++;
         }
 
@@ -96,11 +101,17 @@ class DemoController extends Controller
             elseif ($cat === 'TIU') $tiuTotal++;
             elseif ($cat === 'TKP') $tkpTotal++;
 
-            $jawabanUser = isset($answers[$q['id']]) ? $answers[$q['id']] : null;
-            
-            $isCorrect = (strtolower(trim($jawabanUser)) === strtolower(trim($q['kunci'])));
-            
-            if($isCorrect) {
+            $rawAnswer = $answers[$q['id']] ?? null;
+            $selectedOpt = $rawAnswer !== null
+                ? collect($q['opsi'])->first(fn ($opt) => (string) $opt['id'] === (string) $rawAnswer)
+                : null;
+
+            $jawabanUserText = $selectedOpt ? $selectedOpt['text'] : ($rawAnswer !== null ? (string) $rawAnswer : null);
+            $isCorrect = $selectedOpt
+                ? ($selectedOpt['id'] === $q['kunci_id'])
+                : ($jawabanUserText !== null && strtolower(trim($jawabanUserText)) === strtolower(trim((string) $q['kunci'])));
+
+            if ($isCorrect) {
                 $correct++;
                 if ($cat === 'TWK') $twkCorrect++;
                 elseif ($cat === 'TIU') $tiuCorrect++;
@@ -110,8 +121,8 @@ class DemoController extends Controller
             $detailHasil[] = [
                 'no' => $q['id'],
                 'kategori' => $q['kategori'] ?? 'UMUM',
-                'pertanyaan' => \Illuminate\Support\Str::limit(strip_tags($q['pertanyaan']), 80),
-                'user' => $jawabanUser,
+                'pertanyaan' => \Illuminate\Support\Str::limit(strip_tags((string) $q['pertanyaan']), 80),
+                'user' => $jawabanUserText,
                 'kunci' => $q['kunci'],
                 'status' => $isCorrect
             ];
@@ -122,7 +133,7 @@ class DemoController extends Controller
         // Standar poin CAT BKN untuk demo (1 soal = 5 poin)
         $score = $correct * 5;
 
-        // Cek status paket user
+        // Cek status paket user (case-insensitive + is_premium)
         $user = auth()->user();
         $hasPaket1 = false;
         $hasPaket3 = false;
@@ -130,10 +141,10 @@ class DemoController extends Controller
         $isLengkap = false;
 
         if ($user) {
-            $hasPaket1 = \App\Models\Transaction::where('user_id', $user->id)->where('tryout_id', 1)->where('status', 'Success')->exists();
-            $hasPaket3 = \App\Models\Transaction::where('user_id', $user->id)->where('tryout_id', 3)->where('status', 'Success')->exists();
-            $hasPaketLengkap = \App\Models\Transaction::where('user_id', $user->id)->where('tryout_id', 2)->where('status', 'Success')->exists();
-            $isLengkap = $hasPaketLengkap || ($hasPaket1 && $hasPaket3);
+            $hasPaket1 = \App\Models\Transaction::where('user_id', $user->id)->where('tryout_id', 1)->whereRaw('LOWER(status) = ?', ['success'])->exists();
+            $hasPaket3 = \App\Models\Transaction::where('user_id', $user->id)->where('tryout_id', 3)->whereRaw('LOWER(status) = ?', ['success'])->exists();
+            $hasPaketLengkap = \App\Models\Transaction::where('user_id', $user->id)->where('tryout_id', 2)->whereRaw('LOWER(status) = ?', ['success'])->exists();
+            $isLengkap = $hasPaketLengkap || ($hasPaket1 && $hasPaket3) || (bool) $user->is_premium;
         }
 
         return view('user.demo.result', compact(
