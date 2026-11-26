@@ -349,7 +349,8 @@
                                 <i class="fe fe-arrow-left me-1 me-md-2"></i> Sebelumnya
                             </button>
 
-                            <button class="btn btn-warning text-white px-3 px-md-4 py-2 py-md-2.5 fs-6 fw-bold flex-grow-1 flex-md-grow-0 text-center" id="btn-ragu"
+                            <button class="btn btn-warning px-3 px-md-4 py-2 py-md-2.5 fs-6 fw-bold flex-grow-1 flex-md-grow-0 text-center" id="btn-ragu"
+                                style="color: #0f172a !important;"
                                 onclick="toggleRaguRagu()">
                                 <i class="fe fe-help-circle me-1 me-md-2"></i> Ragu-Ragu
                             </button>
@@ -407,124 +408,172 @@
                     <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"
                         aria-label="Close"></button>
 
+                    @php
+                        $demoUser = auth()->user();
+                        $demoPromo = $demoUser ? $demoUser->newMemberPromo() : null;
+                        $demoPkgStatus = $demoUser ? $demoUser->package_status : 'guest';
+                        $demoIsFull = in_array($demoPkgStatus, ['lengkap', 'manual'], true);
+                        $demoHasMandiri = ($demoPkgStatus === 'tryout');
+                        $demoShowPromo = ($demoPkgStatus === 'guest') || ($demoPromo !== null);
+                        $demoPriceLengkap = $demoShowPromo ? 'Rp 42.000' : 'Rp 49.000';
+                        $demoPriceMandiri = $demoShowPromo ? 'Rp 13.000' : 'Rp 20.000';
+                    @endphp
+
                     <!-- 1. Box Skor Demo Jelas & Menonjol -->
-                    <div class="d-flex align-items-center justify-content-center gap-2 gap-sm-3 p-2.5 p-sm-3 bg-light rounded-4 border mb-3 text-start">
+                    <div class="d-flex align-items-center justify-content-center gap-2 gap-sm-3 p-2.5 p-sm-3 rounded-4 border mb-3 text-start" style="background-color: #f8fafc !important; color: #0f172a !important;">
                         <div class="text-center px-2 px-sm-3 border-end">
-                            <span class="text-muted small fw-bold d-block text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px;">SKOR DEMO</span>
+                            <span class="small fw-bold d-block text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px; color: #64748b !important;">SKOR DEMO</span>
                             <div class="d-flex align-items-baseline justify-content-center gap-1">
-                                <h1 class="display-6 display-sm-5 fw-bolder text-primary mb-0 lh-1" id="modal-skor-akhir">0</h1>
-                                <span class="fs-6 fs-sm-5 text-muted fw-bold">/ 25</span>
+                                <h1 class="display-6 display-sm-5 fw-bolder mb-0 lh-1" id="modal-skor-akhir" style="color: #2563eb !important;">0</h1>
+                                <span class="fs-6 fs-sm-5 fw-bold" style="color: #64748b !important;">/ 25</span>
                             </div>
                         </div>
                         <div class="ps-1">
-                            <span id="modal-evaluasi-ringkas" class="badge bg-warning-subtle text-dark border border-warning px-2.5 py-1 rounded-pill small fw-bold mb-1">
+                            <span id="modal-evaluasi-ringkas" class="badge border border-warning px-2.5 py-1 rounded-pill small fw-bold mb-1" style="background-color: #fef3c7 !important; color: #0f172a !important;">
                                 ⚡ Zona Rawan, Perlu Pemantapan
                             </span>
-                            <h6 class="fw-bold text-dark mb-0 fs-6">Mau Cek Pembahasan 5 Soal Tadi?</h6>
-                            <span class="text-muted small d-block" style="font-size: 0.74rem; line-height: 1.35;">
-                                Pelajari trik jawab <strong>&lt; 1 menit</strong> & kuasai 110 Soal HOTS BKN 2026:
+                            <h6 class="fw-bold mb-0 fs-6" style="color: #0f172a !important;">Mau Cek Pembahasan 5 Soal Tadi?</h6>
+                            <span class="small d-block" style="font-size: 0.74rem; line-height: 1.35; color: #475569 !important;">
+                                Pelajari trik jawab <strong style="color: #0f172a !important;">&lt; 1 menit</strong> &amp; kuasai 110 Soal HOTS BKN 2026:
                             </span>
                         </div>
                     </div>
 
-                    <!-- 2. Hero Offer: Paket Super Lengkap Unlimited (Pilihan Utama) -->
-                    <div class="card border-2 border-primary rounded-4 p-3 text-start mb-3 shadow-xs position-relative overflow-hidden"
-                        style="background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);">
-                        
-                        <div class="position-absolute top-0 end-0 bg-primary text-white px-2.5 px-sm-3 py-1 fw-bold small"
-                            style="border-bottom-left-radius: 12px; font-size: 0.65rem; letter-spacing: 0.5px;">
-                            ⭐ REKOMENDASI 95% PESERTA
-                        </div>
-
-                        <div class="d-flex align-items-center gap-2 mb-1">
-                            <span class="badge bg-primary-soft text-primary rounded-pill px-2.5 py-0.5 fw-bold small">
-                                PAKET SUPER LENGKAP
-                            </span>
-                        </div>
-
-                        <!-- Harga & Kupon Diskon -->
-                        <div class="d-flex align-items-baseline gap-2 my-1 flex-wrap">
-                            <span class="text-muted text-decoration-line-through small">Rp 49.000</span>
-                            <h3 class="fw-bolder text-primary mb-0 lh-1">Rp 42.000</h3>
-                            <span class="badge bg-success-subtle text-success border border-success rounded-pill px-2 py-0.5 small fw-bold" style="font-size: 0.7rem;">
-                                Hemat Rp 7rb (Kupon: <strong>ASN2026</strong>)
-                            </span>
-                        </div>
-                        <span class="text-muted small d-block mb-2.5" style="font-size: 0.74rem;">
-                            Sekali bayar, aktif selamanya tanpa biaya langganan bulanan.
-                        </span>
-
-                        <!-- 3 Poin Keunggulan Utama -->
-                        <ul class="list-unstyled d-flex flex-column gap-2 text-dark small mb-3">
-                            <li class="d-flex align-items-start gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary flex-shrink-0 mt-0.5"><path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-4.585 0-4.585 8 0 8 5.606 0 7.644-8 12.74-8z"/></svg>
-                                <span><strong class="text-primary">Akses Tryout UNLIMITED:</strong> Ulangi simulasi sepuasnya tanpa batas kuota!</span>
-                            </li>
-                            <li class="d-flex align-items-start gap-2">
-                                <i class="fe fe-book-open text-primary fs-5 flex-shrink-0 mt-0.5"></i>
-                                <span><strong>Ratusan Modul Micro-Learning:</strong> Rangkuman materi resmi TWK, TIU, TKP</span>
-                            </li>
-                            <li class="d-flex align-items-start gap-2">
-                                <i class="fe fe-check-circle text-success fs-5 flex-shrink-0 mt-0.5"></i>
-                                <span><strong>110 Soal CAT BKN + Pembahasan Trik &lt; 1 Menit</strong> + Ranking Nasional</span>
-                            </li>
-                        </ul>
-
-                        <!-- Tombol Beli Paket Lengkap -->
-                        @guest
-                            <a href="{{ route('register', ['package' => 'tryout-pdf']) }}"
-                                class="btn btn-primary rounded-pill py-2.5 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 w-100 text-nowrap"
-                                style="font-size: 0.93rem;">
-                                <span>Amankan Akses Unlimited • Rp 42.000</span>
-                                <i class="fe fe-arrow-right"></i>
+                    @if ($demoIsFull)
+                        <div class="card border-2 border-success rounded-4 p-4 text-center mb-3" style="background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 100%) !important; color: #0f172a !important;">
+                            <span class="badge bg-success rounded-pill px-3 py-1 fw-bold mx-auto mb-2" style="color: #ffffff !important;">AKSES FULL AKTIF</span>
+                            <h5 class="fw-bold mb-2" style="color: #0f172a !important;">Kamu Sudah Memiliki Paket Super Lengkap!</h5>
+                            <p class="small mb-3" style="color: #475569 !important;">Langsung masuk ke simulasi penuh 110 soal CAT BKN dan pelajari semua modul materinya.</p>
+                            <a href="{{ route('ujian.persiapan', 1) }}" class="btn btn-success rounded-pill py-2.5 fw-bold w-100" style="color: #ffffff !important;">
+                                Masuk Simulasi Penuh (110 Soal) <i class="fe fe-arrow-right ms-1"></i>
                             </a>
-                        @else
-                            <a href="{{ route('checkout', 2) }}"
-                                class="btn btn-primary rounded-pill py-2.5 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 w-100 text-nowrap"
-                                style="font-size: 0.93rem;">
-                                <span>Amankan Akses Unlimited • Rp 42.000</span>
-                                <i class="fe fe-arrow-right"></i>
+                        </div>
+                    @elseif ($demoHasMandiri)
+                        <div class="card border-2 border-primary rounded-4 p-3 text-start mb-3 shadow-xs position-relative overflow-hidden"
+                            style="background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%) !important; color: #0f172a !important;">
+                            <span class="badge bg-primary rounded-pill px-2.5 py-1 fw-bold small mb-2" style="color: #ffffff !important;">UPGRADE KHUSUS PEMILIK TRYOUT MANDIRI</span>
+                            <div class="d-flex align-items-baseline gap-2 my-1">
+                                <span class="text-decoration-line-through small" style="color: #64748b !important;">Rp 49.000</span>
+                                <h3 class="fw-bolder mb-0 lh-1" style="color: #1d4ed8 !important;">Rp 29.000</h3>
+                            </div>
+                            <p class="small mb-3" style="color: #475569 !important;">Buka <strong>Tryout Unlimited</strong> + <strong>Full Semua Modul Materi</strong> cukup tambah Rp 29.000 sekali bayar.</p>
+                            <a href="{{ route('checkout', 3) }}" class="btn btn-primary rounded-pill py-2.5 fw-bold w-100" style="color: #ffffff !important;">
+                                Upgrade Unlimited Sekarang • Rp 29.000 <i class="fe fe-arrow-right ms-1"></i>
                             </a>
-                        @endguest
-                    </div>
+                        </div>
+                    @else
+                        <!-- 2. Hero Offer: Paket Super Lengkap Unlimited (Pilihan Utama) -->
+                        <div class="card border-2 border-primary rounded-4 p-3 text-start mb-3 shadow-xs position-relative overflow-hidden"
+                            style="background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%) !important; color: #0f172a !important;">
+                            
+                            <div class="position-absolute top-0 end-0 bg-primary px-2.5 px-sm-3 py-1 fw-bold small"
+                                style="border-bottom-left-radius: 12px; font-size: 0.65rem; letter-spacing: 0.5px; color: #ffffff !important;">
+                                ⭐ REKOMENDASI 95% PESERTA
+                            </div>
 
-                    <!-- 3. Alternatif Pilihan Simple: Paket Latihan Mandiri 13rb (Voucher Card Kuning Menarik) -->
-                    <div class="card rounded-4 p-2.5 p-sm-3 text-start mb-3 shadow-xs position-relative"
-                        style="background: linear-gradient(135deg, #fffdf5 0%, #fef3c7 100%); border: 1.5px dashed #f59e0b !important;">
-                        <div class="d-flex align-items-center justify-content-between gap-2 gap-sm-3">
-                            <div class="pe-1">
-                                <div class="mb-1">
-                                    <span class="badge rounded-pill fw-bold me-1"
-                                        style="background: #f59e0b; color: #ffffff; font-size: 0.62rem; padding: 3px 6px; letter-spacing: 0.5px;">
-                                        🔥 OPSI HEMAT
-                                    </span>
-                                    <strong class="text-dark small align-middle">Tryout Mandiri (1x Latihan)</strong>
-                                </div>
-                                <span class="text-dark opacity-75 d-block" style="font-size: 0.72rem; line-height: 1.3;">
-                                    1x CAT BKN (110 Soal) + Kunci & Pembahasan
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge rounded-pill px-2.5 py-0.5 fw-bold small" style="background-color: #dbeafe !important; color: #1e40af !important;">
+                                    PAKET SUPER LENGKAP
                                 </span>
                             </div>
-                            <div class="d-flex align-items-center gap-2 gap-sm-2.5 flex-shrink-0">
-                                <div class="text-end">
-                                    <span class="text-muted text-decoration-line-through d-block" style="font-size: 0.68rem; line-height: 1.2;">Rp 20.000</span>
-                                    <span class="fw-bolder text-dark fs-5 lh-1">Rp 13.000</span>
-                                </div>
-                                @guest
-                                    <a href="{{ route('register', ['package' => 'tryout-only']) }}"
-                                        class="btn btn-dark btn-sm rounded-pill fw-bold px-2.5 px-sm-3 py-1.5 shadow-xs text-nowrap"
-                                        style="font-size: 0.78rem;">
-                                        Pilih <i class="fe fe-arrow-right ms-1"></i>
-                                    </a>
+
+                            <!-- Harga & Kupon Diskon -->
+                            <div class="d-flex align-items-baseline gap-2 my-1 flex-wrap">
+                                @if ($demoShowPromo)
+                                    <span class="text-decoration-line-through small" style="color: #64748b !important;">Rp 49.000</span>
+                                    <h3 class="fw-bolder mb-0 lh-1" style="color: #1d4ed8 !important;">{{ $demoPriceLengkap }}</h3>
+                                    <span class="badge border border-success rounded-pill px-2 py-0.5 small fw-bold" style="font-size: 0.7rem; background-color: #dcfce7 !important; color: #166534 !important;">
+                                        Hemat Rp 7rb (Kupon: <strong>ASN2026</strong>)
+                                    </span>
                                 @else
-                                    <a href="{{ route('checkout', 1) }}"
-                                        class="btn btn-dark btn-sm rounded-pill fw-bold px-2.5 px-sm-3 py-1.5 shadow-xs text-nowrap"
-                                        style="font-size: 0.78rem;">
-                                        Pilih <i class="fe fe-arrow-right ms-1"></i>
-                                    </a>
-                                @endguest
+                                    <span class="text-decoration-line-through small" style="color: #64748b !important;">Rp 149.000</span>
+                                    <h3 class="fw-bolder mb-0 lh-1" style="color: #1d4ed8 !important;">{{ $demoPriceLengkap }}</h3>
+                                @endif
+                            </div>
+                            <span class="small d-block mb-2.5" style="font-size: 0.74rem; color: #475569 !important;">
+                                @if ($demoPromo)
+                                    Khusus pendaftar baru • berakhir {{ $demoPromo['deadline_label'] }}.
+                                @elseif ($demoShowPromo)
+                                    Pendaftar hari ini pakai kode <strong>ASN2026</strong> (berakhir 23:59 WIB).
+                                @else
+                                    Sekali bayar, aktif selamanya tanpa biaya langganan bulanan.
+                                @endif
+                            </span>
+
+                            <!-- 3 Poin Keunggulan Utama -->
+                            <ul class="list-unstyled d-flex flex-column gap-2 small mb-3" style="color: #1e293b !important;">
+                                <li class="d-flex align-items-start gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5" style="color: #2563eb !important;"><path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-4.585 0-4.585 8 0 8 5.606 0 7.644-8 12.74-8z"/></svg>
+                                    <span><strong style="color: #1d4ed8 !important;">Akses Tryout UNLIMITED:</strong> Ulangi simulasi sepuasnya tanpa batas kuota!</span>
+                                </li>
+                                <li class="d-flex align-items-start gap-2">
+                                    <i class="fe fe-book-open fs-5 flex-shrink-0 mt-0.5" style="color: #2563eb !important;"></i>
+                                    <span><strong style="color: #0f172a !important;">Ratusan Modul Micro-Learning:</strong> Rangkuman materi resmi TWK, TIU, TKP</span>
+                                </li>
+                                <li class="d-flex align-items-start gap-2">
+                                    <i class="fe fe-check-circle fs-5 flex-shrink-0 mt-0.5" style="color: #16a34a !important;"></i>
+                                    <span><strong style="color: #0f172a !important;">110 Soal CAT BKN + Pembahasan Trik &lt; 1 Menit</strong> + Ranking Nasional</span>
+                                </li>
+                            </ul>
+
+                            <!-- Tombol Beli Paket Lengkap -->
+                            @guest
+                                <a href="{{ route('register', ['package' => 'tryout-pdf']) }}"
+                                    class="btn btn-primary rounded-pill py-2.5 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 w-100 text-nowrap"
+                                    style="font-size: 0.93rem; color: #ffffff !important;">
+                                    <span>Amankan Akses Unlimited • {{ $demoPriceLengkap }}</span>
+                                    <i class="fe fe-arrow-right"></i>
+                                </a>
+                            @else
+                                <a href="{{ route('checkout', 2) }}"
+                                    class="btn btn-primary rounded-pill py-2.5 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 w-100 text-nowrap"
+                                    style="font-size: 0.93rem; color: #ffffff !important;">
+                                    <span>Amankan Akses Unlimited • {{ $demoPriceLengkap }}</span>
+                                    <i class="fe fe-arrow-right"></i>
+                                </a>
+                            @endguest
+                        </div>
+
+                        <!-- 3. Alternatif Pilihan Simple: Paket Latihan Mandiri (Voucher Card Kuning Menarik) -->
+                        <div class="card rounded-4 p-2.5 p-sm-3 text-start mb-3 shadow-xs position-relative"
+                            style="background: linear-gradient(135deg, #fffdf5 0%, #fef3c7 100%) !important; border: 1.5px dashed #f59e0b !important; color: #0f172a !important;">
+                            <div class="d-flex align-items-center justify-content-between gap-2 gap-sm-3">
+                                <div class="pe-1">
+                                    <div class="mb-1">
+                                        <span class="badge rounded-pill fw-bold me-1"
+                                            style="background: #f59e0b; color: #0f172a !important; font-size: 0.62rem; padding: 3px 6px; letter-spacing: 0.5px;">
+                                            🔥 OPSI HEMAT
+                                        </span>
+                                        <strong class="small align-middle" style="color: #0f172a !important;">Tryout Mandiri (1x Latihan)</strong>
+                                    </div>
+                                    <span class="d-block" style="font-size: 0.72rem; line-height: 1.3; color: #475569 !important;">
+                                        1x CAT BKN (110 Soal) + Kunci &amp; Pembahasan
+                                    </span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 gap-sm-2.5 flex-shrink-0">
+                                    <div class="text-end">
+                                        @if ($demoShowPromo)
+                                            <span class="text-decoration-line-through d-block" style="font-size: 0.68rem; line-height: 1.2; color: #64748b !important;">Rp 20.000</span>
+                                        @endif
+                                        <span class="fw-bolder fs-5 lh-1" style="color: #0f172a !important;">{{ $demoPriceMandiri }}</span>
+                                    </div>
+                                    @guest
+                                        <a href="{{ route('register', ['package' => 'tryout-only']) }}"
+                                            class="btn btn-dark btn-sm rounded-pill fw-bold px-2.5 px-sm-3 py-1.5 shadow-xs text-nowrap"
+                                            style="font-size: 0.78rem; color: #ffffff !important;">
+                                            Pilih <i class="fe fe-arrow-right ms-1"></i>
+                                        </a>
+                                    @else
+                                        <a href="{{ route('checkout', 1) }}"
+                                            class="btn btn-dark btn-sm rounded-pill fw-bold px-2.5 px-sm-3 py-1.5 shadow-xs text-nowrap"
+                                            style="font-size: 0.78rem; color: #ffffff !important;">
+                                            Pilih <i class="fe fe-arrow-right ms-1"></i>
+                                        </a>
+                                    @endguest
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
 
                     <!-- Trust Footer -->
                     <span class="d-block text-muted opacity-75 small text-center" style="font-size: 0.72rem;">
@@ -622,6 +671,8 @@
         let statusRagu = new Array(bankSoal.length).fill(false);
         let sisaWaktu = 5 * 60; // 5 Menit dalam hitungan detik
 
+        let isExamFinished = false;
+
         // 3. RENDER KONTEN KE INTERFACE WEB
         function renderQuestion() {
             const q = bankSoal[currentIdx];
@@ -656,9 +707,11 @@
             if (statusRagu[currentIdx]) {
                 btnRagu.classList.remove('btn-warning');
                 btnRagu.classList.add('btn-dark');
+                btnRagu.style.color = '#ffffff';
             } else {
                 btnRagu.classList.remove('btn-dark');
                 btnRagu.classList.add('btn-warning');
+                btnRagu.style.color = '#0f172a';
             }
 
             // Atur visibilitas tombol Navigasi Pojok & Tombol Selesai Ujian
@@ -668,22 +721,20 @@
             const isLastQuestion = (currentIdx === bankSoal.length - 1);
             const btnNext = document.getElementById('btn-next');
 
-            if (isLastQuestion) {
-                if (allAnswered) {
-                    btnNext.innerHTML = '<i class="fe fe-check-square me-1 me-md-2"></i> Selesai Ujian';
-                    btnNext.className = 'btn btn-danger px-3 px-md-4 py-2 py-md-2.5 fs-6 fw-bold shadow-sm flex-grow-1 flex-md-grow-0 text-center';
-                    btnNext.disabled = false;
-                    btnNext.onclick = function() {
-                        finishExamPrompt();
-                    };
-                } else {
-                    btnNext.innerHTML = 'Selanjutnya <i class="fe fe-arrow-right ms-1 ms-md-2"></i>';
-                    btnNext.className = 'btn btn-primary px-3 px-md-4 py-2 py-md-2.5 fs-6 flex-grow-1 flex-md-grow-0 text-center';
-                    btnNext.disabled = true;
-                    btnNext.onclick = function() {
-                        changeQuestion(1);
-                    };
-                }
+            if (allAnswered) {
+                btnNext.innerHTML = '<i class="fe fe-check-square me-1 me-md-2"></i> Selesai Ujian';
+                btnNext.className = 'btn btn-danger px-3 px-md-4 py-2 py-md-2.5 fs-6 fw-bold shadow-sm flex-grow-1 flex-md-grow-0 text-center';
+                btnNext.disabled = false;
+                btnNext.onclick = function() {
+                    finishExamPrompt();
+                };
+            } else if (isLastQuestion) {
+                btnNext.innerHTML = 'Selanjutnya <i class="fe fe-arrow-right ms-1 ms-md-2"></i>';
+                btnNext.className = 'btn btn-primary px-3 px-md-4 py-2 py-md-2.5 fs-6 flex-grow-1 flex-md-grow-0 text-center';
+                btnNext.disabled = true;
+                btnNext.onclick = function() {
+                    changeQuestion(1);
+                };
             } else {
                 btnNext.innerHTML = 'Selanjutnya <i class="fe fe-arrow-right ms-1 ms-md-2"></i>';
                 btnNext.className = 'btn btn-primary px-3 px-md-4 py-2 py-md-2.5 fs-6 flex-grow-1 flex-md-grow-0 text-center';
@@ -734,7 +785,7 @@
                     btnClass = "btn-success text-white border-success"; // Sudah diisi sukses
                 }
                 if (statusRagu[i]) {
-                    btnClass = "btn-warning text-white border-warning"; // Status ragu mengalahkan status sukses
+                    btnClass = "btn-warning text-dark border-warning"; // Status ragu mengalahkan status sukses
                 }
                 if (i === currentIdx) {
                     btnClass = "btn-primary text-white border-primary shadow"; // Posisi aktif mengunci segalanya
@@ -765,6 +816,11 @@
 
         // 7. PROMPT SEBELUM KUMPUL DATA
         function finishExamPrompt() {
+            if (isExamFinished) {
+                calculateFinalScore();
+                return;
+            }
+
             // Cek apakah ada yang ragu-ragu atau belum diisi
             const belumDiisi = jawabanUser.filter(j => j === null).length;
             const masihRagu = statusRagu.filter(r => r === true).length;
@@ -783,6 +839,7 @@
 
         // 8. ENGINE UTAMA HITUNG SKOR SECARA ADIL (TWK/TIU VS TKP SKALA)
         function calculateFinalScore() {
+            isExamFinished = true;
             let totalSkor = 0;
 
             bankSoal.forEach((soal, i) => {
@@ -825,10 +882,10 @@
             closingModal.show();
         }
 
-        // Jalankan inisialisasi awal saat halaman dibuka
-        window.onload = function() {
+        // Jalankan inisialisasi awal saat DOM siap
+        document.addEventListener('DOMContentLoaded', function() {
             renderQuestion();
-        };
+        });
     </script>
 @endsection
 
