@@ -106,7 +106,19 @@ class UjianController extends Controller
         $tryout = Tryout::findOrFail($id);
         $access = $this->checkUserAccess($id);
 
-        return view('user.ujian.persiapan', compact('tryout', 'access'));
+        $tryoutMandiri = Tryout::find(1);
+        $tryoutLengkap = Tryout::find(2);
+        $tryoutUpgrade = Tryout::find(3);
+        $promo24h = auth()->user()?->newMemberPromo();
+
+        return view('user.ujian.persiapan', compact(
+            'tryout',
+            'access',
+            'tryoutMandiri',
+            'tryoutLengkap',
+            'tryoutUpgrade',
+            'promo24h'
+        ));
     }
 
     public function mulai($id)

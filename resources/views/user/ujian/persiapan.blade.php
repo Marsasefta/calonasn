@@ -27,11 +27,10 @@
             </div>
 
             <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="card shadow-sm border-0 mb-3">
-                        <div class="card-body p-5 text-center">
-
-                            @if ($access['status'] == 'unlocked')
+                @if ($access['status'] == 'unlocked')
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border-0 mb-3">
+                            <div class="card-body p-5 text-center">
                                 <div class="mb-4">
                                     <div class="display-4 text-success mb-3">
                                         <i class="fe fe-unlock"></i>
@@ -60,43 +59,167 @@
                                 <button type="button" class="btn btn-primary btn-lg w-100 shadow-sm" data-bs-toggle="modal" data-bs-target="#briefingUjianModal">
                                     <i class="fe fe-play me-2"></i> Mulai Ujian Sekarang
                                 </button>
-                            @else
+                            </div>
+                        </div>
+                    </div>
+                @elseif (str_contains(strtolower($access['message']), 'ulang') || str_contains(strtolower($access['message']), 'selesai'))
+                    <div class="col-lg-6 col-md-8">
+                        <div class="card shadow-sm border-0 rounded-4 mb-3">
+                            <div class="card-body p-4 p-md-5 text-center">
                                 <div class="mb-4">
                                     <div class="display-4 text-warning mb-3">
                                         <i class="fe fe-lock"></i>
                                     </div>
-                                    <h3 class="fw-bold">Akses Terkunci</h3>
-                                    <p class="text-muted">{{ $access['message'] }}</p>
+                                    <h3 class="fw-bold">Kuota Tryout Mandiri Habis</h3>
+                                    <p class="text-muted mb-0">{{ $access['message'] }}</p>
                                 </div>
 
-                                {{-- PERBAIKAN LOGIKA: Cek kata 'ulang' atau 'selesai' untuk mendeteksi user yang mau retry --}}
-                                @if (str_contains(strtolower($access['message']), 'ulang') || str_contains(strtolower($access['message']), 'selesai'))
-                                    <div class="d-grid gap-2">
-                                        <a href="{{ route('checkout', $tryout->id) }}" class="btn btn-outline-primary">
-                                            <i class="fe fe-refresh-cw me-1"></i> Beli Kuota Baru (Mengulang)
-                                        </a>
-                                        <a href="{{ route('dashboard') }}" class="btn btn-link text-muted">
-                                            Kembali ke Dashboard
-                                        </a>
-                                    </div>
-                                @else
-                                    {{-- Jika tidak ada kata 'ulang', berarti dia user baru yang belum pernah beli paket ini --}}
-                                    <div class="bg-light p-3 rounded mb-4">
-                                        <span class="text-muted d-block small">Investasi Paket:</span>
-                                        <h4 class="fw-bold text-primary mb-0">Rp
-                                            {{ number_format($tryout->price, 0, ',', '.') }}</h4>
-                                    </div>
+                                @php
+                                    $hargaUpgrade = (int) ($tryoutUpgrade->price ?? 29000);
+                                    $hargaUlang = (int) ($tryout->price ?? 20000);
+                                @endphp
 
-                                    <a href="{{ route('checkout', $tryout->id) }}"
-                                        class="btn btn-primary btn-lg w-100 shadow-sm">
-                                        <i class="fe fe-shopping-cart me-2"></i> Amankan Akses Sekarang
+                                <div class="p-3 rounded-4 border border-primary border-2 bg-primary-soft text-start mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge bg-primary text-white rounded-pill px-2.5 py-1 fw-bold">⭐ LEBIH HEMAT</span>
+                                        <span class="fw-bolder text-primary fs-4">Rp {{ number_format($hargaUpgrade, 0, ',', '.') }}</span>
+                                    </div>
+                                    <h5 class="fw-bold text-dark mb-1">Upgrade ke Unlimited + Full Materi</h5>
+                                    <p class="text-muted small mb-3">Sekali bayar, bisa mengulang Tryout CAT sepuasnya tanpa batas + akses penuh semua modul materi.</p>
+                                    <a href="{{ route('checkout', 3) }}" class="btn btn-primary w-100 rounded-pill fw-bold shadow-sm">
+                                        <i class="fe fe-zap me-1"></i> Upgrade Sekarang (Rp {{ number_format($hargaUpgrade, 0, ',', '.') }})
                                     </a>
-                                @endif
-                            @endif
+                                </div>
 
+                                <div class="d-grid gap-2">
+                                    <a href="{{ route('checkout', $tryout->id) }}" class="btn btn-outline-secondary rounded-pill">
+                                        <i class="fe fe-refresh-cw me-1"></i> Atau Beli 1x Kuota Ulang (Rp {{ number_format($hargaUlang, 0, ',', '.') }})
+                                    </a>
+                                    <a href="{{ route('dashboard') }}" class="btn btn-link text-muted">
+                                        Kembali ke Dashboard
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                @else
+                    @php
+                        $hargaMandiri = (int) ($tryoutMandiri->price ?? $tryout->price ?? 20000);
+                        $hargaLengkap = (int) ($tryoutLengkap->price ?? 49000);
+                        $diskon = !empty($promo24h) ? (int) $promo24h['discount_amount'] : 0;
+                        $hargaMandiriAkhir = max(0, $hargaMandiri - $diskon);
+                        $hargaLengkapAkhir = max(0, $hargaLengkap - $diskon);
+                    @endphp
+
+                    <div class="col-lg-10 col-12">
+                        @include('partials.promo-24h-banner', ['showCta' => false, 'promo24h' => $promo24h ?? null])
+
+                        <div class="text-center mb-4">
+                            <span class="badge bg-warning-subtle text-dark border border-warning rounded-pill px-3 py-1.5 fw-bold mb-2">
+                                <i class="fe fe-lock me-1"></i> Akses Ujian Terkunci
+                            </span>
+                            <h3 class="fw-bold text-dark mb-1">Pilih Paket untuk Membuka Simulasi CAT</h3>
+                            <p class="text-muted mb-0">{{ $access['message'] }}</p>
+                        </div>
+
+                        <div class="row g-4 justify-content-center align-items-stretch">
+                            <!-- Paket 1: Tryout Mandiri -->
+                            <div class="col-md-6 d-flex">
+                                <div class="card w-100 border border-2 border-light shadow-sm rounded-4 p-4 d-flex flex-column bg-white">
+                                    <div class="mb-3">
+                                        <span class="badge bg-secondary rounded-pill px-3 py-1 mb-2 fw-semibold">Paket Latihan</span>
+                                        <h4 class="fw-bold text-dark mb-1">{{ $tryoutMandiri->title ?? 'Tryout Mandiri' }}</h4>
+                                        <p class="text-muted small mb-3">Fokus uji ketahanan & manajemen waktu dengan 1x simulasi CAT.</p>
+
+                                        <div class="p-3 bg-light rounded-3 border">
+                                            @if ($diskon > 0)
+                                                <div class="d-flex align-items-center gap-2 mb-1">
+                                                    <span class="text-muted text-decoration-line-through small">Rp {{ number_format($hargaMandiri, 0, ',', '.') }}</span>
+                                                    <span class="badge bg-success text-white rounded-pill" style="font-size: 0.7rem;">Kupon {{ $promo24h['code'] }}</span>
+                                                </div>
+                                                <h3 class="fw-bolder text-dark mb-0">
+                                                    Rp {{ number_format($hargaMandiriAkhir, 0, ',', '.') }}
+                                                    <span class="fs-6 text-muted fw-normal">/ sekali bayar</span>
+                                                </h3>
+                                            @else
+                                                <h3 class="fw-bolder text-dark mb-0">
+                                                    Rp {{ number_format($hargaMandiri, 0, ',', '.') }}
+                                                    <span class="fs-6 text-muted fw-normal">/ sekali bayar</span>
+                                                </h3>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <ul class="list-unstyled d-flex flex-column gap-2 text-dark small mb-4">
+                                        <li><i class="fe fe-check-circle text-success me-2"></i><strong>1x Kesempatan</strong> Simulasi 110 Soal CAT BKN</li>
+                                        <li><i class="fe fe-check-circle text-success me-2"></i>Skor Otomatis, Pembahasan & Ranking Nasional</li>
+                                        <li><i class="fe fe-check-circle text-success me-2"></i>Sertifikat Resmi Ber-QR Code (Jika Lulus PG)</li>
+                                        <li class="text-muted"><i class="fe fe-x-circle text-danger opacity-50 me-2"></i><span class="text-decoration-line-through">Full Modul Materi & Tryout Unlimited</span></li>
+                                    </ul>
+
+                                    <div class="mt-auto">
+                                        <a href="{{ route('checkout', 1) }}" class="btn btn-outline-dark btn-lg rounded-pill fw-bold w-100">
+                                            Pilih Paket Mandiri <i class="fe fe-arrow-right ms-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Paket 2: Super Lengkap (Rekomendasi) -->
+                            <div class="col-md-6 d-flex">
+                                <div class="card w-100 border-2 border-primary shadow rounded-4 p-4 d-flex flex-column bg-white position-relative overflow-hidden">
+                                    <div class="position-absolute top-0 end-0 bg-primary text-white px-3 py-1.5 small fw-bold shadow-sm"
+                                         style="border-bottom-left-radius: 14px;">
+                                        ⭐ REKOMENDASI TERBAIK
+                                    </div>
+
+                                    <div class="mb-3 mt-2">
+                                        <span class="badge bg-primary-soft text-primary rounded-pill px-3 py-1 mb-2 fw-bold">Paket Super Lengkap</span>
+                                        <h4 class="fw-bold text-dark mb-1">{{ $tryoutLengkap->title ?? 'Tryout + Materi Full' }}</h4>
+                                        <p class="text-muted small mb-3">Solusi total: Kuasai modul materinya dan ulangi tryout sepuasnya.</p>
+
+                                        <div class="p-3 bg-primary-soft rounded-3 border border-primary border-opacity-25">
+                                            @if ($diskon > 0)
+                                                <div class="d-flex align-items-center gap-2 mb-1">
+                                                    <span class="text-muted text-decoration-line-through small">Rp {{ number_format($hargaLengkap, 0, ',', '.') }}</span>
+                                                    <span class="badge bg-primary text-white rounded-pill" style="font-size: 0.7rem;">Kupon {{ $promo24h['code'] }}</span>
+                                                </div>
+                                                <h3 class="fw-bolder text-primary mb-0">
+                                                    Rp {{ number_format($hargaLengkapAkhir, 0, ',', '.') }}
+                                                    <span class="fs-6 text-muted fw-normal">/ selamanya</span>
+                                                </h3>
+                                            @else
+                                                <h3 class="fw-bolder text-primary mb-0">
+                                                    Rp {{ number_format($hargaLengkap, 0, ',', '.') }}
+                                                    <span class="fs-6 text-muted fw-normal">/ selamanya</span>
+                                                </h3>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <ul class="list-unstyled d-flex flex-column gap-2 text-dark small mb-4">
+                                        <li class="text-primary fw-semibold"><i class="fe fe-repeat text-primary me-2"></i><strong>Tryout Unlimited</strong> — Ulangi berkali-kali tanpa batas</li>
+                                        <li class="text-primary fw-semibold"><i class="fe fe-book-open text-primary me-2"></i><strong>Full Modul Materi</strong> TWK, TIU, TKP Terstruktur</li>
+                                        <li><i class="fe fe-check-circle text-primary me-2"></i>110 Soal HOTS BKN, Pembahasan PDF & Grafik Progres</li>
+                                        <li><i class="fe fe-check-circle text-primary me-2"></i>Ranking Nasional & Sertifikat Resmi Ber-QR Code</li>
+                                    </ul>
+
+                                    <div class="mt-auto">
+                                        <a href="{{ route('checkout', 2) }}" class="btn btn-primary btn-lg rounded-pill fw-bold w-100 shadow-sm">
+                                            Ambil Paket Lengkap <i class="fe fe-arrow-right ms-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <a href="{{ route('demo.index') }}" class="btn btn-link text-muted small">
+                                <i class="fe fe-play-circle me-1"></i> Atau coba Ujicoba Gratis (10 Soal) dulu
+                            </a>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -229,9 +352,9 @@
     @include('partials.btn-scroll-top')
     <!-- Scripts -->
     @include('partials.scripts')
-    <script src="assets/js/vendors/tnsSlider.js"></script>
-    <script src="assets/js/vendors/chart.js"></script>
-    <script src="assets/js/vendors/navbar-nav.js"></script>
+    <script src="/build/assets/js/vendors/tnsSlider.js"></script>
+    <script src="/build/assets/js/vendors/chart.js"></script>
+    <script src="/build/assets/js/vendors/navbar-nav.js"></script>
 </body>
 
 </html>
