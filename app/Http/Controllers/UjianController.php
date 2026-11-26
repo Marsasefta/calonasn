@@ -376,7 +376,7 @@ class UjianController extends Controller
         \Illuminate\Support\Facades\Redis::del("timer:user_{$userId}:tryout_{$id}");
         \Illuminate\Support\Facades\Redis::del("sequence:user_{$userId}:tryout_{$id}");
 
-        return redirect()->route('ujian.hasil', $id);
+        return redirect()->route('ujian.hasil', $session->id);
     }
 
 
@@ -420,28 +420,51 @@ class UjianController extends Controller
             $twkId => [
                 'name' => 'TWK',
                 'skor' => $scoreTwk,
-                'passing_grade' => 65
+                'passing_grade' => 65,
+                'max_score' => 150,
             ],
             $tiuId => [
                 'name' => 'TIU',
                 'skor' => $scoreTiu,
-                'passing_grade' => 80
+                'passing_grade' => 80,
+                'max_score' => 175,
             ],
             $tkpId => [
                 'name' => 'TKP',
                 'skor' => $scoreTkp,
-                'passing_grade' => 166
+                'passing_grade' => 166,
+                'max_score' => 225,
             ],
         ];
 
         $lulus = ($scoreTwk >= 65 && $scoreTiu >= 80 && $scoreTkp >= 166);
 
+        $access = $this->checkUserAccess($session->tryout_id);
+        $user = auth()->user();
+        $isUnlimited = !empty($access['is_unlimited']);
+        $isPaketMandiri = ($user?->package_status === 'tryout');
+        $hargaUpgrade = (int) (Tryout::find(3)->price ?? 29000);
+
+        $totalParticipants = ExamSession::whereNotNull('end_time')
+            ->distinct('user_id')
+            ->count('user_id');
+        $sessionRank = ExamSession::whereNotNull('end_time')
+            ->where('total_score', '>', $totalSkor)
+            ->distinct('user_id')
+            ->count('user_id') + 1;
+
         return view('user.ujian.ujian_hasil', [
-            'id' => $session->id, // Kirim ID sesi ujian agar tombol pembahasan & sertifikat akurat
+            'id' => $session->id,
             'tryoutId' => $session->tryout_id,
             'hasilPerKategori' => $hasilPerKategori,
             'totalSkor' => $totalSkor,
-            'lulus' => $lulus
+            'lulus' => $lulus,
+            'access' => $access,
+            'isUnlimited' => $isUnlimited,
+            'isPaketMandiri' => $isPaketMandiri,
+            'hargaUpgrade' => $hargaUpgrade,
+            'totalParticipants' => $totalParticipants,
+            'sessionRank' => $sessionRank,
         ]);
     }
 

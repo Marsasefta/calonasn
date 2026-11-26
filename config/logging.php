@@ -54,7 +54,7 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => explode(',', env('LOG_STACK', 'single')),
+            'channels' => explode(',', env('LOG_STACK', 'daily,email_alert')),
             'ignore_exceptions' => false,
         ],
 
@@ -127,6 +127,24 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'email_alert' => [
+            'driver' => 'custom',
+            'via' => \App\Logging\CreateEmailAlertLogger::class,
+            'level' => env('ERROR_ALERT_LEVEL', 'error'),
+        ],
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Error Email Alert Settings
+    |--------------------------------------------------------------------------
+    */
+
+    'error_alert' => [
+        'enabled' => env('ERROR_ALERT_ENABLED', true),
+        'to' => env('ERROR_ALERT_EMAIL', 'fenthalari@gmail.com'),
+        'only_production' => env('ERROR_ALERT_ONLY_PRODUCTION', true),
     ],
 
 ];

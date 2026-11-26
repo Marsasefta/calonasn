@@ -5,6 +5,27 @@
     @include('partials.head')
 
     <title>Simulasi Ujian</title>
+    <style>
+        .ujian-area {
+            background-color: #f4f6f9;
+            overflow-y: auto;
+        }
+        .ujian-surface {
+            background-color: #ffffff;
+        }
+        [data-bs-theme="dark"] .ujian-area {
+            background-color: #0b1324 !important;
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] .ujian-surface {
+            background-color: #1e293b !important;
+            color: #e2e8f0 !important;
+            border-color: #334155 !important;
+        }
+        .opsi-radio + label:hover {
+            border-color: #3b82f6 !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -13,18 +34,27 @@
     <!-- Sidebar -->
     @include('partials.navbar-student')
 
-    <div class="db-content text-dark p-2 p-md-4" id="areaUjian" style="background-color: #f4f6f9; overflow-y: auto;">
+    <div class="db-content text-dark p-2 p-md-4 ujian-area" id="areaUjian">
         <div class="container-fluid mb-4">
 
-            <div class="row align-items-center mb-4 bg-white p-3 shadow-sm rounded">
+            <div class="row align-items-center mb-4 ujian-surface p-3 shadow-sm rounded border mx-0">
 
-                <div class="col-md-6 col-12 mb-3 mb-md-0">
-                    <h4 class="mb-0 fw-bold text-primary">Simulasi CAT CPNS 2026</h4>
-                    <p class="mb-0 text-muted small">Total: 110 Soal (TWK, TIU, TKP)</p>
+                <div class="col-md-5 col-12 mb-3 mb-md-0">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                        <h4 class="mb-0 fw-bold text-primary">Simulasi CAT CPNS 2026</h4>
+                        <span id="saveStatusBadge" class="badge bg-success-subtle text-success border border-success rounded-pill" style="font-size: 0.7rem;">
+                            <i class="fe fe-cloud me-1"></i>Autosave Aktif
+                        </span>
+                    </div>
+                    <p class="mb-0 text-muted small">Total: {{ $questions->count() }} Soal (TWK, TIU, TKP)</p>
                 </div>
 
                 <div
-                    class="col-md-6 col-12 d-flex justify-content-md-end justify-content-between align-items-center gap-4">
+                    class="col-md-7 col-12 d-flex flex-wrap justify-content-md-end justify-content-between align-items-center gap-2 gap-md-3">
+
+                    <a href="#panelNavigasiSoal" class="btn btn-outline-primary btn-sm d-md-none">
+                        <i class="fe fe-grid me-1"></i>Nomor (<span id="mobileAnsweredCount">0</span>/{{ $questions->count() }})
+                    </a>
 
                     <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center"
                         id="btnFullscreen" title="Layar Penuh">
@@ -120,7 +150,7 @@
                             </div>
 
                             <div
-                                class="card-footer bg-white border-top p-3 d-flex justify-content-between align-items-center">
+                                class="card-footer ujian-surface border-top p-3 d-flex justify-content-between align-items-center gap-2">
                                 <button type="button" class="btn btn-outline-secondary" id="btnPrev"
                                     onclick="gantiSoal('prev')">
                                     <i class="fe fe-arrow-left"></i> Sebelumnya
@@ -141,10 +171,13 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-4" id="panelNavigasiSoal">
                         <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
-                            <div class="card-header bg-white py-3 d-flex justify-content-between">
+                            <div class="card-header ujian-surface py-3 d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">Navigasi Soal</h5>
+                                <span class="badge bg-primary-subtle text-primary rounded-pill small fw-bold" id="navSummaryBadge">
+                                    0/{{ $questions->count() }} Terjawab
+                                </span>
                             </div>
 
                             <div class="card-body p-2" style="max-height: 400px; overflow-y: auto;">
@@ -177,7 +210,7 @@
                                 </div>
                             </div>
 
-                            <div class="card-footer bg-light p-3">
+                            <div class="card-footer ujian-surface border-top p-3">
                                 <div class="d-flex justify-content-between small mb-3">
                                     <span><span class="badge bg-success">&nbsp;</span> Dijawab</span>
                                     <span><span class="badge bg-warning">&nbsp;</span> Ragu</span>
@@ -203,11 +236,16 @@
 
         function updateNextButtonState() {
             const btnNext = document.getElementById('btnNext');
-            if (!btnNext) return;
-
             const answeredCount = new Set(
                 Array.from(document.querySelectorAll('.opsi-radio:checked')).map(el => el.getAttribute('data-db-id'))
             ).size;
+
+            const navBadge = document.getElementById('navSummaryBadge');
+            if (navBadge) navBadge.textContent = `${answeredCount}/${totalSoal} Terjawab`;
+            const mobileCount = document.getElementById('mobileAnsweredCount');
+            if (mobileCount) mobileCount.textContent = answeredCount;
+
+            if (!btnNext) return;
 
             if (totalSoal > 0 && answeredCount >= totalSoal) {
                 btnNext.disabled = false;
@@ -221,6 +259,21 @@
                 btnNext.classList.add('btn-primary');
                 btnNext.innerHTML = 'Selanjutnya <i class="fe fe-arrow-right"></i>';
                 btnNext.disabled = (currentSoalId >= totalSoal);
+            }
+        }
+
+        function setSaveStatus(state) {
+            const badge = document.getElementById('saveStatusBadge');
+            if (!badge) return;
+            if (state === 'saving') {
+                badge.className = 'badge bg-warning-subtle text-dark border border-warning rounded-pill';
+                badge.innerHTML = '<i class="fe fe-refresh-cw me-1"></i>Menyimpan...';
+            } else if (state === 'saved') {
+                badge.className = 'badge bg-success-subtle text-success border border-success rounded-pill';
+                badge.innerHTML = '<i class="fe fe-check me-1"></i>Tersimpan Cloud';
+            } else {
+                badge.className = 'badge bg-danger-subtle text-danger border border-danger rounded-pill';
+                badge.innerHTML = '<i class="fe fe-wifi-off me-1"></i>Koneksi Lemah (Tetap Aman)';
             }
         }
 
@@ -363,6 +416,7 @@
                 }
                 updateNextButtonState();
 
+                setSaveStatus('saving');
                 fetch('{{ route('ujian.simpan_temp') }}', {
                     method: 'POST',
                     headers: {
@@ -374,7 +428,12 @@
                         question_id: dbId,
                         option_id: opsiId
                     })
-                });
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    setSaveStatus('saved');
+                })
+                .catch(() => setSaveStatus('error'));
             });
         });
 
@@ -455,9 +514,9 @@
     @include('partials.btn-scroll-top')
     <!-- Scripts -->
     @include('partials.scripts')
-    <script src="assets/js/vendors/tnsSlider.js"></script>
-    <script src="assets/js/vendors/chart.js"></script>
-    <script src="assets/js/vendors/navbar-nav.js"></script>
+    <script src="/build/assets/js/vendors/tnsSlider.js"></script>
+    <script src="/build/assets/js/vendors/chart.js"></script>
+    <script src="/build/assets/js/vendors/navbar-nav.js"></script>
 </body>
 
 </html>
