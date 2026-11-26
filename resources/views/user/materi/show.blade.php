@@ -182,7 +182,7 @@
                                             data-bs-toggle="modal"
                                             data-bs-target="#modalLockedMaterial"
                                             data-material-name="{{ $nextMaterial->title }}"
-                                            class="btn btn-danger rounded-pill px-4 py-2 fw-bold shadow-sm animate__animated animate__pulse animate__infinite hover-lift d-inline-flex align-items-center gap-1.5">
+                                            class="btn btn-danger rounded-pill px-4 py-2 fw-bold shadow-sm hover-lift d-inline-flex align-items-center gap-1.5">
                                             <i class="bi bi-lock-fill"></i>
                                             <span>Buka Bab Berikutnya ({{ $upgradePrice ?? 'Upgrade' }})</span>
                                         </button>
@@ -272,27 +272,24 @@
                                                 @endif
                                             @endforeach
 
-                                            @php
-                                                $hasLockedItems = $chapter->materials->where('is_locked', 1)->count() > 0;
-                                            @endphp
-                                            @if ($hasLockedItems && (!isset($hasFullAccess) || !$hasFullAccess))
-                                                <div class="mt-3 p-3 bg-danger-soft border border-danger border-opacity-25 rounded-3 text-center">
-                                                    <p class="small text-danger fw-bold mb-2">
-                                                        <i class="bi bi-lock-fill me-1"></i> Ada Materi Premium Terkunci
-                                                    </p>
-                                                    <a href="{{ $upgradeRoute ?? route('checkout', 2) }}"
-                                                        class="btn btn-sm btn-danger rounded-pill w-100 shadow-sm fw-bold hover-lift">
-                                                        <i class="bi bi-key-fill me-1"></i>
-                                                        {{ $upgradeLabel ?? 'Beli Paket Lengkap (Rp 49.000)' }}
-                                                    </a>
-                                                </div>
-                                            @endif
-
                                         </div>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
+
+                        @if (!isset($hasFullAccess) || !$hasFullAccess)
+                            <div class="mt-3 p-3 bg-danger-soft border border-danger border-opacity-25 rounded-4 text-center">
+                                <p class="small text-danger fw-bold mb-2">
+                                    <i class="bi bi-lock-fill me-1"></i> Buka Semua Bab Materi Premium
+                                </p>
+                                <a href="{{ $upgradeRoute ?? route('checkout', 2) }}"
+                                    class="btn btn-sm btn-danger rounded-pill w-100 shadow-sm fw-bold hover-lift">
+                                    <i class="bi bi-key-fill me-1"></i>
+                                    {{ $upgradeLabel ?? 'Buka Semua Materi (Rp 49.000)' }}
+                                </a>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -310,13 +307,25 @@
 
                                     <h5 class="fw-bold text-dark mb-2">Ingin Lulus SKD Sekali Tes?</h5>
 
-                                    <p class="text-muted small mb-4">
+                                    <p class="text-muted small mb-3">
                                         Buka <strong>100% Seluruh Bab Materi</strong> + <strong>Tryout CAT Unlimited</strong> untuk mempertajam insting dan hafalan materi ujianmu.
                                     </p>
 
+                                    @if (($upgradePriceNum ?? 49000) < ($upgradeNormalPriceNum ?? 49000))
+                                        <div class="p-2.5 rounded-3 bg-warning-subtle border border-warning mb-3">
+                                            <div class="small text-muted text-decoration-line-through">Rp {{ number_format($upgradeNormalPriceNum, 0, ',', '.') }}</div>
+                                            <div class="fs-4 fw-bolder text-primary lh-1">{{ $upgradePrice }}</div>
+                                            @if (!empty($promo24h))
+                                                <span class="badge bg-dark text-warning mt-1" style="font-size: 0.68rem;">
+                                                    Kode {{ $promo24h['code'] }} • {{ $promo24h['deadline_label'] }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @endif
+
                                     <a href="{{ $upgradeRoute ?? route('checkout', 2) }}"
                                         class="btn btn-primary text-white w-100 rounded-pill fw-bold shadow-sm py-2 hover-lift">
-                                        {{ $upgradeLabel ?? 'Beli Paket Lengkap (Rp 49.000)' }}
+                                        {{ $upgradeLabel ?? 'Buka Semua Materi (Rp 49.000)' }}
                                     </a>
                                 </div>
                             </div>
@@ -393,6 +402,16 @@
                     </div>
 
                     <div class="d-flex flex-column gap-2">
+                        @if (($upgradePriceNum ?? 49000) < ($upgradeNormalPriceNum ?? 49000))
+                            <div class="text-center small text-muted">
+                                Harga promo pendaftar baru:
+                                <span class="text-decoration-line-through">Rp {{ number_format($upgradeNormalPriceNum, 0, ',', '.') }}</span>
+                                <strong class="text-primary">{{ $upgradePrice }}</strong>
+                                @if (!empty($promo24h))
+                                    <span class="badge bg-warning text-dark ms-1">{{ $promo24h['code'] }}</span>
+                                @endif
+                            </div>
+                        @endif
                         <a href="{{ $upgradeRoute ?? route('checkout', 2) }}" class="btn btn-primary rounded-pill py-2.5 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 hover-lift">
                             <i class="bi bi-unlock-fill"></i>
                             <span>{{ $upgradeLabel ?? 'Buka Semua Akses (Rp 49.000)' }}</span>

@@ -56,7 +56,9 @@
                 </div>
             </div>
 
-
+            @if (!$hasFullAccess)
+                @include('partials.promo-24h-banner', ['showCta' => false, 'compact' => true, 'promo24h' => $promo24h ?? null])
+            @endif
 
             <div class="row g-4">
                 @foreach ($categories as $category)
@@ -88,7 +90,7 @@
                                                 <span
                                                     class="badge bg-danger-soft text-danger border border-danger border-opacity-25 fw-semibold"
                                                     style="font-size: 0.72rem;">
-                                                    <i class="bi bi-unlock-fill me-1"></i> Bab 1 Free
+                                                    <i class="bi bi-unlock-fill me-1"></i> {{ $category->free_count ?? 1 }} Gratis • {{ $category->locked_count ?? 0 }} Terkunci
                                                 </span>
                                             @endif
                                         </div>
@@ -129,7 +131,52 @@
                 @endforeach
             </div>
 
-            <div class="row mt-5">
+            @if (!$hasFullAccess)
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card border-2 border-primary rounded-4 shadow-sm overflow-hidden bg-white">
+                            <div class="card-body p-4 d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+                                <div>
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                        <span class="badge bg-primary text-white rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.72rem;">
+                                            ⭐ AKSES PENUH + TRYOUT UNLIMITED
+                                        </span>
+                                        @if (!empty($promo24h) && empty($sudahBeliPaket1))
+                                            <span class="badge bg-warning text-dark rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.72rem;">
+                                                Kupon {{ $promo24h['code'] }} Aktif
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <h4 class="fw-bold text-dark mb-1">
+                                        Buka Semua {{ $totalLockedCount ?? 20 }} Materi Premium Kisi-Kisi SKD 2026
+                                    </h4>
+                                    <p class="text-muted small mb-0">
+                                        Termasuk materi terbaru: <strong>Empat Konsensus Kebangsaan</strong>, <strong>Penalaran Matriks Figural</strong>, dan <strong>Adaptasi TIK & Generative AI</strong> — plus <strong>Tryout CAT Unlimited</strong> sepuasnya.
+                                    </p>
+                                </div>
+                                <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3 flex-shrink-0">
+                                    <div class="text-sm-end">
+                                        @if (($upgradePriceNum ?? 49000) < ($upgradeNormalPriceNum ?? 49000))
+                                            <span class="text-muted text-decoration-line-through small d-block">
+                                                Rp {{ number_format($upgradeNormalPriceNum, 0, ',', '.') }}
+                                            </span>
+                                        @endif
+                                        <span class="fs-3 fw-bolder text-primary lh-1">{{ $upgradePrice ?? 'Rp 49.000' }}</span>
+                                        <span class="small text-muted d-block">sekali bayar selamanya</span>
+                                    </div>
+                                    <a href="{{ $upgradeRoute ?? route('checkout', 2) }}"
+                                        class="btn btn-primary btn-lg rounded-pill px-4 fw-bold shadow-sm text-nowrap hover-lift">
+                                        <i class="bi bi-unlock-fill me-1"></i>
+                                        {{ !empty($sudahBeliPaket1) ? 'Upgrade Sekarang' : 'Buka Semua Materi' }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <div class="row mt-4">
                 <div class="col-12">
                     <div class="card border-0 bg-light rounded-4 shadow-sm border-start border-warning border-4">
                         <div
@@ -145,8 +192,8 @@
                                         mengerjakan soal-soal HOTS agar insting menjawabmu tajam.</p>
                                 </div>
                             </div>
-                            <a href="{{ route('dashboard') }}"
-                                class="btn btn-warning text-dark fw-bold px-4 rounded-pill shadow-sm">
+                            <a href="{{ route('ujian.persiapan', 1) }}"
+                                class="btn btn-warning text-dark fw-bold px-4 rounded-pill shadow-sm text-nowrap">
                                 Kerjakan Tryout Sekarang
                             </a>
                         </div>
@@ -159,7 +206,7 @@
 
     @include('partials.btn-scroll-top')
     @include('partials.scripts')
-    <script src="assets/js/vendors/navbar-nav.js"></script>
+    <script src="/build/assets/js/vendors/navbar-nav.js"></script>
 
     <style>
         .btn-hover-solid:hover {

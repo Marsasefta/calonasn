@@ -13,160 +13,172 @@ use App\Models\UserMaterialProgress;
 
 class MateriController extends Controller
 {
+    /**
+     * Hitung status akses materi dan info harga upgrade dinamis.
+     */
+    private function resolveAccessState($user): array
+    {
+        $hasFullAccess = false;
+        $sudahBeliPaket1 = false;
+
+        if ($user) {
+            $hasPaketLengkap = Transaction::where('user_id', $user->id)
+                ->where('tryout_id', 2)
+                ->whereRaw('LOWER(status) = ?', ['success'])
+                ->exists();
+
+            $sudahBeliPaket1 = Transaction::where('user_id', $user->id)
+                ->where('tryout_id', 1)
+                ->whereRaw('LOWER(status) = ?', ['success'])
+                ->exists();
+
+            $hasPaket3 = Transaction::where('user_id', $user->id)
+                ->where('tryout_id', 3)
+                ->whereRaw('LOWER(status) = ?', ['success'])
+                ->exists();
+
+            $hasPaketUpgrade = $sudahBeliPaket1 && $hasPaket3;
+            $hasFullAccess = $hasPaketLengkap || $hasPaketUpgrade || (bool) $user->is_premium;
+        }
+
+        $promo24h = $user?->newMemberPromo();
+        $hargaLengkap = (int) (Tryout::find(2)->price ?? 49000);
+        $hargaUpgrade = (int) (Tryout::find(3)->price ?? 29000);
+
+        if ($sudahBeliPaket1) {
+            $upgradeRoute = route('checkout', 3);
+            $upgradePriceNum = $hargaUpgrade;
+            $upgradeNormalPriceNum = $hargaLengkap;
+            $upgradeLabel = 'Upgrade ke Paket Lengkap (Rp ' . number_format($upgradePriceNum, 0, ',', '.') . ')';
+        } else {
+            $upgradeRoute = route('checkout', 2);
+            $diskon = $promo24h ? (int) $promo24h['discount_amount'] : 0;
+            $upgradeNormalPriceNum = $hargaLengkap;
+            $upgradePriceNum = max(0, $hargaLengkap - $diskon);
+            $upgradeLabel = 'Buka Semua Materi (Rp ' . number_format($upgradePriceNum, 0, ',', '.') . ')';
+        }
+
+        return [
+            'hasFullAccess'         => $hasFullAccess,
+            'sudahBeliPaket1'       => $sudahBeliPaket1,
+            'promo24h'              => $promo24h,
+            'upgradeRoute'          => $upgradeRoute,
+            'upgradeLabel'          => $upgradeLabel,
+            'upgradePrice'          => 'Rp ' . number_format($upgradePriceNum, 0, ',', '.'),
+            'upgradePriceNum'       => $upgradePriceNum,
+            'upgradeNormalPriceNum' => $upgradeNormalPriceNum,
+        ];
+    }
+
     // Method untuk halaman Lobby (Menampilkan 3 Kategori)
     public function index()
     {
         $user = auth()->user();
         $userId = $user ? $user->id : null;
-        $categories = LearningCategory::withCount('materials')->get();
+        $categories = LearningCategory::with('materials')->withCount('materials')->get();
+        $accessState = $this->resolveAccessState($user);
 
-        $hasFullAccess = false;
-        $sudahBeliPaket1 = false;
-        if ($user) {
-            $hasPaketLengkap = Transaction::where('user_id', $user->id)
-                                            ->where('tryout_id', 2)
-                                            ->whereRaw('LOWER(status) = ?', ['success'])
-                                            ->exists();
-
-            $sudahBeliPaket1 = Transaction::where('user_id', $user->id)
-                                        ->where('tryout_id', 1)
-                                        ->whereRaw('LOWER(status) = ?', ['success'])
-                                        ->exists();
-                                        
-            $hasPaket3 = Transaction::where('user_id', $user->id)
-                                        ->where('tryout_id', 3)
-                                        ->whereRaw('LOWER(status) = ?', ['success'])
-                                        ->exists();
-
-            $hasPaketUpgrade = $sudahBeliPaket1 && $hasPaket3;
-            $hasFullAccess = $hasPaketLengkap || $hasPaketUpgrade || ($user && $user->is_premium);
-        }
-
-        $completedMaterialIds = $userId 
+        $completedMaterialIds = $userId
             ? UserMaterialProgress::where('user_id', $userId)->pluck('learning_material_id')->toArray()
             : [];
 
+        $totalMaterialsCount = 0;
+        $totalLockedCount = 0;
+
         foreach ($categories as $category) {
-            $catMaterialIds = $category->materials->pluck('id')->toArray();
+            $catMaterials = $category->materials;
+            $catMaterialIds = $catMaterials->pluck('id')->toArray();
             $totalInCat = count($catMaterialIds);
             $completedInCat = count(array_intersect($catMaterialIds, $completedMaterialIds));
-            
+            $lockedInCat = $catMaterials->where('is_locked', 1)->count();
+
             $category->completed_count = $completedInCat;
             $category->progress_percent = $totalInCat > 0 ? round(($completedInCat / $totalInCat) * 100) : 0;
+            $category->locked_count = $lockedInCat;
+            $category->free_count = max(0, $totalInCat - $lockedInCat);
+
+            $totalMaterialsCount += $totalInCat;
+            $totalLockedCount += $lockedInCat;
         }
 
-        return view('user.materi.index', compact('categories', 'hasFullAccess', 'sudahBeliPaket1'));
+        return view('user.materi.index', array_merge($accessState, compact(
+            'categories',
+            'totalMaterialsCount',
+            'totalLockedCount'
+        )));
     }
 
     // Method untuk halaman Micro-Learning (Saat salah satu kategori diklik)
     public function show($categorySlug, $materialSlug = null)
     {
         $category = LearningCategory::where('slug', $categorySlug)->firstOrFail();
-        $chapters = $category->chapters()->with('materials')->orderBy('order_number')->get();
+        $chapters = $category->chapters()
+            ->with(['materials' => fn ($q) => $q->orderBy('order_number', 'asc')])
+            ->orderBy('order_number', 'asc')
+            ->get();
 
-        // 1. CEK HAK AKSES USER (Apakah punya Paket 2 / Paket 3 / is_premium)
         $user = auth()->user();
-        $hasFullAccess = false;
-        $sudahBeliPaket1 = false;
+        $accessState = $this->resolveAccessState($user);
+        $hasFullAccess = $accessState['hasFullAccess'];
+        $sudahBeliPaket1 = $accessState['sudahBeliPaket1'];
+        $upgradeRoute = $accessState['upgradeRoute'];
 
-        if ($user) {
-            // 1. Cek Paket 2 (Beli Langsung 49rb)
-            $hasPaketLengkap = Transaction::where('user_id', $user->id)
-                                            ->where('tryout_id', 2)
-                                            ->whereRaw('LOWER(status) = ?', ['success'])
-                                            ->exists();
+        $orderedMaterials = $chapters->pluck('materials')->flatten();
 
-            // 2. Cek Paket 1 + Paket 3 (Beli Bertahap 20rb + 29rb)
-            $sudahBeliPaket1 = Transaction::where('user_id', $user->id)
-                                        ->where('tryout_id', 1)
-                                        ->whereRaw('LOWER(status) = ?', ['success'])
-                                        ->exists();
-                                        
-            $hasPaket3 = Transaction::where('user_id', $user->id)
-                                        ->where('tryout_id', 3)
-                                        ->whereRaw('LOWER(status) = ?', ['success'])
-                                        ->exists();
-
-            $hasPaketUpgrade = $sudahBeliPaket1 && $hasPaket3;
-
-            // Gabungkan: Beli Paket Lengkap / Hasil Upgrade / Akun is_premium
-            $hasFullAccess = $hasPaketLengkap || $hasPaketUpgrade || ($user && $user->is_premium);
-        }
-
-        // Tentukan rute & label upgrade dinamis
-        $upgradeRoute = $sudahBeliPaket1 ? route('checkout', 3) : route('checkout', 2);
-        $upgradeLabel = $sudahBeliPaket1 ? 'Upgrade ke Paket Lengkap (Rp 29.000)' : 'Beli Paket Lengkap (Rp 49.000)';
-        $upgradePrice = $sudahBeliPaket1 ? 'Rp 29.000' : 'Rp 49.000';
-
-        // 2. TENTUKAN MATERI AKTIF
+        // 2. TENTUKAN MATERI AKTIF (gunakan urutan chapter & fallback aman)
         if ($materialSlug) {
-            $currentMaterial = LearningMaterial::where('slug', $materialSlug)->firstOrFail();
+            $currentMaterial = $orderedMaterials->firstWhere('slug', $materialSlug)
+                ?? LearningMaterial::where('slug', $materialSlug)->firstOrFail();
         } else {
-            $currentMaterial = $category->chapters->first()->materials->first();
+            $currentMaterial = $hasFullAccess
+                ? $orderedMaterials->first()
+                : ($orderedMaterials->firstWhere('is_locked', 0) ?? $orderedMaterials->first());
+
+            if (!$currentMaterial) {
+                abort(404, 'Materi pada kategori ini belum tersedia.');
+            }
         }
 
         // 3. KEAMANAN BACKEND (Mencegah user nakal ketik URL manual)
-        // Jika materi ini dilock (is_locked == 1) DAN user tidak punya Full Access
         if ($currentMaterial->is_locked == 1 && !$hasFullAccess) {
-            $msg = $sudahBeliPaket1 
-                ? 'Materi ini eksklusif untuk member Paket Lengkap. Upgrade sekarang seharga Rp 29.000 untuk membuka semua bab.' 
+            $msg = $sudahBeliPaket1
+                ? 'Materi ini eksklusif untuk member Paket Lengkap. Upgrade sekarang seharga ' . $accessState['upgradePrice'] . ' untuk membuka semua bab.'
                 : 'Materi ini eksklusif untuk member Paket Lengkap. Silakan aktifkan paket untuk membuka semua materi.';
             return redirect($upgradeRoute)->with('error', $msg);
         }
 
-        // 4. LOGIKA PINTAR: Cari materi berikutnya
-        // A. Coba cari materi selanjutnya di bab yang sama
-        $nextMaterial = LearningMaterial::where('learning_chapter_id', $currentMaterial->learning_chapter_id)
-            ->where('order_number', '>', $currentMaterial->order_number)
-            ->orderBy('order_number', 'asc')
-            ->first();
-
-        // B. Jika di bab yang sama tidak ada, cari bab selanjutnya
-        if (!$nextMaterial) {
-            $currentChapter = LearningChapter::find($currentMaterial->learning_chapter_id);
-            
-            $nextChapter = LearningChapter::where('learning_category_id', $category->id)
-                ->where('order_number', '>', $currentChapter->order_number)
-                ->orderBy('order_number', 'asc')
-                ->first();
-
-            if ($nextChapter) {
-                $nextMaterial = $nextChapter->materials()->orderBy('order_number', 'asc')->first();
-            }
-        }
+        // 4. LOGIKA PINTAR: Cari materi berikutnya berdasarkan urutan bab & materi
+        $currentIndex = $orderedMaterials->search(fn ($m) => $m->id === $currentMaterial->id);
+        $nextMaterial = ($currentIndex !== false && isset($orderedMaterials[$currentIndex + 1]))
+            ? $orderedMaterials[$currentIndex + 1]
+            : null;
 
         $tryout = Tryout::find(1) ?? Tryout::first();
 
-        // Riwayat materi yang sudah diselesaikan user dalam kategori ini
-        $completedMaterialIds = $user 
+        $completedMaterialIds = $user
             ? UserMaterialProgress::where('user_id', $user->id)->pluck('learning_material_id')->toArray()
             : [];
 
         $isCurrentCompleted = in_array($currentMaterial->id, $completedMaterialIds);
 
-        $categoryMaterialIds = $category->materials->pluck('id')->toArray();
+        $categoryMaterialIds = $orderedMaterials->pluck('id')->toArray();
         $totalCategoryMaterials = count($categoryMaterialIds);
         $completedCategoryCount = count(array_intersect($categoryMaterialIds, $completedMaterialIds));
         $progressPercent = $totalCategoryMaterials > 0 ? round(($completedCategoryCount / $totalCategoryMaterials) * 100) : 0;
 
         // 5. Lempar variabel ke View Blade
-        return view('user.materi.show', compact(
+        return view('user.materi.show', array_merge($accessState, compact(
             'category',
             'chapters',
             'currentMaterial',
             'nextMaterial',
-            'hasFullAccess',
-            'sudahBeliPaket1',
-            'upgradeRoute',
-            'upgradeLabel',
-            'upgradePrice',
             'tryout',
             'completedMaterialIds',
             'isCurrentCompleted',
             'completedCategoryCount',
             'totalCategoryMaterials',
             'progressPercent'
-        ));
+        )));
     }
 
     public function toggleProgress($id)

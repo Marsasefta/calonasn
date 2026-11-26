@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Tryout;
 use App\Models\Post;
 use App\Models\ExamSession;
+use App\Models\LearningCategory;
 use App\Http\Controllers\UjianController;
 
 class DashboardController extends Controller
@@ -211,8 +212,14 @@ class DashboardController extends Controller
             }
         } else {
             $chartLabels = ['TO 1', 'TO 2', 'TO 3', 'TO 4', 'TO 5'];
-            $chartScores = [0, 0, 0, 0, 0];
+            $chartScores = [295, 325, 355, 390, 435];
         }
+
+        $promo24h = $user->newMemberPromo();
+        $tryoutMandiri = Tryout::find(1);
+        $tryoutLengkap = Tryout::find(2);
+        $tryoutUpgrade = Tryout::find(3);
+        $learningCategories = LearningCategory::withCount('materials')->get();
 
         return view('user.dashboard', compact(
             'tryout',
@@ -227,7 +234,12 @@ class DashboardController extends Controller
             'totalParticipants',
             'chartLabels',
             'chartScores',
-            'topNational'
+            'topNational',
+            'promo24h',
+            'tryoutMandiri',
+            'tryoutLengkap',
+            'tryoutUpgrade',
+            'learningCategories'
         ));
     }
 }

@@ -69,11 +69,13 @@
                     @php
                         $userNav = auth()->user();
                         $hasFullMateriNav = false;
+                        $hasAnyPaidNav = false;
                         if ($userNav) {
-                            $hasFullMateriNav = $userNav->is_premium 
-                                || \App\Models\Transaction::where('user_id', $userNav->id)->where('tryout_id', 2)->whereRaw('LOWER(status) = ?', ['success'])->exists()
-                                || (\App\Models\Transaction::where('user_id', $userNav->id)->where('tryout_id', 1)->whereRaw('LOWER(status) = ?', ['success'])->exists() 
-                                    && \App\Models\Transaction::where('user_id', $userNav->id)->where('tryout_id', 3)->whereRaw('LOWER(status) = ?', ['success'])->exists());
+                            $hasPaket1Nav = \App\Models\Transaction::where('user_id', $userNav->id)->where('tryout_id', 1)->whereRaw('LOWER(status) = ?', ['success'])->exists();
+                            $hasPaket2Nav = \App\Models\Transaction::where('user_id', $userNav->id)->where('tryout_id', 2)->whereRaw('LOWER(status) = ?', ['success'])->exists();
+                            $hasPaket3Nav = \App\Models\Transaction::where('user_id', $userNav->id)->where('tryout_id', 3)->whereRaw('LOWER(status) = ?', ['success'])->exists();
+                            $hasFullMateriNav = $userNav->is_premium || $hasPaket2Nav || ($hasPaket1Nav && $hasPaket3Nav);
+                            $hasAnyPaidNav = $hasFullMateriNav || $hasPaket1Nav;
                         }
                     @endphp
                     <li class="nav-item">
@@ -91,18 +93,33 @@
                             </div>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('demo.*') ? 'active' : '' }}"
-                            href="{{ route('demo.index') }}">
-                            <i class="fe fe-unlock nav-icon"></i> Ujicoba Gratis
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('ujian.*') ? 'active' : '' }}"
-                            href="{{ route('ujian.persiapan', 1) }}">
-                            <i class="fe fe-edit nav-icon"></i> Mulai Tryout
-                        </a>
-                    </li>
+                    @if ($hasAnyPaidNav)
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('ujian.*') ? 'active' : '' }}"
+                                href="{{ route('ujian.persiapan', 1) }}">
+                                <i class="fe fe-edit nav-icon"></i> Mulai Tryout
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('demo.*') ? 'active' : '' }}"
+                                href="{{ route('demo.index') }}">
+                                <i class="fe fe-unlock nav-icon"></i> Ujicoba Gratis
+                            </a>
+                        </li>
+                    @else
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('demo.*') ? 'active' : '' }}"
+                                href="{{ route('demo.index') }}">
+                                <i class="fe fe-unlock nav-icon"></i> Ujicoba Gratis
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('ujian.*') ? 'active' : '' }}"
+                                href="{{ route('ujian.persiapan', 1) }}">
+                                <i class="fe fe-edit nav-icon"></i> Mulai Tryout
+                            </a>
+                        </li>
+                    @endif
                 </ul>
 
                 <div class="d-flex flex-column gap-1 mt-2">
