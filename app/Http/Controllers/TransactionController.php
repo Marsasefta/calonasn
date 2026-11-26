@@ -39,7 +39,9 @@ class TransactionController extends Controller
         }
 
         // Jika tryout ditemukan, lempar ke view
-        return view('user.payment.checkout', compact('tryout'));
+        $promo24h = Auth::user()?->newMemberPromo();
+
+        return view('user.payment.checkout', compact('tryout', 'promo24h'));
     }
 
     // Memproses klik "Beli" dan buat tagihan PENDING
@@ -336,13 +338,15 @@ class TransactionController extends Controller
         // Menggunakan path lengkap \App\Models\Tryout untuk berjaga-jaga jika kamu belum menambahkan 'use App\Models\Tryout;' di atas
         $tryoutMandiri = Tryout::find(1);
         $tryoutLengkap = Tryout::find(2);
+        $promo24h = $user?->newMemberPromo();
 
         // 3. Lempar semua variabel ke view
         return view('user.payment.pilih-paket', compact(
             'hasPaket1', 
             'isLengkap', 
             'tryoutMandiri', 
-            'tryoutLengkap'
+            'tryoutLengkap',
+            'promo24h'
         ));
     }
 }

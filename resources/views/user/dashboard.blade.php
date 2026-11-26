@@ -69,6 +69,11 @@
                 </div>
         </div>
 
+        @php
+            $promo24h = auth()->check() ? auth()->user()->newMemberPromo() : null;
+        @endphp
+        @include('partials.promo-24h-banner', ['showCta' => true, 'promo24h' => $promo24h])
+
         <div class="row g-4 mb-5">
 
             <!-- CARD GRATIS -->
@@ -220,16 +225,18 @@
                                 paling mirip ujian asli BKN.
                             </p>
 
-                            <div
-                                class="alert alert-warning border-0 rounded-4 d-inline-flex flex-wrap align-items-center gap-2 py-2 px-3 mb-4 shadow-sm">
-                                <span class="fw-semibold">Gunakan kode</span>
-                                <span
-                                    class="bg-white border border-warning rounded px-3 py-1 fw-bold text-dark shadow-sm"
-                                    style="letter-spacing:1px;">
-                                    ASN2026
-                                </span>
-                                <span>hemat <strong>Rp 7.000</strong></span>
-                            </div>
+                            @if ($promo24h)
+                                <div
+                                    class="alert alert-warning border-0 rounded-4 d-inline-flex flex-wrap align-items-center gap-2 py-2 px-3 mb-4 shadow-sm">
+                                    <span class="fw-semibold">Gunakan kode</span>
+                                    <span
+                                        class="bg-white border border-warning rounded px-3 py-1 fw-bold text-dark shadow-sm"
+                                        style="letter-spacing:1px;">
+                                        {{ $promo24h['code'] }}
+                                    </span>
+                                    <span>hemat <strong>Rp {{ number_format($promo24h['discount_amount'], 0, ',', '.') }}</strong> ({{ $promo24h['deadline_label'] ?? 's/d 23:59 WIB' }})</span>
+                                </div>
+                            @endif
 
                             <div class="mt-auto">
                                 <a href="{{ route('user.pilih-paket')}}"

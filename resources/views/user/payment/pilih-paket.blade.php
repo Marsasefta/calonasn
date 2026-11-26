@@ -16,7 +16,7 @@
     <div class="db-content">
         <div class="container mb-4">
 
-            <div class="row mb-5 text-center">
+            <div class="row mb-4 text-center">
                 <div class="col-12 col-md-8 offset-md-2">
                     <span
                         class="badge bg-primary-soft text-primary px-3 py-2 fw-bold text-uppercase rounded-pill mb-3 shadow-sm">
@@ -27,6 +27,8 @@
                         menemanimu belajar.</p>
                 </div>
             </div>
+
+            @include('partials.promo-24h-banner', ['showCta' => false, 'promo24h' => $promo24h ?? null])
 
             <div class="row g-4 justify-content-center align-items-stretch">
 
@@ -46,12 +48,14 @@
                                 <p class="display-5 fw-bolder text-dark mb-0">
                                     Rp 20.000 <span class="fs-6 text-muted fw-normal">/selamanya</span>
                                 </p>
-                                <div class="mt-2 pt-2 border-top border-secondary border-opacity-25">
-                                    <span class="badge bg-success text-white px-2.5 py-1 small shadow-xs">
-                                        <i class="bi bi-tag-fill me-1"></i> + Kupon ASN2026 jadi: <strong
-                                            class="fs-6">Rp 13.000</strong>
-                                    </span>
-                                </div>
+                                @if (!empty($promo24h))
+                                    <div class="mt-2 pt-2 border-top border-secondary border-opacity-25">
+                                        <span class="badge bg-success text-white px-2.5 py-1 small shadow-xs">
+                                            <i class="bi bi-tag-fill me-1"></i> + Kupon {{ $promo24h['code'] }} (s/d 23:59 WIB) jadi: <strong
+                                                class="fs-6">Rp 13.000</strong>
+                                        </span>
+                                    </div>
+                                @endif
                             </div>
                         </div>
 
@@ -143,12 +147,14 @@
                                         <p class="display-5 fw-bolder text-primary mb-0">
                                             Rp 49.000 <span class="fs-6 text-muted fw-normal">/selamanya</span>
                                         </p>
-                                        <div class="mt-2 pt-2 border-top border-primary border-opacity-25">
-                                            <span class="badge bg-primary text-white px-2.5 py-1 small shadow-sm">
-                                                <i class="bi bi-tag-fill me-1"></i> + Kupon ASN2026 jadi: <strong
-                                                    class="fs-6 text-warning">Rp 42.000</strong>
-                                            </span>
-                                        </div>
+                                        @if (!empty($promo24h))
+                                            <div class="mt-2 pt-2 border-top border-primary border-opacity-25">
+                                                <span class="badge bg-primary text-white px-2.5 py-1 small shadow-sm">
+                                                    <i class="bi bi-tag-fill me-1"></i> + Kupon {{ $promo24h['code'] }} (s/d 23:59 WIB) jadi: <strong
+                                                        class="fs-6 text-warning">Rp 42.000</strong>
+                                                </span>
+                                            </div>
+                                        @endif
                                     </div>
                                 @endif
                             </div>

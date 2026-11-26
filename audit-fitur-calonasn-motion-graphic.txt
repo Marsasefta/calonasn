@@ -1,0 +1,197 @@
+========================================================================
+AUDIT FITUR, VALUE PROPOSITION & KONSEP VIDEO MOTION GRAPHIC
+Platform: CalonASN.id (http://127.0.0.1:8000/)
+Cakupan Audit: Halaman Landing Publik (/) + Area Login & Dashboard Peserta
+========================================================================
+
+------------------------------------------------------------------------
+1. CORE VALUE PROPOSITION (PESAN UTAMA WEBSITE)
+------------------------------------------------------------------------
+- Positioning:
+  Platform simulasi Tryout CAT & ruang belajar SKD CPNS/PPPK berbasis
+  web cloud (100% tanpa install aplikasi) dengan standar resmi BKN 2026.
+- Janji Utama ke Peserta:
+  "Kuasai materinya, taklukkan simulasinya, lolos Passing Grade SKD."
+- Diferensiator Utama:
+  1) Bisa dicoba GRATIS dulu (Demo CAT 10 soal + Materi Bab 1 terbuka).
+  2) Antarmuka simulasi CAT presisi BKN (110 soal: 30 TWK, 35 TIU, 45 TKP;
+     timer 100 menit; tombol ragu-ragu; palet navigasi nomor; autosave).
+  3) Soal & opsi jawaban diacak per sesi (prioritas soal yang belum pernah
+     dikerjakan) agar latihan selalu menantang dan tidak sekadar menghafal posisi.
+  4) Evaluasi lengkap dalam satu tempat: skor instan + status Passing Grade,
+     pembahasan bisa dicetak PDF, grafik progres, ranking nasional, dan
+     sertifikat kelulusan ber-QR Code resmi.
+  5) Model bayar sekali seumur hidup (tanpa langganan bulanan), mulai
+     Rp 13.000 (dengan kode promo ASN2026) hingga paket Unlimited + Full
+     Materi Rp 42.000.
+
+------------------------------------------------------------------------
+2. AUDIT FITUR UTAMA & FEATURE-TO-BENEFIT (SIAP MATERI MOTION GRAPHIC)
+------------------------------------------------------------------------
+
+[1] Akses Web Cloud & Login Kilat (Email / Google) + Klaim Redeem Gratis
+- Terlihat di Website:
+  Halaman /login & /register mendukung masuk pakai email/username atau
+  1-klik "Masuk dengan Google", plus halaman /redeem untuk klaim kode
+  tryout gratis dari admin. Tanpa perlu download APK/software.
+- Manfaat Praktis (Benefit):
+  Peserta bisa langsung belajar dan tryout dari HP, tablet, atau laptop
+  kapan saja (di rumah, jam istirahat kerja, atau di perjalanan) tanpa
+  memenuhi memori perangkat.
+
+[2] Demo Ujicoba CAT Gratis (/demo-cat & /demo)
+- Terlihat di Website:
+  Tombol "Coba Demo CAT" di landing page dan kartu "Cek Kemampuan Dulu
+  (GRATIS)" di dashboard peserta berisi 10 soal kombinasi acak TWK, TIU,
+  TKP berdurasi 10 menit dengan skor otomatis.
+- Manfaat Praktis (Benefit):
+  Peserta baru bisa mengukur kemampuan awal dan mencoba sensasi ujian CAT
+  tanpa keluar biaya dulu sebelum memutuskan membeli paket.
+
+[3] Ruang Belajar SKD / Modul Micro-Learning (/materi-belajar)
+- Terlihat di Website:
+  Kategori materi terstruktur untuk TWK, TIU, dan TKP (saat ini terdata
+  26 modul materi), tampilan baca yang rapi & mobile-friendly, fitur
+  "Tandai Selesai", progress bar persentase baca per kategori, serta
+  akses Free Trial Bab 1 untuk akun gratis.
+- Manfaat Praktis (Benefit):
+  Peserta tidak sekadar menebak soal. Konsep dan kisi-kisi dipahami
+  bertahap lewat modul ringkas langsung dari HP, dan progres belajarnya
+  terpantau jelas bab demi bab.
+
+[4] Simulasi CAT Presisi Standar BKN 2026 (/ujian/persiapan/1 & /ujian/mulai/1)
+- Terlihat di Website:
+  - Modal Pakta Integritas sebelum mulai (komitmen kerjakan jujur 100 menit
+    non-stop, tanpa AI/kalkulator, target ±54 detik/soal).
+  - 110 soal (TWK 30, TIU 35, TKP 45), timer 100 menit (berkedip merah
+    saat sisa <= 5 menit), tombol Fokus/Fullscreen.
+  - Palet navigasi 110 nomor (Hijau = Dijawab, Kuning = Ragu-ragu,
+    Abu-abu = Kosong).
+  - Soal & urutan opsi A-E diacak per sesi (memprioritaskan soal baru).
+  - Autosave real-time ke Redis/Cloud (jawaban, status ragu, dan timer).
+- Manfaat Praktis (Benefit):
+  Melatih mental, ritme waktu, dan strategi melewati soal sulit seperti
+  ujian CAT BKN sungguhan. Jawaban peserta tetap aman meski sinyal putus
+  atau browser ter-refresh di tengah ujian.
+
+[5] Penilaian Instan & Analisis Passing Grade (/ujian/hasil/{id})
+- Terlihat di Website:
+  Begitu klik "Selesai Ujian" atau waktu habis, langsung tampil kartu skor
+  TWK (PG 65), TIU (PG 80), TKP (PG 166), Total Skor, status LULUS / TIDAK
+  LULUS PG, serta tabel analisis kompetensi tiap subtes.
+- Manfaat Praktis (Benefit):
+  Peserta tidak perlu koreksi manual. Dalam hitungan detik langsung tahu
+  subtes mana yang sudah aman dan mana yang masih di bawah ambang batas
+  untuk segera diperbaiki.
+
+[6] Kunci Jawaban, Pembahasan Lengkap & Simpan PDF (/ujian/pembahasan/{id})
+- Terlihat di Website:
+  Menampilkan jawaban user vs kunci jawaban (hijau untuk benar, merah
+  untuk salah), bobot poin 1-5 di setiap opsi TKP, kotak penjelasan
+  pembahasan per soal, dan tombol "Cetak / Simpan PDF".
+- Manfaat Praktis (Benefit):
+  Peserta paham alasan di balik jawaban yang benar (termasuk gradasi poin
+  TKP), tidak mengulang kesalahan yang sama, dan bisa menyimpan PDF untuk
+  dibaca ulang secara offline.
+
+[7] Dashboard Evaluasi & Grafik Perkembangan Skor (/dashboard)
+- Terlihat di Website:
+  Menampilkan status member, 4 metrik utama (Total Tryout, Skor Tertinggi,
+  Rasio Kelulusan, Peringkat Nasional), grafik area tren skor antar sesi,
+  serta Top 3 Nasional.
+- Manfaat Praktis (Benefit):
+  Peserta punya "rapor kemajuan" visual untuk melihat apakah nilai
+  latihannya terus naik atau stagnan menjelang hari H tes.
+
+[8] Peringkat Nasional / Leaderboard Real-Time (/ranking)
+- Terlihat di Website:
+  Podium Juara 1-3, banner khusus "POSISI SAYA" (rank, total skor, status
+  PG), serta tabel peringkat lengkap dengan aturan urutan kelulusan BKN
+  (TKP > TIU > TWK) dan waktu pengerjaan.
+- Manfaat Praktis (Benefit):
+  Peserta bisa membandingkan skornya melawan peserta lain secara nasional
+  untuk mengukur seberapa kompetitif peluang lolos formasinya.
+
+[9] Riwayat Tryout & Sertifikat Kelulusan Ber-QR Code (/riwayat-sertifikat & /ujian/sertifikat/{id})
+- Terlihat di Website:
+  Tabel riwayat seluruh percobaan ujian, akses cepat Rapor & Pembahasan,
+  serta cetak/download Sertifikat Kelulusan resmi (A4 landscape, download
+  gambar/PDF, share WhatsApp) bagi yang lolos semua Passing Grade.
+  Sertifikat dilengkapi token & QR Code verifikasi publik (/v/{token}).
+- Manfaat Praktis (Benefit):
+  Menjadi bukti pencapaian terverifikasi sekaligus target motivasi nyata
+  bagi peserta agar terus berlatih sampai resmi lolos Passing Grade.
+
+[10] Paket Sekali Bayar, Voucher Diskon, QRIS & Support WA (/pilih-paket & /checkout)
+- Terlihat di Website:
+  - Paket Mandiri: 1x Tryout CAT + Trial Bab 1 Materi (Rp 20.000 ->
+    Rp 13.000 dengan voucher ASN2026).
+  - Paket Super Lengkap: Tryout Unlimited (berkali-kali) + Full Semua
+    Modul Materi + Rapor + Ranking + Sertifikat (Rp 49.000 -> Rp 42.000
+    dengan voucher ASN2026).
+  - Jalur Upgrade Rp 29.000 bagi pemilik Paket Mandiri.
+  - Pembayaran QRIS (mendukung semua m-Banking & e-Wallet), upload bukti,
+    riwayat invoice, serta tombol WhatsApp Admin di navbar/landing/login.
+- Manfaat Praktis (Benefit):
+  Biaya sangat terjangkau dan fleksibel tanpa tagihan berulang tiap bulan;
+  peserta bisa mulai dari paket latihan hemat lalu upgrade kapan saja.
+
+------------------------------------------------------------------------
+3. KONSEP MATERI VIDEO MOTION GRAPHIC (RANGKUMAN SCENE 60-75 DETIK)
+------------------------------------------------------------------------
+Target Video: Iklan / Explainer CalonASN.id (Cocok untuk Reels/TikTok/YT)
+
+- SCENE 1 (00-08 dtk) | HOOK & MASALAH
+  Visual: Teks besar dinamis + ikon jam berdetak & grafik passing grade.
+  Poin Teks Layar: "Daftar CPNS/PPPK 2026? Saingan Ribuan, Waktu Cuma 100 Menit!"
+  Narasi Inti: Jangan datang ke ruang CAT tanpa tahu ritme 110 soal.
+
+- SCENE 2 (08-18 dtk) | SOLUSI (CALONASN.ID)
+  Visual: Animasi logo CalonASN.id muncul dari laptop & HP (cloud web app).
+  Poin Teks Layar: "CalonASN.id — Simulasi CAT Standar BKN. Tanpa Install Aplikasi!"
+  Narasi Inti: Cukup buka browser di HP atau laptop, daftar 1 menit pakai Google.
+
+- SCENE 3 (18-30 dtk) | BELAJAR DULU + DEMO GRATIS
+  Visual: Mockup Ruang Belajar (TWK, TIU, TKP) + progress bar bergerak naik.
+  Poin Teks Layar: "Materi Micro-Learning Terstruktur + Demo CAT Gratis!"
+  Narasi Inti: Pahami konsep dasarnya di modul materi, lalu tes kemampuan
+  awalmu lewat Demo 10 soal gratis.
+
+- SCENE 4 (30-46 dtk) | SIMULASI CAT REALISTIS
+  Visual: Screen mockup antarmuka ujian CAT: timer 100:00, palet 110 nomor
+  berubah hijau & kuning (ragu-ragu), badge "Autosave Cloud & Soal Acak".
+  Poin Teks Layar: "110 Soal HOTS Acak | Timer 100 Menit | Autosave Aman"
+  Narasi Inti: Rasakan tekanan ujian asli BKN dengan soal terbaru dan sistem
+  pengacakan agar latihanmu benar-benar menguji pemahaman.
+
+- SCENE 5 (46-60 dtk) | EVALUASI & PEMBUKTIAN
+  Visual: Transisi cepat hasil skor TWK/TIU/TKP "LOLOS PG" -> lembar
+  pembahasan PDF -> grafik skor naik -> podium Ranking Nasional -> Sertifikat QR.
+  Poin Teks Layar: "Skor & PG Instan • Pembahasan PDF • Ranking Nasional • Sertifikat QR"
+  Narasi Inti: Langsung tahu bagian mana yang lemah, pelajari pembahasannya,
+  dan kejar posisi puncak di Ranking Nasional.
+
+- SCENE 6 (60-75 dtk) | PENAWARAN & CTA
+  Visual: Kartu perbandingan harga Paket Mandiri (Rp 13rb) & Super Lengkap
+  Unlimited (Rp 42rb) dengan stiker voucher "ASN2026 - Hemat Rp 7.000" + logo QRIS.
+  Poin Teks Layar: "Sekali Bayar Seumur Hidup! Pakai Kode: ASN2026"
+  CTA Akhir: "Daftar & Coba Gratis Sekarang di CalonASN.id!"
+
+------------------------------------------------------------------------
+4. CATATAN KECIL HASIL AUDIT (UNTUK PERAPIAN PRODUK)
+------------------------------------------------------------------------
+1) Konsistensi Copy Paket Mandiri:
+   Di halaman /pilih-paket & /dashboard tertulis Paket Mandiri mendapat
+   "1x kesempatan tryout", sedangkan di kartu paket landing page (/)
+   keterbatasan 1x kesempatan tersebut belum ditulis eksplisit (baru ada
+   di FAQ bagian bawah). Sebaiknya disamakan agar ekspektasi pembeli jelas.
+2) Konsistensi Target Seleksi di Copywriting:
+   Di landing page paket disebut "CPNS & PPPK 2026", namun mayoritas
+   headline & demo menyebut "SKD CPNS (TWK, TIU, TKP)". Jika menyasar
+   peserta PPPK juga, materi video motion graphic dapat menekankan bahwa
+   platform ini fokus pada simulasi CAT & kompetensi dasar/SKD ASN.
+3) Section Blog di Landing Page:
+   Section artikel/blog pada landing page (/) saat ini dalam status
+   di-hide (komentar Blade), sehingga informasi tips tidak tampil di
+   beranda utama (tetap bisa diakses via menu "Info & Tips" di navbar).
+========================================================================

@@ -476,8 +476,8 @@
                                     <i class="fe fe-gift fs-5"></i>
                                 </div>
                                 <div class="small">
-                                    <span class="d-block text-dark fw-bold">Spesial Calon Abdi Negara Hari Ini:</span>
-                                    <span class="text-muted">Akses materi TWK, TIU, TKP <strong>100% GRATIS</strong> + Diskon Tryout ekstra pakai voucher <strong>ASN2026</strong></span>
+                                    <span class="d-block text-dark fw-bold">Spesial Pendaftar Hari Ini (Berakhir 23:59 WIB):</span>
+                                    <span class="text-muted">Akses materi TWK, TIU, TKP <strong>GRATIS</strong> + Diskon Tryout Rp 7.000 pakai kode <strong>ASN2026</strong></span>
                                 </div>
                             </div>
 
@@ -691,8 +691,8 @@
                              onclick="copyPromoCode()" 
                              id="promoBanner" 
                              title="Klik untuk salin kode voucher">
-                            <span class="badge bg-success text-white rounded-pill px-2.5 py-1">HEMAT RP 7.000</span>
-                            <span class="small text-muted">Gunakan kode: <strong class="text-dark font-monospace fs-6">ASN2026</strong></span>
+                            <span class="badge bg-success text-white rounded-pill px-2.5 py-1">HEMAT RP 7.000 • HARI INI</span>
+                            <span class="small text-muted">Pendaftar hari ini gunakan kode: <strong class="text-dark font-monospace fs-6">ASN2026</strong></span>
                             <span id="copyPromoBtn" class="badge rounded-pill px-2 py-1 ms-1 small fw-bold" style="background: #f1f5f9; color: #059669 !important; border: 1px solid rgba(5, 150, 105, 0.3);">
                                 <i class="fe fe-copy me-1"></i>Salin
                             </span>
@@ -1462,7 +1462,7 @@
                              style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(52, 211, 153, 0.3);">
                             <i class="fe fe-tag text-success" style="color: #34d399 !important;"></i>
                             <span class="small" style="color: #a7f3d0 !important;">
-                                Diskon otomatis Rp 7.000 dengan kode promo: <strong class="text-white font-monospace">ASN2026</strong>
+                                Diskon pendaftar baru Rp 7.000 (berakhir pukul 23:59 WIB): <strong class="text-white font-monospace">ASN2026</strong>
                             </span>
                         </div>
                     </div>

@@ -110,4 +110,59 @@ class User extends Authenticatable
             default   => 'Belum Beli',
         };
     }
+
+    /**
+     * Ambil data promo pendaftar baru (berakhir 23:59 WIB hari daftar, atau besok 23:59 WIB jika daftar >= 21:00).
+     */
+    public function newMemberPromo(): ?array
+    {
+        if ($this->isAdmin() || $this->is_premium || !$this->created_at) {
+            return null;
+        }
+
+        $hasPaidPackage = $this->relationLoaded('transactions')
+            ? $this->transactions->contains(fn ($t) => strtolower((string) $t->status) === 'success' && in_array((int) $t->tryout_id, [1, 2, 3], true))
+            : $this->transactions()
+                ->whereRaw('LOWER(status) = ?', ['success'])
+                ->whereIn('tryout_id', [1, 2, 3])
+                ->exists();
+
+        if ($hasPaidPackage) {
+            return null;
+        }
+
+        $tz = config('app.timezone', 'Asia/Jakarta');
+        $registeredAt = $this->created_at->copy()->timezone($tz);
+        $expiresAt = $registeredAt->hour >= 21
+            ? $registeredAt->copy()->addDay()->endOfDay()
+            : $registeredAt->copy()->endOfDay();
+
+        $now = now($tz);
+        $remainingSeconds = (int) $now->diffInSeconds($expiresAt, false);
+
+        if ($remainingSeconds <= 0) {
+            return null;
+        }
+
+        $promo = PromoCode::where('code', 'ASN2026')
+            ->where('status', 'aktif')
+            ->first();
+
+        if (!$promo) {
+            return null;
+        }
+
+        $deadlineLabel = $expiresAt->isSameDay($now)
+            ? 'Hari Ini Pukul 23:59 WIB'
+            : 'Besok Pukul 23:59 WIB';
+
+        return [
+            'promo_id'          => $promo->id,
+            'code'              => $promo->code,
+            'discount_amount'   => (int) $promo->discount_amount,
+            'expires_at'        => $expiresAt,
+            'deadline_label'    => $deadlineLabel,
+            'remaining_seconds' => $remainingSeconds,
+        ];
+    }
 }

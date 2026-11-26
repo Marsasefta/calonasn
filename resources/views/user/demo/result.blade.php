@@ -137,31 +137,11 @@
                 </div>
             </div>
 
-            <!-- Promo Voucher Callout Banner -->
-            <div class="card border-0 shadow-sm rounded-4 mb-4 text-white overflow-hidden"
-                 style="background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 50%, #4338ca 100%);">
-                <div class="card-body p-4 p-md-4">
-                    <div class="row align-items-center">
-                        <div class="col-lg-8 mb-3 mb-lg-0">
-                            <span class="badge bg-white text-primary px-3 py-1 rounded-pill fw-bold text-uppercase mb-2 shadow-sm">
-                                <i class="bi bi-ticket-perforated-fill text-warning me-1"></i> Voucher Diskon Spesial Demo
-                            </span>
-                            <h4 class="fw-bold mb-1 text-white">Selamat! Kamu Mendapatkan Potongan Rp 7.000</h4>
-                            <p class="mb-0 text-white-50 small">
-                                Gunakan kode kupon di bawah saat checkout untuk langsung memotong harga paket latihan CalonASN.id.
-                            </p>
-                        </div>
-                        <div class="col-lg-4 text-lg-end">
-                            <div class="d-inline-flex align-items-center bg-white bg-opacity-15 p-2 rounded-pill border border-white border-opacity-25 shadow-sm">
-                                <span class="voucher-badge px-3 py-1 rounded-pill me-2 fs-6" id="voucherCode">ASN2026</span>
-                                <button type="button" class="btn btn-light btn-sm rounded-pill fw-bold px-3" onclick="copyVoucherCode()">
-                                    <i class="bi bi-clipboard me-1" id="copyIcon"></i> <span id="copyText">Salin</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Promo Voucher 24 Jam Pendaftar Baru -->
+            @php
+                $promo24h = auth()->check() ? auth()->user()->newMemberPromo() : null;
+            @endphp
+            @include('partials.promo-24h-banner', ['showCta' => false, 'promo24h' => $promo24h])
 
             <!-- Evaluasi Butir Soal & Teaser Pembahasan (FOMO Builder) -->
             <div class="card border-0 shadow-sm rounded-4 mb-5">
@@ -273,14 +253,22 @@
                                 <p class="text-muted small">Solusi komprehensif: Paham konsep materinya, taklukkan ribuan variasi simulasinya.</p>
 
                                 <div class="mt-3 p-3 bg-primary-soft rounded-3 border border-primary border-opacity-25">
-                                    <div class="d-flex align-items-baseline gap-2">
-                                        <span class="text-decoration-line-through text-muted small">Rp 49.000</span>
-                                        <h3 class="fw-bolder text-primary mb-0">Rp 42.000</h3>
-                                        <span class="badge bg-danger text-white rounded-pill small">Hemat Rp 7.000</span>
-                                    </div>
-                                    <div class="mt-2 pt-2 border-top border-primary border-opacity-25 small text-primary fw-medium">
-                                        <i class="bi bi-tag-fill me-1 text-warning"></i> Gunakan kupon <strong class="text-dark bg-white px-2 py-0.5 rounded border">ASN2026</strong> di checkout
-                                    </div>
+                                    @if ($promo24h)
+                                        <div class="d-flex align-items-baseline gap-2">
+                                            <span class="text-decoration-line-through text-muted small">Rp 49.000</span>
+                                            <h3 class="fw-bolder text-primary mb-0">Rp 42.000</h3>
+                                            <span class="badge bg-danger text-white rounded-pill small">Hemat Rp 7.000</span>
+                                        </div>
+                                        <div class="mt-2 pt-2 border-top border-primary border-opacity-25 small text-primary fw-medium">
+                                            <i class="bi bi-tag-fill me-1 text-warning"></i> Kupon <strong class="text-dark bg-white px-2 py-0.5 rounded border">{{ $promo24h['code'] }}</strong> aktif s/d {{ $promo24h['deadline_label'] ?? '23:59 WIB' }}
+                                        </div>
+                                    @else
+                                        <div class="d-flex align-items-baseline gap-2">
+                                            <span class="text-decoration-line-through text-muted small">Rp 149.000</span>
+                                            <h3 class="fw-bolder text-primary mb-0">Rp 49.000</h3>
+                                            <span class="small text-muted">/ selamanya</span>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
 
@@ -340,14 +328,22 @@
                                 <p class="text-muted small">Fokus uji ketahanan, kecepatan, dan manajemen waktu 100 menit.</p>
 
                                 <div class="mt-3 p-3 bg-light rounded-3 border">
-                                    <div class="d-flex align-items-baseline gap-2">
-                                        <span class="text-decoration-line-through text-muted small">Rp 20.000</span>
-                                        <h3 class="fw-bolder text-dark mb-0">Rp 13.000</h3>
-                                        <span class="badge bg-danger text-white rounded-pill small">Hemat Rp 7.000</span>
-                                    </div>
-                                    <div class="mt-2 pt-2 border-top border-secondary border-opacity-25 small text-muted">
-                                        <i class="bi bi-tag-fill me-1 text-success"></i> Gunakan kupon <strong class="text-dark bg-white px-2 py-0.5 rounded border">ASN2026</strong> di checkout
-                                    </div>
+                                    @if ($promo24h)
+                                        <div class="d-flex align-items-baseline gap-2">
+                                            <span class="text-decoration-line-through text-muted small">Rp 20.000</span>
+                                            <h3 class="fw-bolder text-dark mb-0">Rp 13.000</h3>
+                                            <span class="badge bg-danger text-white rounded-pill small">Hemat Rp 7.000</span>
+                                        </div>
+                                        <div class="mt-2 pt-2 border-top border-secondary border-opacity-25 small text-muted">
+                                            <i class="bi bi-tag-fill me-1 text-success"></i> Kupon <strong class="text-dark bg-white px-2 py-0.5 rounded border">{{ $promo24h['code'] }}</strong> aktif s/d {{ $promo24h['deadline_label'] ?? '23:59 WIB' }}
+                                        </div>
+                                    @else
+                                        <div class="d-flex align-items-baseline gap-2">
+                                            <span class="text-decoration-line-through text-muted small">Rp 50.000</span>
+                                            <h3 class="fw-bolder text-dark mb-0">Rp 20.000</h3>
+                                            <span class="small text-muted">/ selamanya</span>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
 
