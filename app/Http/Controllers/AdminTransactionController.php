@@ -12,7 +12,7 @@ class AdminTransactionController extends Controller
     {
         Transaction::deleteExpiredPendingPayments();
 
-        $transactions = Transaction::with(['user', 'tryout'])
+        $allTransactions = Transaction::with(['user', 'tryout'])
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function (Transaction $tx) {
@@ -20,10 +20,21 @@ class AdminTransactionController extends Controller
                 return $tx;
             });
 
-        $pendingCount = $transactions->whereIn('status', ['pending', 'verifying'])->count();
-        $successCount = $transactions->where('status', 'success')->count();
+        $unpaidNoProofTransactions = $allTransactions->filter(function (Transaction $tx) {
+            return in_array($tx->status, ['pending', 'verifying'], true) && empty($tx->payment_proof);
+        })->values();
 
-        return view('admin.transactions', compact('transactions', 'pendingCount', 'successCount'));
+        $verifiedOrCompletedTransactions = $allTransactions->reject(function (Transaction $tx) {
+            return in_array($tx->status, ['pending', 'verifying'], true) && empty($tx->payment_proof);
+        })->values();
+
+        $needVerifyCount = $verifiedOrCompletedTransactions->whereIn('status', ['pending', 'verifying'])->count();
+
+        return view('admin.transactions', compact(
+            'verifiedOrCompletedTransactions',
+            'unpaidNoProofTransactions',
+            'needVerifyCount'
+        ));
     }
 
     private function buildPendingWhatsappUrl(Transaction $transaction): ?string
