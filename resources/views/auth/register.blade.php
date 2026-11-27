@@ -9,7 +9,7 @@
 <body>
     <!-- Page content -->
     <main>
-        <section class="container d-flex flex-column vh-100">
+        <section class="container d-flex flex-column min-vh-100">
             <div class="row align-items-center justify-content-center g-0 h-lg-100 py-8">
                 <div class="col-lg-5 col-md-8 py-8 py-xl-0">
                     <!-- Card -->
@@ -119,17 +119,23 @@
 
                                 <div class="mb-3">
                                     <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" id="agreeCheck" required />
+                                        <input type="checkbox"
+                                            class="form-check-input @error('terms') is-invalid @enderror"
+                                            id="agreeCheck" name="terms" value="1"
+                                            {{ old('terms') ? 'checked' : '' }} required />
                                         <label class="form-check-label" for="agreeCheck">
                                             <span>
                                                 Saya menyetujui
-                                                <a href="#">Syarat & Ketentuan</a>
+                                                <a href="{{ route('legal.terms') }}" data-bs-toggle="modal" data-bs-target="#termsModal">Syarat &amp; Ketentuan</a>
                                                 dan
-                                                <a href="#">Kebijakan Privasi</a> CalonASN.id.
+                                                <a href="{{ route('legal.privacy') }}" data-bs-toggle="modal" data-bs-target="#privacyModal">Kebijakan Privasi</a> CalonASN.id.
                                             </span>
                                         </label>
-                                        <div class="invalid-feedback">Anda harus menyetujui ketentuan di atas sebelum
-                                            mendaftar.</div>
+                                        @if ($errors->has('terms'))
+                                            <div class="invalid-feedback d-block">{{ $errors->first('terms') }}</div>
+                                        @else
+                                            <div class="invalid-feedback">Anda harus menyetujui Syarat &amp; Ketentuan dan Kebijakan Privasi sebelum mendaftar.</div>
+                                        @endif
                                     </div>
                                 </div>
 
@@ -218,10 +224,56 @@
             </div>
         </div>
     </main>
+    <!-- Modal Syarat & Ketentuan -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="termsModalLabel">Syarat &amp; Ketentuan CalonASN.id</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body p-4">
+                    @include('partials.legal.terms-content')
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <a href="{{ route('legal.terms') }}" target="_blank" rel="noopener noreferrer" class="small text-decoration-none">
+                        Buka di tab baru <i class="fe fe-external-link ms-1"></i>
+                    </a>
+                    <button type="button" class="btn btn-primary rounded-pill px-4 fw-semibold js-accept-legal" data-bs-dismiss="modal">
+                        Saya Mengerti &amp; Setuju
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Kebijakan Privasi -->
+    <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="privacyModalLabel">Kebijakan Privasi CalonASN.id</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body p-4">
+                    @include('partials.legal.privacy-content')
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <a href="{{ route('legal.privacy') }}" target="_blank" rel="noopener noreferrer" class="small text-decoration-none">
+                        Buka di tab baru <i class="fe fe-external-link ms-1"></i>
+                    </a>
+                    <button type="button" class="btn btn-primary rounded-pill px-4 fw-semibold js-accept-legal" data-bs-dismiss="modal">
+                        Saya Mengerti &amp; Setuju
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     @include('partials.scripts')
 
-    <script src="assets/js/vendors/validation.js"></script>
+    <script src="{{ asset('build/assets/js/vendors/validation.js') }}"></script>
 
     <script>
         function togglePassword(inputId, iconId) {
@@ -242,6 +294,30 @@
                 iconField.classList.add('fe-eye');
             }
         }
+
+        document.getElementById('agreeCheck').addEventListener('change', function() {
+            if (this.checked) {
+                this.classList.remove('is-invalid');
+            }
+        });
+
+        document.querySelectorAll('.js-accept-legal').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const agreeEl = document.getElementById('agreeCheck');
+                if (agreeEl) {
+                    agreeEl.checked = true;
+                    agreeEl.classList.remove('is-invalid');
+                }
+            });
+        });
+
+        document.querySelector('form.needs-validation').addEventListener('submit', function() {
+            const firstInvalid = this.querySelector(':invalid');
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalid.focus({ preventScroll: true });
+            }
+        });
 
         document.getElementById('btn-google').addEventListener('click', function(e) {
             // Menampilkan loading SweetAlert2 sebelum pindah halaman

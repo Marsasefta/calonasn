@@ -54,6 +54,8 @@ Route::get('/blog', [App\Http\Controllers\BlogController::class, 'index'])->name
 Route::get('/blog/{slug}', [App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
 
 Route::view('/demo-cat', 'demo')->name('demo.cat');
+Route::view('/syarat-ketentuan', 'legal.terms')->name('legal.terms');
+Route::view('/kebijakan-privasi', 'legal.privacy')->name('legal.privacy');
 
 // Route Redeem Tryout Gratis
 Route::get('/redeem', [App\Http\Controllers\RedeemController::class, 'index'])->name('redeem.index');

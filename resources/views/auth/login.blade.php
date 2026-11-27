@@ -78,7 +78,7 @@
                                 <div class="d-lg-flex justify-content-between align-items-center mb-4">
                                     <div class="form-check">
                                         <input type="checkbox" class="form-check-input" id="remember"
-                                            name="remember" />
+                                            name="remember" {{ old('remember') ? 'checked' : '' }} />
                                         <label class="form-check-label" for="remember">Ingat saya</label>
                                     </div>
                                     <div>
@@ -176,7 +176,7 @@
     <!-- Scripts -->
     @include('partials.scripts')
 
-    <script src="assets/js/vendors/validation.js"></script>
+    <script src="{{ asset('build/assets/js/vendors/validation.js') }}"></script>
 
 
     <script>

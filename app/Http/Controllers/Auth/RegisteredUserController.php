@@ -73,11 +73,13 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'phone' => ['required', 'string', 'max:20', 'regex:/^[0-9+\s\-]+$/'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'terms' => ['accepted'],
         ], [
             'name.regex' => 'Format nama hanya boleh menggunakan huruf, spasi, titik, koma, tanda petik, atau tanda hubung.',
             'phone.regex' => 'Nomor WhatsApp / telepon hanya boleh berisi angka dan tanda (+ / -).',
             'email.unique' => 'Alamat email ini sudah terdaftar sebelumnya.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'terms.accepted' => 'Anda harus menyetujui Syarat & Ketentuan dan Kebijakan Privasi sebelum mendaftar.',
         ]);
 
         $role = 'user';
