@@ -148,7 +148,7 @@
                             <h1 class="fw-bold mb-4 text-dark fs-2">{{ $currentMaterial->title }}</h1>
 
                             <div class="reading-area lh-lg">
-                                {!! $currentMaterial->content !!}
+                                {!! preg_replace('/<img(?![^>]*loading=)/i', '<img loading="lazy" decoding="async"', $currentMaterial->content ?? '') !!}
                             </div>
 
                             <hr class="my-5">

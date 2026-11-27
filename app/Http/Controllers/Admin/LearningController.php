@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Models\LearningCategory;
 use App\Models\LearningChapter;
 use App\Models\LearningMaterial;
@@ -169,5 +172,75 @@ class LearningController extends Controller
         $material = LearningMaterial::where('id', $materialId)->where('learning_chapter_id', $chapter->id)->firstOrFail();
         $material->delete();
         return redirect()->route('admin.learning.category.show', $slug)->with('success','Materi berhasil dihapus');
+    }
+
+    /**
+     * Unggah gambar sisipan untuk editor CKEditor pada konten materi.
+     */
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'upload' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+        ]);
+
+        $path = $this->storeCompressedImage($request->file('upload'));
+
+        return response()->json([
+            'url' => Storage::url($path),
+        ]);
+    }
+
+    /**
+     * Kompres dan ubah ukuran gambar di sisi server bila ekstensi GD tersedia.
+     */
+    private function storeCompressedImage(UploadedFile $file): string
+    {
+        if (!extension_loaded('gd') || $file->getMimeType() === 'image/gif') {
+            return $file->store('learning-images', 'public');
+        }
+
+        $raw = @file_get_contents($file->getRealPath());
+        $source = $raw !== false ? @imagecreatefromstring($raw) : false;
+        if (!$source) {
+            return $file->store('learning-images', 'public');
+        }
+
+        $width = imagesx($source);
+        $height = imagesy($source);
+        $maxDimension = 1200;
+
+        $targetWidth = $width;
+        $targetHeight = $height;
+        if ($width > $maxDimension || $height > $maxDimension) {
+            $ratio = min($maxDimension / $width, $maxDimension / $height);
+            $targetWidth = (int) round($width * $ratio);
+            $targetHeight = (int) round($height * $ratio);
+        }
+
+        $canvas = imagecreatetruecolor($targetWidth, $targetHeight);
+        imagealphablending($canvas, false);
+        imagesavealpha($canvas, true);
+        $transparent = imagecolorallocatealpha($canvas, 255, 255, 255, 127);
+        imagefilledrectangle($canvas, 0, 0, $targetWidth, $targetHeight, $transparent);
+        imagecopyresampled($canvas, $source, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+        $useWebp = function_exists('imagewebp');
+        $ext = $useWebp ? 'webp' : 'jpg';
+        $filename = 'learning-images/' . Str::random(40) . '.' . $ext;
+
+        ob_start();
+        $encoded = $useWebp ? imagewebp($canvas, null, 78) : imagejpeg($canvas, null, 80);
+        $binary = ob_get_clean();
+
+        imagedestroy($canvas);
+        imagedestroy($source);
+
+        if (!$encoded || $binary === false) {
+            return $file->store('learning-images', 'public');
+        }
+
+        Storage::disk('public')->put($filename, $binary);
+
+        return $filename;
     }
 }

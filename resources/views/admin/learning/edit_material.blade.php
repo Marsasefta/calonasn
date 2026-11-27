@@ -53,15 +53,6 @@
       </main>
     </div>
     @include('partials.scripts')
-    <script src="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.js"></script>
-    <script>
-        ClassicEditor
-            .create(document.querySelector('#content'), {
-                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', 'undo', 'redo']
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    </script>
+    @include('admin.learning.partials.ckeditor')
   </body>
   </html>

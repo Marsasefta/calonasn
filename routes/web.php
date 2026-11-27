@@ -211,6 +211,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/learning', [App\Http\Controllers\Admin\LearningController::class, 'index'])->name('learning.index');
         Route::get('/learning/create', [App\Http\Controllers\Admin\LearningController::class, 'createCategory'])->name('learning.create');
         Route::post('/learning/store', [App\Http\Controllers\Admin\LearningController::class, 'storeCategory'])->name('learning.store');
+        Route::post('/learning/upload-image', [App\Http\Controllers\Admin\LearningController::class, 'uploadImage'])->name('learning.upload-image');
         Route::get('/learning/{slug}', [App\Http\Controllers\Admin\LearningController::class, 'showCategory'])->name('learning.category.show');
         Route::get('/learning/{slug}/edit', [App\Http\Controllers\Admin\LearningController::class, 'editCategory'])->name('learning.category.edit');
         Route::put('/learning/{slug}/update', [App\Http\Controllers\Admin\LearningController::class, 'updateCategory'])->name('learning.category.update');
