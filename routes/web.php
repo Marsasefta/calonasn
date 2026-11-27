@@ -123,6 +123,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/riwayat-sertifikat', [UjianController::class, 'riwayatSertifikat'])->name('sertifikat.riwayat');
     Route::post('/ujian/feedback/{sessionId}', [App\Http\Controllers\FeedbackController::class, 'store'])->name('ujian.feedback.store');
 
+    // Zona Refreshing (Mini Game Flappy ASN)
+    Route::get('/zona-refreshing', [App\Http\Controllers\RefreshingGameController::class, 'index'])->name('game.index');
+    Route::post('/zona-refreshing/trial', [App\Http\Controllers\RefreshingGameController::class, 'consumeTrial'])->name('game.trial');
+    Route::post('/zona-refreshing/score', [App\Http\Controllers\RefreshingGameController::class, 'saveScore'])->name('game.score');
+
    
     // ==========================================
     // ROUTE MATERI BELAJAR

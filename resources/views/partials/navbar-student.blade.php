@@ -171,6 +171,23 @@
                 </div>
 
                 <div class="d-flex flex-column gap-1 mt-2">
+                    <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Refreshing</span>
+                    <ul class="list-unstyled mb-0">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('game.*') ? 'active' : '' }}"
+                                href="{{ route('game.index') }}">
+                                <div class="d-flex align-items-center justify-content-between w-100">
+                                    <span>🎮 Zona Refreshing</span>
+                                    @if (!$hasAnyPaidNav)
+                                        <span class="badge bg-warning text-dark rounded-pill fw-bold" style="font-size: 0.62rem;">5s TRIAL</span>
+                                    @endif
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="d-flex flex-column gap-1 mt-2">
                     <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Bantuan</span>
                     <ul class="list-unstyled mb-0">
                         <li class="nav-item">
