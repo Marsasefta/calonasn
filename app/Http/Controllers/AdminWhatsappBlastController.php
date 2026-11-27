@@ -13,9 +13,32 @@ class AdminWhatsappBlastController extends Controller
     public function index()
     {
         $users = User::query()
+            ->with('transactions')
             ->where('role', 'user')
             ->orderByDesc('created_at')
-            ->get();
+            ->get()
+            ->map(function (User $user) {
+                $pendingTx = $user->transactions
+                    ->whereIn('status', ['pending', 'verifying'])
+                    ->sortByDesc('created_at')
+                    ->first();
+
+                $packageStatus = $user->package_status;
+
+                if ($pendingTx && $packageStatus === 'free') {
+                    $user->wa_segment = 'pending';
+                } elseif ($packageStatus === 'tryout') {
+                    $user->wa_segment = 'mandiri';
+                } elseif ($packageStatus === 'free') {
+                    $user->wa_segment = 'free';
+                } else {
+                    $user->wa_segment = 'paid';
+                }
+
+                $user->pending_tx = $pendingTx;
+
+                return $user;
+            });
 
         return view('admin.whatsapp_blast', [
             'users' => $users,
@@ -91,17 +114,7 @@ class AdminWhatsappBlastController extends Controller
 
     private function normalizePhone(?string $phone): ?string
     {
-        $digits = preg_replace('/\D+/', '', (string) $phone);
-
-        if ($digits === '') {
-            return null;
-        }
-
-        if (str_starts_with($digits, '62')) {
-            $digits = '0' . substr($digits, 2);
-        }
-
-        return strlen($digits) >= 9 ? $digits : null;
+        return User::normalizeWhatsappNumber($phone, '0');
     }
 
     private function sanitizeTargetValue(?string $value): string

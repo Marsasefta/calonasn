@@ -162,4 +162,27 @@ class User extends Authenticatable
             'remaining_seconds' => $remainingSeconds,
         ];
     }
+
+    /**
+     * Normalisasi nomor WhatsApp ke awalan '62' (wa.me) atau '0' (lokal/Fonnte).
+     */
+    public static function normalizeWhatsappNumber(?string $phone, string $prefix = '62'): ?string
+    {
+        $digits = preg_replace('/\D+/', '', (string) $phone);
+        if ($digits === '' || strlen($digits) < 9) {
+            return null;
+        }
+
+        if (str_starts_with($digits, '62')) {
+            $local = substr($digits, 2);
+        } elseif (str_starts_with($digits, '0')) {
+            $local = substr($digits, 1);
+        } elseif (str_starts_with($digits, '8')) {
+            $local = $digits;
+        } else {
+            return $digits;
+        }
+
+        return strlen($local) >= 8 ? $prefix . $local : null;
+    }
 }

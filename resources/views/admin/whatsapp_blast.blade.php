@@ -133,6 +133,19 @@
                                         <button type="submit" class="btn btn-success btn-sm flex-shrink-0" id="sendButton">
                                             <i class="fe fe-send me-1"></i> Kirim
                                         </button>
+                                    <div class="d-flex flex-wrap gap-1.5 mt-2">
+                                        <button type="button" class="btn btn-outline-primary btn-sm segment-filter-btn active" data-segment="all">
+                                            Semua ({{ $users->count() }})
+                                        </button>
+                                        <button type="button" class="btn btn-outline-warning text-dark btn-sm segment-filter-btn" data-segment="pending">
+                                            Pending ({{ $users->where('wa_segment', 'pending')->count() }})
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm segment-filter-btn" data-segment="free">
+                                            Belum Bayar ({{ $users->where('wa_segment', 'free')->count() }})
+                                        </button>
+                                        <button type="button" class="btn btn-outline-info btn-sm segment-filter-btn" data-segment="mandiri">
+                                            Mandiri Belum Upgrade ({{ $users->where('wa_segment', 'mandiri')->count() }})
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="table-responsive user-table-wrapper">
@@ -151,9 +164,10 @@
                                         <tbody>
                                             @forelse($users as $user)
                                                 @php
-                                                    $hasPhone = filled($user->phone);
+                                                    $hasPhone = filled(\App\Models\User::normalizeWhatsappNumber($user->phone, '0'));
+                                                    $segment = $user->wa_segment ?? 'free';
                                                 @endphp
-                                                <tr class="user-row" data-search="{{ strtolower($user->name . ' ' . $user->email . ' ' . $user->phone) }}">
+                                                <tr class="user-row" data-segment="{{ $segment }}" data-search="{{ strtolower($user->name . ' ' . $user->email . ' ' . $user->phone) }}">
                                                     <td>
                                                         <input
                                                             class="form-check-input user-checkbox"
@@ -171,6 +185,13 @@
                                                     </td>
                                                     <td>{{ $user->phone ?? '-' }}</td>
                                                     <td>
+                                                        @if($segment === 'pending')
+                                                            <span class="badge bg-warning text-dark me-1">Pending QRIS</span>
+                                                        @elseif($segment === 'mandiri')
+                                                            <span class="badge bg-info-subtle text-info border border-info-subtle me-1">Mandiri</span>
+                                                        @elseif($segment === 'paid')
+                                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle me-1">Lengkap</span>
+                                                        @endif
                                                         @if($hasPhone)
                                                             <span class="badge bg-success-subtle text-success border border-success-subtle">Siap kirim</span>
                                                         @else
@@ -267,11 +288,26 @@
                 updatePreview();
             });
 
-            searchInput.addEventListener('input', function () {
+            let activeSegment = 'all';
+
+            function applyFilters() {
                 const keyword = searchInput.value.trim().toLowerCase();
 
                 document.querySelectorAll('.user-row').forEach((row) => {
-                    row.style.display = row.dataset.search.includes(keyword) ? '' : 'none';
+                    const matchSearch = row.dataset.search.includes(keyword);
+                    const matchSegment = activeSegment === 'all' || row.dataset.segment === activeSegment;
+                    row.style.display = (matchSearch && matchSegment) ? '' : 'none';
+                });
+            }
+
+            searchInput.addEventListener('input', applyFilters);
+
+            document.querySelectorAll('.segment-filter-btn').forEach((btn) => {
+                btn.addEventListener('click', function () {
+                    activeSegment = btn.dataset.segment || 'all';
+                    document.querySelectorAll('.segment-filter-btn').forEach((b) => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    applyFilters();
                 });
             });
 
