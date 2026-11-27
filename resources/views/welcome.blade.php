@@ -569,7 +569,7 @@
                             </div>
 
                             <div class="d-inline-flex flex-wrap justify-content-center justify-content-lg-start align-items-center gap-3 pt-2 border-top border-light-subtle small text-muted">
-                                <span><strong class="text-dark">{{ number_format($totalUsers ?? 180) }}+</strong> Pejuang ASN Terdaftar</span>
+                                <span><strong class="text-dark">{{ number_format(($totalUsers ?? 180) + 1000, 0, ',', '.') }}+</strong> Pejuang ASN Terdaftar</span>
                                 <span class="opacity-50">•</span>
                                 <span><strong class="text-dark">{{ $totalQuestions ?? 211 }}</strong> Bank Soal HOTS</span>
                                 <span class="opacity-50">•</span>
