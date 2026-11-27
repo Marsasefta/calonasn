@@ -24,6 +24,27 @@
             margin-bottom: 0.75rem;
         }
 
+        [data-bs-theme="dark"] .reading-area {
+            color: #e2e8f0;
+        }
+
+        [data-bs-theme="dark"] .reading-area h1,
+        [data-bs-theme="dark"] .reading-area h2,
+        [data-bs-theme="dark"] .reading-area h3,
+        [data-bs-theme="dark"] .reading-area h4 {
+            color: #f8fafc;
+        }
+
+        [data-bs-theme="dark"] .reading-area table th {
+            background-color: #0f172a;
+            border-color: #334155;
+        }
+
+        [data-bs-theme="dark"] .reading-area table,
+        [data-bs-theme="dark"] .reading-area table td {
+            border-color: #334155;
+        }
+
         .reading-area img {
             max-width: 100% !important;
             height: auto !important;
@@ -360,14 +381,14 @@
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
                 <div class="modal-header border-0 bg-primary text-white p-4">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px; flex-shrink: 0;">
-                            <i class="bi bi-lock-fill fs-4"></i>
+                        <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px; flex-shrink: 0; background-color: #ffffff !important;">
+                            <i class="bi bi-lock-fill fs-4" style="color: #2563eb !important;"></i>
                         </div>
                         <div>
-                            <span class="badge bg-white bg-opacity-25 text-white rounded-pill px-2.5 py-1 small fw-semibold mb-1">
+                            <span class="badge rounded-pill px-2.5 py-1 small fw-semibold mb-1" style="background-color: rgba(15, 23, 42, 0.3) !important; color: #fde68a !important; border: 1px solid rgba(253, 230, 138, 0.45) !important;">
                                 Akses Eksklusif CalonASN.id
                             </span>
-                            <h5 class="modal-title fw-bold text-white mb-0" id="modalLockedMaterialLabel">Materi Belajar Terkunci</h5>
+                            <h5 class="modal-title fw-bold mb-0" id="modalLockedMaterialLabel" style="color: #ffffff !important;">Materi Belajar Terkunci</h5>
                         </div>
                     </div>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>

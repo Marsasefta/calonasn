@@ -16,6 +16,7 @@ use App\Http\Controllers\MateriController;
 
 use App\Models\Post;
 use App\Models\LearningCategory;
+use App\Models\TryoutFeedback;
 
 use App\Http\Controllers\UserTypeController;
 use Illuminate\Support\Facades\Route;
@@ -38,9 +39,14 @@ Route::get('/', function () {
     $totalUsers = \App\Models\User::where('role', '!=', 'admin')->count();
     $totalQuestions = \App\Models\Question::count();
     $totalMaterials = \App\Models\LearningMaterial::count();
+    $publishedFeedbacks = TryoutFeedback::with('user')
+        ->where('is_published', true)
+        ->latest()
+        ->take(6)
+        ->get();
 
     // 3. Kirim ke welcome.blade.php
-    return view('welcome', compact('latestPosts', 'categories', 'totalUsers', 'totalQuestions', 'totalMaterials'));
+    return view('welcome', compact('latestPosts', 'categories', 'totalUsers', 'totalQuestions', 'totalMaterials', 'publishedFeedbacks'));
 });
 
 // Di area publik (luar middleware admin)
@@ -115,6 +121,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Sertifikat & Riwayat
     Route::get('/ujian/sertifikat/{id}', [UjianController::class, 'sertifikat'])->name('ujian.sertifikat');
     Route::get('/riwayat-sertifikat', [UjianController::class, 'riwayatSertifikat'])->name('sertifikat.riwayat');
+    Route::post('/ujian/feedback/{sessionId}', [App\Http\Controllers\FeedbackController::class, 'store'])->name('ujian.feedback.store');
 
    
     // ==========================================
@@ -232,6 +239,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('promo-codes', [PromoCodeController::class, 'store'])->name('promo.store');
         Route::put('promo-codes/{id}', [PromoCodeController::class, 'update'])->name('promo.update');
         Route::delete('promo-codes/{id}', [PromoCodeController::class, 'destroy'])->name('promo.destroy');   
+
+        Route::get('/feedback', [App\Http\Controllers\FeedbackController::class, 'adminIndex'])->name('feedback.index');
+        Route::post('/feedback/{id}/toggle-publish', [App\Http\Controllers\FeedbackController::class, 'togglePublish'])->name('feedback.toggle-publish');
+        Route::delete('/feedback/{id}', [App\Http\Controllers\FeedbackController::class, 'destroy'])->name('feedback.destroy');
        
     });
 });

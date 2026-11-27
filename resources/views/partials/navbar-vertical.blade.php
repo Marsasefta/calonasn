@@ -117,6 +117,24 @@
           </a>
         </li>
 
+        @php
+          $pendingFeedbackBadge = 0;
+          try {
+              $pendingFeedbackBadge = \App\Models\TryoutFeedback::where('is_published', false)->count();
+          } catch (\Throwable) {
+              $pendingFeedbackBadge = 0;
+          }
+        @endphp
+        <li class="nav-item">
+          <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.feedback.*') ? 'active' : '' }}" href="{{ route('admin.feedback.index') }}">
+            <i class="fe fe-star me-2.5"></i>
+            <span>Feedback &amp; Testimoni</span>
+            @if ($pendingFeedbackBadge > 0)
+              <span class="badge bg-warning text-dark rounded-pill ms-auto" style="font-size: 0.68rem;">{{ $pendingFeedbackBadge }}</span>
+            @endif
+          </a>
+        </li>
+
         <li class="nav-item">
           <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.whatsapp-blast.*') ? 'active' : '' }}" href="{{ route('admin.whatsapp-blast.index') }}">
             <i class="fe fe-message-circle me-2.5"></i>

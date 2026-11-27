@@ -1336,6 +1336,68 @@
             </div>
         </section>
         --}}
+        {{-- SECTION TESTIMONI PESERTA (OTOMATIS TAMPIL JIKA ADA YANG DI-APPROVE ADMIN) --}}
+        @if (isset($publishedFeedbacks) && $publishedFeedbacks->isNotEmpty())
+        <section id="testimoni" class="py-xl-9 py-6 landing-surface-muted position-relative">
+            <div class="container position-relative">
+                <div class="row justify-content-center text-center mb-5">
+                    <div class="col-lg-7 col-12">
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill small fw-semibold mb-3"
+                             style="background: #fef3c7; color: #92400e !important; border: 1px solid rgba(245, 158, 11, 0.35);">
+                            <i class="fe fe-star"></i>
+                            <span class="text-uppercase tracking-wider">Pengalaman Peserta Asli</span>
+                        </div>
+                        <h2 class="display-5 fw-bold text-dark mb-3">Kata Peserta Tryout CalonASN.id</h2>
+                        <p class="text-muted fs-5 mb-0" style="max-width: 620px; margin: 0 auto;">
+                            Ulasan jujur dari pejuang NIP setelah menyelesaikan simulasi CAT 110 soal di CalonASN.id.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    @foreach ($publishedFeedbacks as $fb)
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="card h-100 rounded-4 border-0 shadow-sm p-4 landing-surface-card hover-lift d-flex flex-column justify-content-between"
+                                 style="border: 1px solid rgba(226, 232, 240, 0.9) !important;">
+                                <div>
+                                    <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+                                        <span class="text-warning fs-5 fw-bold" style="letter-spacing: 1px;">
+                                            {{ str_repeat('★', (int) $fb->rating) }}{{ str_repeat('☆', max(0, 5 - (int) $fb->rating)) }}
+                                        </span>
+                                        @if ($fb->recommendation === 'yes')
+                                            <span class="badge rounded-pill px-2.5 py-1 fw-semibold" style="background: #dcfce7; color: #166534 !important; font-size: 0.72rem;">
+                                                👍 Direkomendasikan
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <p class="text-dark mb-4 lh-base" style="font-size: 0.96rem;">
+                                        "{{ \Illuminate\Support\Str::limit($fb->message, 220) }}"
+                                    </p>
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle">
+                                    <div>
+                                        <div class="fw-bold text-dark small">{{ $fb->maskedAuthorName() }}</div>
+                                        <div class="text-muted" style="font-size: 0.75rem;">
+                                            @if ($fb->is_passed)
+                                                Lulus Passing Grade{{ $fb->total_score ? ' • Skor ' . $fb->total_score : '' }}
+                                            @else
+                                                Peserta Tryout SKD CAT
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-primary-soft text-primary rounded-pill px-2.5 py-1" style="font-size: 0.7rem;">
+                                        Terverifikasi
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+        @endif
+
         <!-- SECTION FAQ 2026 -->
         <section id="faq" class="py-xl-9 py-6 landing-surface-section position-relative">
             <div class="container py-xl-4">

@@ -172,6 +172,115 @@
                         </div>
                     @endif
 
+                    <!-- Card Feedback, Kritik & Saran & Rekomendasi (Khusus Peserta Selesai Tryout) -->
+                    @php
+                        $fbSaved = $existingFeedback ?? null;
+                        $shareWaText = urlencode("Aku barusan selesai simulasi CAT SKD CPNS 110 soal di CalonASN.id (skor real-time + pembahasan lengkap)! Cobain juga yuk buat latihan CPNS 2026: " . url('/'));
+                    @endphp
+                    <div id="feedback-card" class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden bg-white">
+                        <div class="card-body p-3 p-md-4">
+                            <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-3">
+                                <div>
+                                    <span class="badge bg-warning text-dark rounded-pill px-2.5 py-1 fw-bold mb-1" style="font-size: 0.7rem;">
+                                        💬 SUARA PESERTA TRYOUT
+                                    </span>
+                                    <h5 class="fw-bold text-dark mb-0">Bagaimana Pengalaman Tryoutmu di CalonASN.id?</h5>
+                                    <small class="text-muted">Masukanmu membantu kami meningkatkan kualitas soal &amp; pembahasan.</small>
+                                </div>
+                            </div>
+
+                            @if (session('feedback_success'))
+                                <div class="alert alert-success rounded-3 py-2 px-3 small mb-3">
+                                    <i class="fe fe-check-circle me-1"></i> {{ session('feedback_success') }}
+                                </div>
+                            @endif
+
+                            <div id="feedbackDoneBox" class="{{ $fbSaved ? '' : 'd-none' }}">
+                                <div class="p-3 rounded-3 border bg-light">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                                        <span class="fw-bold text-success small">
+                                            <i class="fe fe-check-circle me-1"></i> Terima kasih! Penilaian &amp; masukanmu sudah kami terima.
+                                        </span>
+                                        <span id="fbDoneStars" class="text-warning fw-bold">
+                                            @if ($fbSaved)
+                                                {{ str_repeat('★', (int) $fbSaved->rating) . str_repeat('☆', max(0, 5 - (int) $fbSaved->rating)) }}
+                                            @endif
+                                        </span>
+                                    </div>
+                                    <p id="fbDoneMessage" class="small text-dark mb-0 fst-italic">
+                                        @if ($fbSaved)
+                                            "{{ $fbSaved->message }}"
+                                        @endif
+                                    </p>
+                                </div>
+
+                                <div id="fbShareWaBox" class="mt-3 p-3 rounded-3 border border-success bg-success-subtle d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 {{ ($fbSaved && $fbSaved->recommendation === 'yes') ? '' : 'd-none' }}">
+                                    <div class="small text-dark fw-medium">
+                                        <i class="bi bi-heart-fill text-danger me-1"></i> Terima kasih mau merekomendasikan CalonASN.id! Ajak teman pejuang NIP sekarang:
+                                    </div>
+                                    <a href="https://wa.me/?text={{ $shareWaText }}" target="_blank" rel="noopener noreferrer"
+                                       class="btn btn-success btn-sm rounded-pill px-3 py-2 fw-bold text-nowrap">
+                                        <i class="bi bi-whatsapp me-1"></i> Bagikan ke WhatsApp
+                                    </a>
+                                </div>
+                            </div>
+
+                            @if (!$fbSaved)
+                                <form id="tryoutFeedbackForm" action="{{ route('ujian.feedback.store', $id) }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="rating" id="fbRatingInput" value="{{ old('rating', 5) }}">
+                                    <input type="hidden" name="recommendation" id="fbRecommendInput" value="{{ old('recommendation', 'yes') }}">
+
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-5">
+                                            <label class="form-label fw-semibold small text-dark mb-1">1. Penilaian Keseluruhan</label>
+                                            <div class="d-flex align-items-center gap-1" id="fbStarButtons">
+                                                @for ($s = 1; $s <= 5; $s++)
+                                                    <button type="button" class="btn btn-sm border-0 p-1 fs-4 fb-star-btn text-warning" data-value="{{ $s }}" aria-label="{{ $s }} Bintang" style="line-height: 1;">
+                                                        ★
+                                                    </button>
+                                                @endfor
+                                                <span id="fbRatingLabel" class="small text-muted ms-2 fw-medium">5 / 5 Sangat Bagus</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-7">
+                                            <label class="form-label fw-semibold small text-dark mb-1">2. Apakah kamu mau merekomendasikan CalonASN.id ke teman?</label>
+                                            <div class="d-flex flex-wrap gap-2" id="fbRecommendButtons">
+                                                <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold fb-rec-btn active" data-rec="yes">
+                                                    👍 Ya, Pasti
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold fb-rec-btn" data-rec="maybe">
+                                                    🤔 Mungkin
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold fb-rec-btn" data-rec="no">
+                                                    👎 Belum
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="fbMessageInput" class="form-label fw-semibold small text-dark mb-1">3. Testimoni / Kritik &amp; Saran</label>
+                                        <textarea name="message" id="fbMessageInput" rows="3" class="form-control @error('message') is-invalid @enderror"
+                                                  placeholder="Ceritakan pengalamanmu mengerjakan tryout atau tulis kritik &amp; saran agar CalonASN.id makin baik..." required minlength="5" maxlength="1000">{{ old('message') }}</textarea>
+                                        <div id="fbErrorBox" class="text-danger small mt-1 d-none"></div>
+                                        @error('message')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                        <small class="text-muted">Ulasan pilihan berkesempatan tampil dengan nama tersamar di halaman utama.</small>
+                                        <button type="submit" id="fbSubmitBtn" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-xs">
+                                            <i class="fe fe-send me-1"></i> Kirim Masukan
+                                        </button>
+                                    </div>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
+
                     <!-- Tombol Aksi Bawah (Responsif, Mudah Diklik di HP & Desktop) -->
                     <div class="text-center d-flex flex-wrap gap-2 justify-content-center pt-2">
                         <a href="{{ route('sertifikat.riwayat') }}" class="btn btn-outline-secondary rounded-pill px-3.5 py-2 fw-medium shadow-xs">
@@ -218,6 +327,113 @@
     <script src="/build/assets/js/vendors/tnsSlider.js"></script>
     <script src="/build/assets/js/vendors/chart.js"></script>
     <script src="/build/assets/js/vendors/navbar-nav.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('tryoutFeedbackForm');
+            if (!form) return;
+
+            const ratingInput = document.getElementById('fbRatingInput');
+            const ratingLabel = document.getElementById('fbRatingLabel');
+            const recInput = document.getElementById('fbRecommendInput');
+            const starBtns = Array.from(document.querySelectorAll('.fb-star-btn'));
+            const recBtns = Array.from(document.querySelectorAll('.fb-rec-btn'));
+            const labels = {
+                1: '1 / 5 Kurang Puas',
+                2: '2 / 5 Cukup',
+                3: '3 / 5 Baik',
+                4: '4 / 5 Bagus',
+                5: '5 / 5 Sangat Bagus'
+            };
+
+            function renderStars(val) {
+                starBtns.forEach(function (btn) {
+                    const v = parseInt(btn.dataset.value, 10);
+                    btn.classList.toggle('text-warning', v <= val);
+                    btn.classList.toggle('text-muted', v > val);
+                    btn.style.opacity = v <= val ? '1' : '0.35';
+                });
+                if (ratingLabel) {
+                    ratingLabel.textContent = labels[val] || (val + ' / 5');
+                }
+            }
+
+            starBtns.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const val = parseInt(btn.dataset.value, 10);
+                    ratingInput.value = val;
+                    renderStars(val);
+                });
+            });
+
+            recBtns.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const val = btn.dataset.rec;
+                    recInput.value = val;
+                    recBtns.forEach(function (b) {
+                        const isActive = b === btn;
+                        b.classList.toggle('active', isActive);
+                        b.classList.toggle('btn-primary', isActive);
+                        b.classList.toggle('btn-outline-secondary', !isActive);
+                    });
+                });
+            });
+
+            renderStars(parseInt(ratingInput.value || '5', 10));
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const submitBtn = document.getElementById('fbSubmitBtn');
+                const errBox = document.getElementById('fbErrorBox');
+                const msgVal = document.getElementById('fbMessageInput').value.trim();
+
+                errBox.classList.add('d-none');
+                if (msgVal.length < 5) {
+                    errBox.textContent = 'Mohon tulis masukan minimal 5 karakter ya.';
+                    errBox.classList.remove('d-none');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                const origHtml = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Mengirim...';
+
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': form.querySelector('input[name="_token"]').value
+                    },
+                    body: JSON.stringify({
+                        rating: parseInt(ratingInput.value, 10),
+                        recommendation: recInput.value,
+                        message: msgVal
+                    })
+                })
+                .then(async function (res) {
+                    const data = await res.json();
+                    if (!res.ok) {
+                        const firstErr = data?.errors ? Object.values(data.errors).flat()[0] : (data?.message || 'Gagal mengirim masukan.');
+                        throw new Error(firstErr);
+                    }
+                    const stars = parseInt(data.feedback.rating, 10);
+                    document.getElementById('fbDoneStars').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+                    document.getElementById('fbDoneMessage').textContent = '"' + data.feedback.message + '"';
+                    if (data.feedback.recommendation === 'yes') {
+                        document.getElementById('fbShareWaBox').classList.remove('d-none');
+                    }
+                    form.classList.add('d-none');
+                    document.getElementById('feedbackDoneBox').classList.remove('d-none');
+                })
+                .catch(function (err) {
+                    errBox.textContent = err.message || 'Terjadi kesalahan, silakan coba lagi.';
+                    errBox.classList.remove('d-none');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = origHtml;
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

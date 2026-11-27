@@ -453,6 +453,8 @@ class UjianController extends Controller
             ->distinct('user_id')
             ->count('user_id') + 1;
 
+        $existingFeedback = \App\Models\TryoutFeedback::where('user_id', $userId)->first();
+
         return view('user.ujian.ujian_hasil', [
             'id' => $session->id,
             'tryoutId' => $session->tryout_id,
@@ -465,6 +467,7 @@ class UjianController extends Controller
             'hargaUpgrade' => $hargaUpgrade,
             'totalParticipants' => $totalParticipants,
             'sessionRank' => $sessionRank,
+            'existingFeedback' => $existingFeedback,
         ]);
     }
 
@@ -597,13 +600,16 @@ class UjianController extends Controller
             return ($item->score_twk >= 65 && $item->score_tiu >= 80 && $item->score_tkp >= 166);
         })->count();
 
+        $hasSubmittedFeedback = \App\Models\TryoutFeedback::where('user_id', $userId)->exists();
+
         // 4. Lempar variabel ke file View
         return view('user.riwayat_tryout.riwayat_ujian', compact(
             'riwayatUjian', 
             'sessionTerbaruPerTryout', 
             'totalTryout', 
             'skorTertinggi', 
-            'totalLulus'
+            'totalLulus',
+            'hasSubmittedFeedback'
         ));
     }
 

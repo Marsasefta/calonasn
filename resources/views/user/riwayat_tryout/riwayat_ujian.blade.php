@@ -171,6 +171,17 @@
                                                             title="Buka Pembahasan Soal">
                                                             <i class="fe fe-book-open me-1"></i>Pembahasan
                                                         </a>
+                                                        @if (!empty($hasSubmittedFeedback))
+                                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 text-nowrap" style="font-size: 11px;">
+                                                                <i class="fe fe-check me-1"></i>Diulas
+                                                            </span>
+                                                        @else
+                                                            <a href="{{ route('ujian.hasil', $item->id) }}#feedback-card"
+                                                                class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1 text-nowrap fw-medium"
+                                                                title="Beri Penilaian &amp; Saran">
+                                                                <i class="fe fe-message-square me-1"></i>Ulas
+                                                            </a>
+                                                        @endif
                                                     @else
                                                         <span class="badge rounded-pill px-2.5 py-1 text-nowrap fw-semibold d-inline-flex align-items-center"
                                                             style="background-color: #e2e8f0 !important; color: #334155 !important; border: 1px solid #cbd5e1 !important; font-size: 12px;"
@@ -220,9 +231,9 @@
     @include('partials.btn-scroll-top')
     <!-- Scripts -->
     @include('partials.scripts')
-    <script src="assets/js/vendors/tnsSlider.js"></script>
-    <script src="assets/js/vendors/chart.js"></script>
-    <script src="assets/js/vendors/navbar-nav.js"></script>
+    <script src="/build/assets/js/vendors/tnsSlider.js"></script>
+    <script src="/build/assets/js/vendors/chart.js"></script>
+    <script src="/build/assets/js/vendors/navbar-nav.js"></script>
 </body>
 
 </html>
