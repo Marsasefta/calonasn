@@ -178,6 +178,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/transactions/{id}/status', [App\Http\Controllers\AdminTransactionController::class, 'updateStatus'])->name('transactions.update-status');
         Route::delete('/transactions/{id}', [App\Http\Controllers\AdminTransactionController::class, 'destroy'])->name('transactions.destroy');
 
+        Route::get('/expenses', [App\Http\Controllers\AdminExpenseController::class, 'index'])->name('expenses.index');
+        Route::post('/expenses', [App\Http\Controllers\AdminExpenseController::class, 'store'])->name('expenses.store');
+        Route::put('/expenses/{id}', [App\Http\Controllers\AdminExpenseController::class, 'update'])->name('expenses.update');
+        Route::delete('/expenses/{id}', [App\Http\Controllers\AdminExpenseController::class, 'destroy'])->name('expenses.destroy');
+
         Route::get('/reports', [App\Http\Controllers\AdminReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/export', [App\Http\Controllers\AdminReportController::class, 'export'])->name('reports.export');
 

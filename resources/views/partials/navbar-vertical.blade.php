@@ -99,6 +99,13 @@
         </li>
 
         <li class="nav-item">
+          <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.expenses.*') ? 'active' : '' }}" href="{{ route('admin.expenses.index') }}">
+            <i class="fe fe-trending-down me-2.5"></i>
+            <span>Pengeluaran</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
           <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.reports.*') ? 'active' : '' }}" href="{{ route('admin.reports.index') }}">
             <i class="fe fe-bar-chart-2 me-2.5"></i>
             <span>Laporan & Peringkat</span>
@@ -252,6 +259,7 @@
     color: #cbd5e1; /* Slate-300 yang cerah, kontras dengan kategori Sky Blue */
     font-size: 13.5px;
     font-weight: 500;
+    gap: 0.65rem;
     transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
     margin: 2px 0;
     position: relative;
@@ -261,6 +269,9 @@
 
   .navbar-vertical .nav-link i {
     font-size: 15px;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
     color: #94a3b8; /* Ikon slate netral yang serasi */
     transition: color 0.15s ease;
   }
