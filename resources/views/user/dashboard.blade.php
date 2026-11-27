@@ -37,6 +37,11 @@
     <div class="db-content">
         <div class="container-fluid py-4">
 
+            @php
+                $promo24h = $promo24h ?? (auth()->check() ? auth()->user()->newMemberPromo() : null);
+            @endphp
+            @include('partials.promo-24h-banner', ['showCta' => true, 'promo24h' => $promo24h])
+
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="card border-0 shadow-sm rounded-4"
@@ -107,7 +112,6 @@
             </div>
 
         @php
-            $promo24h = $promo24h ?? (auth()->check() ? auth()->user()->newMemberPromo() : null);
             $isUnlocked = isset($access) && $access['status'] == 'unlocked';
             $topLeader = $topNational->first();
             $hargaMandiri = (int) ($tryoutMandiri->price ?? 20000);
@@ -117,7 +121,6 @@
             $hargaMandiriAkhir = max(0, $hargaMandiri - $diskonPromo);
             $hargaLengkapAkhir = max(0, $hargaLengkap - $diskonPromo);
         @endphp
-        @include('partials.promo-24h-banner', ['showCta' => true, 'promo24h' => $promo24h])
 
         <div class="row g-4 mb-4">
 

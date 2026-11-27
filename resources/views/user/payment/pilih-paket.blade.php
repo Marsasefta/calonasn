@@ -30,7 +30,7 @@
 
             @include('partials.promo-24h-banner', ['showCta' => false, 'promo24h' => $promo24h ?? null])
 
-            <div class="row g-4 justify-content-center align-items-stretch">
+            <div id="daftar-paket" class="row g-4 justify-content-center align-items-stretch">
 
                 <!-- PAKET 1: TRYOUT MANDIRI -->
                 <div class="col-lg-5 col-md-6 d-flex">
@@ -51,8 +51,8 @@
                                 @if (!empty($promo24h))
                                     <div class="mt-2 pt-2 border-top border-secondary border-opacity-25">
                                         <span class="badge bg-success text-white px-2.5 py-1 small shadow-xs">
-                                            <i class="bi bi-tag-fill me-1"></i> + Kupon {{ $promo24h['code'] }} (s/d 23:59 WIB) jadi: <strong
-                                                class="fs-6">Rp 13.000</strong>
+                                            <i class="bi bi-tag-fill me-1"></i> + Kupon {{ $promo24h['code'] }} ({{ $promo24h['deadline_label'] ?? 'Terbatas 2 Jam' }}) jadi: <strong
+                                                class="fs-6">Rp {{ number_format(max(0, 20000 - (int) ($promo24h['discount_amount'] ?? 7000)), 0, ',', '.') }}</strong>
                                         </span>
                                     </div>
                                 @endif
@@ -150,8 +150,8 @@
                                         @if (!empty($promo24h))
                                             <div class="mt-2 pt-2 border-top border-primary border-opacity-25">
                                                 <span class="badge bg-primary text-white px-2.5 py-1 small shadow-sm">
-                                                    <i class="bi bi-tag-fill me-1"></i> + Kupon {{ $promo24h['code'] }} (s/d 23:59 WIB) jadi: <strong
-                                                        class="fs-6 text-warning">Rp 42.000</strong>
+                                                    <i class="bi bi-tag-fill me-1"></i> + Kupon {{ $promo24h['code'] }} ({{ $promo24h['deadline_label'] ?? 'Terbatas 2 Jam' }}) jadi: <strong
+                                                        class="fs-6 text-warning">Rp {{ number_format(max(0, 49000 - (int) ($promo24h['discount_amount'] ?? 7000)), 0, ',', '.') }}</strong>
                                                 </span>
                                             </div>
                                         @endif
@@ -219,9 +219,9 @@
     @include('partials.btn-scroll-top')
     <!-- Scripts -->
     @include('partials.scripts')
-    <script src="assets/js/vendors/tnsSlider.js"></script>
-    <script src="assets/js/vendors/chart.js"></script>
-    <script src="assets/js/vendors/navbar-nav.js"></script>
+    <script src="/build/assets/js/vendors/tnsSlider.js"></script>
+    <script src="/build/assets/js/vendors/chart.js"></script>
+    <script src="/build/assets/js/vendors/navbar-nav.js"></script>
 </body>
 
 </html>
