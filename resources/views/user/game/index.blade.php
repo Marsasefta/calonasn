@@ -139,6 +139,11 @@
             color: #cbd5e1;
         }
 
+        .game-overlay-card h4,
+        .game-overlay-card h5 {
+            color: #ffffff !important;
+        }
+
         .lb-item {
             border-radius: 0.75rem;
             padding: 10px 12px;
@@ -274,7 +279,7 @@
                                     <div class="alert alert-warning border-0 rounded-4 mt-3 mb-0 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2">
                                         <div class="small">
                                             <strong>Mode Trial ({{ $trialSeconds }} Detik &times; {{ $trialLimit }}x/hari):</strong>
-                                            Upgrade ke Paket 1, 2, atau 3 untuk main <strong>Unlimited</strong> dan masuk <strong>Top 10 Leaderboard</strong>!
+                                            Yuk upgrade paketmu untuk main <strong>Unlimited</strong> dan masuk <strong>Top 10 Leaderboard</strong>!
                                         </div>
                                         <a href="{{ route('user.pilih-paket') }}" class="btn btn-warning btn-sm rounded-pill fw-bold text-nowrap px-3">
                                             Lihat Paket
@@ -341,7 +346,7 @@
                                     <span class="badge bg-primary-subtle text-primary rounded-pill">Member Aktif</span>
                                 </div>
                                 <p class="text-muted small mb-3">
-                                    Khusus peserta Paket 1, 2, dan 3. Nama disamarkan demi privasi peserta.
+                                    Khusus peserta Paket Premium. Nama disamarkan demi privasi peserta.
                                 </p>
 
                                 <div id="leaderboardList" class="d-flex flex-column gap-2">
@@ -612,7 +617,7 @@
                     <h5 class="fw-bold mb-2">Trial Hari Ini Habis (3/3)</h5>
                     <p class="small text-muted-light mb-3">
                         Kuota ${CONFIG.trialLimit}x trial (${CONFIG.trialSeconds} detik) untuk hari ini sudah terpakai.
-                        Yuk lanjut persiapan CPNS atau upgrade ke Paket 1, 2, atau 3 untuk main tanpa batas!
+                        Yuk lanjut persiapan CPNS atau upgrade paketmu untuk main tanpa batas!
                     </p>
                     <div class="d-grid gap-2">
                         <a href="${escapeHtml(CONFIG.routes.pilihPaket)}" class="btn btn-warning rounded-pill fw-bold text-dark">

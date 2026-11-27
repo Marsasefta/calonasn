@@ -76,7 +76,7 @@ class RefreshingGameController extends Controller
         if ($user->package_status === 'free') {
             return response()->json([
                 'status' => 'forbidden',
-                'message' => 'Penyimpanan skor Leaderboard khusus untuk Member Paket 1, 2, dan 3.',
+                'message' => 'Penyimpanan skor Leaderboard khusus untuk Member Paket Premium.',
             ], 403);
         }
 
