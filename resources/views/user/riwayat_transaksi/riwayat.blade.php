@@ -1,147 +1,309 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
 
 <head>
     @include('partials.head')
-
-    <title>Riwayat Transaksi</title>
+    <title>Riwayat Transaksi | CalonASN.id</title>
+    <style>
+        .riwayat-shell {
+            max-width: 1120px;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Page Content -->
     @include('partials.navbar')
-    <!-- Sidebar -->
     @include('partials.navbar-student')
 
     <div class="db-content">
-        <div class="container mb-4">
-            <div class="row mb-5">
-                <div class="col-12">
-                    <h1 class="h2 mb-0">Riwayat Pembayaran</h1>
-                    <p class="text-muted">Daftar transaksi dan status aktivasi paket tryout kamu.</p>
+        <div class="container-fluid py-3 py-md-4">
+            <div class="riwayat-shell">
+
+                <!-- Header -->
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+                    <div>
+                        <h1 class="h2 fw-bold mb-1">Riwayat Transaksi</h1>
+                        <p class="text-muted small mb-0">Daftar tagihan, status aktivasi paket tryout, dan invoice resmi kamu.</p>
+                    </div>
+                    <div>
+                        <a href="{{ route('user.pilih-paket') }}" class="btn btn-primary btn-sm rounded-pill px-3 py-2 fw-bold shadow-xs">
+                            <i class="fe fe-shopping-cart me-1"></i> Lihat Paket Tryout
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="card shadow-sm border-0">
 
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4" role="alert">
+                        <i class="fe fe-check-circle me-2"></i> {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4" role="alert">
+                        <i class="fe fe-x-circle me-2"></i> {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+                    </div>
+                @endif
+
+                <!-- 3 Kartu Ringkasan -->
+                <div class="row g-3 mb-4">
+                    <div class="col-4 col-md-4">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            <div class="card-body p-3">
+                                <span class="text-muted small fw-semibold d-block">Total</span>
+                                <h3 class="fw-bolder mb-0 mt-1 text-dark">{{ $totalCount ?? $transactions->count() }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-4">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            <div class="card-body p-3">
+                                <span class="text-muted small fw-semibold d-block">Sukses</span>
+                                <h3 class="fw-bolder mb-0 mt-1 text-success">{{ $successCount ?? 0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-4">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            <div class="card-body p-3">
+                                <span class="text-muted small fw-semibold d-block">Pending</span>
+                                <h3 class="fw-bolder mb-0 mt-1 text-warning">{{ $pendingCount ?? 0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @php
+                    $preparedTx = $transactions->map(function ($trx) {
+                        $statusClean = strtolower(trim((string) $trx->status));
+                        $refCode = $trx->invoice_number ?? $trx->order_id;
+                        $isUnpaid = $statusClean === 'pending' && empty($trx->payment_proof);
+                        $isVerifying = $statusClean === 'pending' && !empty($trx->payment_proof);
+                        $isSuccess = in_array($statusClean, ['success', 'paid'], true);
+                        $waMsg = urlencode('Halo Admin CalonASN, saya ingin konfirmasi pembayaran untuk invoice ' . $refCode . ' atas nama ' . (auth()->user()->name ?? 'Peserta') . '.');
+
+                        return [
+                            'model' => $trx,
+                            'statusClean' => $statusClean,
+                            'refCode' => $refCode,
+                            'packageTitle' => $trx->tryout->title ?? 'Paket Tryout',
+                            'totalText' => 'Rp ' . number_format($trx->total_amount ?? $trx->amount, 0, ',', '.'),
+                            'dateText' => $trx->created_at ? $trx->created_at->format('d M Y, H:i') : '-',
+                            'expiredText' => ($isUnpaid && $trx->expired_at) ? \Illuminate\Support\Carbon::parse($trx->expired_at)->format('d M Y, H:i') : null,
+                            'isUnpaid' => $isUnpaid,
+                            'isVerifying' => $isVerifying,
+                            'isSuccess' => $isSuccess,
+                            'waUrl' => 'https://wa.me/6285113655806?text=' . $waMsg,
+                        ];
+                    });
+                @endphp
+
+                @if ($preparedTx->isEmpty())
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body p-5 text-center">
+                            <div class="rounded-circle bg-primary-soft text-primary d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <i class="fe fe-shopping-bag fs-3"></i>
+                            </div>
+                            <h5 class="fw-bold mb-1">Belum Ada Riwayat Transaksi</h5>
+                            <p class="text-muted small mb-3">Pilih paket belajar &amp; tryout CAT CPNS untuk mulai berlatih maksimal.</p>
+                            <a href="{{ route('user.pilih-paket') }}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-xs">
+                                <i class="fe fe-zap me-1"></i> Pilih Paket Tryout Sekarang
+                            </a>
+                        </div>
+                    </div>
+                @else
+                    <!-- TAMPILAN MOBILE (< md): CARD STACK BEBAS SCROLL SAMPING -->
+                    <div class="d-md-none d-flex flex-column gap-3">
+                        @foreach ($preparedTx as $item)
+                            @php $trx = $item['model']; @endphp
+                            <div class="card border-0 shadow-sm rounded-4">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                        <div class="min-w-0">
+                                            <div class="small text-muted">{{ $item['dateText'] }}</div>
+                                            <h6 class="fw-bold mb-0 text-truncate">{{ $item['packageTitle'] }}</h6>
+                                        </div>
+                                        @if ($item['isUnpaid'])
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle flex-shrink-0">BELUM BAYAR</span>
+                                        @elseif ($item['isVerifying'])
+                                            <span class="badge bg-info-subtle text-info border border-info-subtle flex-shrink-0">VERIFIKASI</span>
+                                        @elseif ($item['isSuccess'])
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle flex-shrink-0">SUKSES</span>
+                                        @else
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle flex-shrink-0">GAGAL</span>
+                                        @endif
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center py-2 border-top border-bottom my-2">
+                                        <div>
+                                            <div class="small text-muted">No. Invoice</div>
+                                            <div class="small fw-semibold">{{ $item['refCode'] }}</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="small text-muted">Total</div>
+                                            <div class="fw-bold text-primary">{{ $item['totalText'] }}</div>
+                                        </div>
+                                    </div>
+
+                                    @if ($item['expiredText'])
+                                        <div class="small text-warning fw-semibold mb-2">
+                                            <i class="fe fe-clock me-1"></i> Batas bayar: {{ $item['expiredText'] }}
+                                        </div>
+                                    @endif
+
+                                    <div class="d-flex flex-wrap gap-2 mt-2">
+                                        @if ($item['isUnpaid'])
+                                            <a href="{{ route('payment.qris', $item['refCode']) }}" class="btn btn-sm btn-primary rounded-pill fw-bold flex-grow-1">
+                                                <i class="fe fe-credit-card me-1"></i> Bayar Sekarang
+                                            </a>
+                                            <form action="{{ route('riwayat.destroy', $trx->id) }}" method="POST" class="cancel-order-form mb-0">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold" data-invoice="{{ $item['refCode'] }}">
+                                                    Batalkan
+                                                </button>
+                                            </form>
+                                        @elseif ($item['isVerifying'])
+                                            <a href="{{ route('payment.qris', $item['refCode']) }}" class="btn btn-sm btn-outline-info rounded-pill fw-semibold flex-grow-1">
+                                                <i class="fe fe-eye me-1"></i> Cek Bukti
+                                            </a>
+                                            <a href="{{ $item['waUrl'] }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-success rounded-pill fw-semibold flex-grow-1">
+                                                <i class="bi bi-whatsapp me-1"></i> Konfirmasi WA
+                                            </a>
+                                        @elseif ($item['isSuccess'])
+                                            <a href="{{ route('invoice', $item['refCode']) }}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold w-100">
+                                                <i class="fe fe-file-text me-1"></i> Lihat Invoice Resmi
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <!-- TAMPILAN TABLET & DESKTOP (>= md): TABEL RAPI -->
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden d-none d-md-block">
                         <div class="table-responsive">
-                            @if (session('success'))
-                                <div class="alert alert-success alert-dismissible fade show m-3 border-0 shadow-sm"
-                                    role="alert">
-                                    <i class="fe fe-check-circle me-2"></i> {{ session('success') }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                        aria-label="Close"></button>
-                                </div>
-                            @endif
-                            @if (session('error'))
-                                <div class="alert alert-danger alert-dismissible fade show m-3 border-0 shadow-sm"
-                                    role="alert">
-                                    <i class="fe fe-x-circle me-2"></i> {{ session('error') }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                        aria-label="Close"></button>
-                                </div>
-                            @endif
-
-                            <table class="table text-nowrap mb-0 table-hover">
+                            <table class="table mb-0 table-hover align-middle">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>Tanggal</th>
+                                        <th class="ps-4">Tanggal</th>
                                         <th>No. Invoice</th>
                                         <th>Paket</th>
                                         <th>Total Tagihan</th>
                                         <th>Status</th>
-                                        <th class="text-end">Aksi</th>
+                                        <th class="text-end pe-4">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse ($transactions as $trx)
-                                        @php
-                                            // Bersihkan status dari spasi dan paksa jadi huruf kecil semua
-                                            $statusClean = strtolower(trim($trx->status));
-                                        @endphp
+                                    @foreach ($preparedTx as $item)
+                                        @php $trx = $item['model']; @endphp
                                         <tr>
-                                            <td class="align-middle">
-                                                {{ $trx->created_at->format('d M Y, H:i') }}
+                                            <td class="text-nowrap ps-4">
+                                                <div>{{ $item['dateText'] }}</div>
+                                                @if ($item['expiredText'])
+                                                    <small class="text-warning fw-semibold">Exp: {{ $item['expiredText'] }}</small>
+                                                @endif
                                             </td>
-                                            <td class="align-middle fw-medium text-dark">
-                                                {{ $trx->invoice_number ?? $trx->order_id }}
+                                            <td class="fw-medium text-nowrap">{{ $item['refCode'] }}</td>
+                                            <td>
+                                                <span class="fw-bold">{{ $item['packageTitle'] }}</span>
                                             </td>
-                                            <td class="align-middle">
-                                                <h5 class="mb-0 text-dark">{{ $trx->tryout->title ?? 'Paket Tryout' }}</h5>
-                                            </td>
-                                            <td class="align-middle fw-bold text-dark">
-                                                Rp {{ number_format($trx->total_amount ?? $trx->amount, 0, ',', '.') }}
-                                            </td>
-
-                                            {{-- SEKARANG SUDAH MENGGUNAKAN @elseif YANG BENAR --}}
-                                            <td class="align-middle">
-                                                @if ($statusClean == 'pending' && empty($trx->payment_proof))
-                                                    <span class="badge bg-warning-soft text-warning px-2 py-1">
+                                            <td class="fw-bold text-nowrap">{{ $item['totalText'] }}</td>
+                                            <td class="text-nowrap">
+                                                @if ($item['isUnpaid'])
+                                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2.5 py-1">
                                                         <i class="fe fe-clock me-1"></i> BELUM BAYAR
                                                     </span>
-                                                @elseif ($statusClean == 'pending' && !empty($trx->payment_proof))
-                                                    <span class="badge bg-info-soft text-info px-2 py-1">
-                                                        <i class="fe fe-refresh-cw me-1 align-middle"></i> MENUNGGU VERIFIKASI
+                                                @elseif ($item['isVerifying'])
+                                                    <span class="badge bg-info-subtle text-info border border-info-subtle px-2.5 py-1">
+                                                        <i class="fe fe-refresh-cw me-1"></i> MENUNGGU VERIFIKASI
                                                     </span>
-                                                @elseif (in_array($statusClean, ['success', 'paid']))
-                                                    <span class="badge bg-success-soft text-success px-2 py-1">
+                                                @elseif ($item['isSuccess'])
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1">
                                                         <i class="fe fe-check-circle me-1"></i> SUKSES
                                                     </span>
                                                 @else
-                                                    <span class="badge bg-danger-soft text-danger px-2 py-1">
+                                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1">
                                                         <i class="fe fe-x-circle me-1"></i> GAGAL ({{ $trx->status }})
                                                     </span>
                                                 @endif
                                             </td>
-
-                                            {{-- KOLOM AKSI JUGA SUDAH DIPERBAIKI MENJADI @elseif --}}
-                                            <td class="align-middle text-end">
-                                                @if ($statusClean == 'pending' && empty($trx->payment_proof))
-                                                    <a href="{{ route('payment.qris', $trx->invoice_number) }}"
-                                                        class="btn btn-sm btn-primary">
-                                                        <i class="fe fe-credit-card me-1"></i> Bayar Sekarang
-                                                    </a>
-                                                @elseif ($statusClean == 'pending' && !empty($trx->payment_proof))
-                                                    <a href="{{ route('payment.qris', $trx->invoice_number) }}"
-                                                        class="btn btn-sm btn-outline-info">
-                                                        <i class="fe fe-eye me-1"></i> Cek Bukti
-                                                    </a>
-                                                @elseif (in_array($statusClean, ['success', 'paid']))
-                                                    <a href="{{ route('invoice', $trx->invoice_number ?? $trx->order_id) }}"
-                                                        class="btn btn-sm btn-outline-secondary" target="_blank">
-                                                        <i class="fe fe-file-text me-1"></i> Invoice
-                                                    </a>
-                                                @else
-                                                    <span class="text-muted small">-</span>
-                                                @endif
+                                            <td class="text-end pe-4 text-nowrap">
+                                                <div class="d-inline-flex align-items-center gap-2 justify-content-end">
+                                                    @if ($item['isUnpaid'])
+                                                        <a href="{{ route('payment.qris', $item['refCode']) }}" class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold">
+                                                            <i class="fe fe-credit-card me-1"></i> Bayar Sekarang
+                                                        </a>
+                                                        <form action="{{ route('riwayat.destroy', $trx->id) }}" method="POST" class="cancel-order-form mb-0">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold" data-invoice="{{ $item['refCode'] }}">
+                                                                Batalkan
+                                                            </button>
+                                                        </form>
+                                                    @elseif ($item['isVerifying'])
+                                                        <a href="{{ route('payment.qris', $item['refCode']) }}" class="btn btn-sm btn-outline-info rounded-pill px-3 fw-semibold">
+                                                            <i class="fe fe-eye me-1"></i> Cek Bukti
+                                                        </a>
+                                                        <a href="{{ $item['waUrl'] }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-success rounded-pill px-3 fw-semibold">
+                                                            <i class="bi bi-whatsapp me-1"></i> Chat Admin
+                                                        </a>
+                                                    @elseif ($item['isSuccess'])
+                                                        <a href="{{ route('invoice', $item['refCode']) }}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold">
+                                                            <i class="fe fe-file-text me-1"></i> Invoice
+                                                        </a>
+                                                    @else
+                                                        <span class="text-muted small">-</span>
+                                                    @endif
+                                                </div>
                                             </td>
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="6" class="text-center py-5 text-muted">
-                                                <i class="fe fe-shopping-bag fs-1 d-block mb-2"></i>
-                                                Belum ada riwayat transaksi pembayaran.
-                                            </td>
-                                        </tr>
-                                    @endforelse
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
-
                     </div>
-                </div>
+                @endif
+
             </div>
         </div>
     </div>
 
-    <!-- Scroll top -->
     @include('partials.btn-scroll-top')
-    <!-- Scripts -->
     @include('partials.scripts')
-    <script src="assets/js/vendors/tnsSlider.js"></script>
-    <script src="assets/js/vendors/chart.js"></script>
-    <script src="assets/js/vendors/navbar-nav.js"></script>
+    <script src="/build/assets/js/vendors/navbar-nav.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('submit', function (e) {
+                const form = e.target.closest('.cancel-order-form');
+                if (!form) return;
+                e.preventDefault();
+
+                const btn = form.querySelector('button[data-invoice]');
+                const inv = btn ? btn.getAttribute('data-invoice') : '';
+
+                if (window.Swal) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Batalkan Pesanan?',
+                        text: `Pesanan ${inv} yang belum dibayar akan dibatalkan.`,
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc2626',
+                        confirmButtonText: 'Ya, batalkan',
+                        cancelButtonText: 'Kembali'
+                    }).then(function (result) {
+                        if (result.isConfirmed) form.submit();
+                    });
+                } else {
+                    form.submit();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

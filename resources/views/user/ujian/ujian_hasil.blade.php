@@ -297,9 +297,10 @@
                                 <i class="fe fe-award me-1"></i> Unduh Sertifikat Resmi
                             </a>
                         @else
-                            <button type="button" class="btn btn-secondary text-white rounded-pill px-3.5 py-2" disabled
-                                title="Capai Passing Grade di semua kategori untuk membuka sertifikat"
-                                style="cursor: not-allowed; opacity: 0.65;">
+                            <button type="button" id="btnLockedCertificate"
+                                class="btn btn-secondary text-white rounded-pill px-3.5 py-2 shadow-xs"
+                                title="Klik untuk melihat syarat kelulusan sertifikat"
+                                style="opacity: 0.85;">
                                 <i class="fe fe-lock me-1"></i> Sertifikat Terkunci
                             </button>
                         @endif
@@ -327,6 +328,59 @@
     <script src="/build/assets/js/vendors/tnsSlider.js"></script>
     <script src="/build/assets/js/vendors/chart.js"></script>
     <script src="/build/assets/js/vendors/navbar-nav.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @php
+        $failedSubtests = [];
+        foreach ($hasilPerKategori as $hasil) {
+            $skorSub = (int) ($hasil['skor'] ?? 0);
+            $pgSub = (int) ($hasil['passing_grade'] ?? 0);
+            if ($skorSub < $pgSub) {
+                $failedSubtests[] = [
+                    'name' => $hasil['name'],
+                    'skor' => $skorSub,
+                    'pg' => $pgSub,
+                    'kurang' => $pgSub - $skorSub,
+                ];
+            }
+        }
+    @endphp
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const lockedCertBtn = document.getElementById('btnLockedCertificate');
+            if (lockedCertBtn) {
+                const failedSubtests = @json($failedSubtests);
+                const pembahasanUrl = @json(route('ujian.pembahasan', $id));
+
+                lockedCertBtn.addEventListener('click', function () {
+                    const listHtml = failedSubtests.map(function (item) {
+                        return `<li class="mb-1"><strong>${item.name}</strong>: skor ${item.skor} (Min. PG ${item.pg}, kurang <strong>${item.kurang} poin</strong>)</li>`;
+                    }).join('');
+
+                    if (window.Swal) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Ups, Sertifikat Belum Terbuka!',
+                            html: `
+                                <p class="small mb-2">Kamu belum bisa mengunduh sertifikat resmi karena nilai pada subtes berikut belum memenuhi Passing Grade BKN:</p>
+                                <ul class="text-start small mb-3 ps-3">${listHtml}</ul>
+                                <p class="small text-muted mb-0">Yuk evaluasi dulu pembahasannya dan coba lagi sampai lolos semua PG!</p>
+                            `,
+                            showCancelButton: true,
+                            confirmButtonText: 'Buka Pembahasan Soal',
+                            cancelButtonText: 'Tutup',
+                            confirmButtonColor: '#2563eb'
+                        }).then(function (result) {
+                            if (result.isConfirmed) {
+                                window.location.href = pembahasanUrl;
+                            }
+                        });
+                    } else {
+                        alert('Ups, Anda belum lolos Passing Grade di semua kategori sehingga sertifikat belum dapat diunduh.');
+                    }
+                });
+            }
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('tryoutFeedbackForm');

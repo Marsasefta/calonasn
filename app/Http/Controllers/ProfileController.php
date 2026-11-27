@@ -16,8 +16,22 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+        $completedExamsCount = \App\Models\ExamSession::where('user_id', $user->id)
+            ->whereNotNull('end_time')
+            ->count();
+        $highestScore = (int) (\App\Models\ExamSession::where('user_id', $user->id)
+            ->whereNotNull('end_time')
+            ->max('total_score') ?? 0);
+
         return view('user.profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'packageLabel' => $user->package_label,
+            'packageStatus' => $user->package_status,
+            'isGoogleAccount' => !empty($user->google_id),
+            'completedExamsCount' => $completedExamsCount,
+            'highestScore' => $highestScore,
+            'promo24h' => $user->newMemberPromo(),
         ]);
     }
 

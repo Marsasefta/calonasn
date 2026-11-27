@@ -14,7 +14,7 @@
     @include('partials.navbar-student')
 
     <div class="db-content">
-        <div class="container mb-4">
+        <div class="container py-3 py-md-4 mb-4">
 
             <div class="row mb-4 text-center">
                 <div class="col-12 col-md-8 offset-md-2">
@@ -35,7 +35,7 @@
                 <!-- PAKET 1: TRYOUT MANDIRI -->
                 <div class="col-lg-5 col-md-6 d-flex">
                     <div
-                        class="card w-100 border border-2 border-light shadow-sm rounded-4 p-4 p-md-5 d-flex flex-column bg-white">
+                        class="card w-100 border border-2 border-secondary-subtle shadow-sm rounded-4 p-3 p-sm-4 p-md-5 d-flex flex-column bg-white">
                         <div class="mb-4">
                             <span class="badge bg-secondary px-3 py-1 rounded-pill mb-2 fw-semibold">Paket
                                 Latihan</span>
@@ -50,7 +50,7 @@
                                 </p>
                                 @if (!empty($promo24h))
                                     <div class="mt-2 pt-2 border-top border-secondary border-opacity-25">
-                                        <span class="badge bg-success text-white px-2.5 py-1 small shadow-xs">
+                                        <span class="badge bg-success text-white px-2.5 py-1.5 small shadow-xs text-wrap lh-base text-start d-inline-block">
                                             <i class="bi bi-tag-fill me-1"></i> + Kupon {{ $promo24h['code'] }} ({{ $promo24h['deadline_label'] ?? 'Terbatas 2 Jam' }}) jadi: <strong
                                                 class="fs-6">Rp {{ number_format(max(0, 20000 - (int) ($promo24h['discount_amount'] ?? 7000)), 0, ',', '.') }}</strong>
                                         </span>
@@ -96,7 +96,7 @@
 
                         <div class="mt-auto">
                             @if ($isLengkap || $hasPaket1)
-                                <button class="btn btn-light rounded-pill py-3 fw-bold w-100 border text-muted"
+                                <button class="btn btn-secondary rounded-pill py-3 fw-bold w-100 opacity-75"
                                     disabled>
                                     <i class="bi bi-check-all me-1"></i> Sudah Dimiliki
                                 </button>
@@ -113,14 +113,14 @@
                 <!-- PAKET 2: PAKET SUPER LENGKAP / UNLIMITED -->
                 <div class="col-lg-5 col-md-6 d-flex">
                     <div
-                        class="card w-100 border-2 border-primary shadow rounded-4 p-4 p-md-5 d-flex flex-column bg-white position-relative">
+                        class="card w-100 border-2 border-primary shadow rounded-4 p-3 p-sm-4 p-md-5 d-flex flex-column bg-white position-relative overflow-hidden">
 
-                        <div class="position-absolute top-0 end-0 bg-primary text-white px-4 py-2 small fw-bold shadow-sm"
+                        <div class="position-absolute top-0 end-0 bg-primary text-white px-3 px-sm-4 py-1.5 py-sm-2 small fw-bold shadow-sm"
                             style="border-bottom-left-radius: 16px;">
                             ⭐ REKOMENDASI TERBAIK
                         </div>
 
-                        <div class="mb-4 mt-2">
+                        <div class="mb-4 mt-4 mt-sm-2">
                             <span class="badge bg-primary-soft text-primary px-3 py-1 rounded-pill mb-2 fw-bold">Paket
                                 Super Lengkap</span>
 
@@ -132,12 +132,12 @@
                                 @if ($hasPaket1 && !$isLengkap)
                                     <!-- Opsi Upgrade (Paket 3) -->
                                     <div
-                                        class="p-3 bg-warning bg-opacity-10 rounded-3 border border-warning border-opacity-25">
-                                        <p class="text-muted small mb-1"><del>Rp 49.000</del> • Biaya Khusus Upgrade:</p>
+                                        class="p-3 bg-warning-subtle rounded-3 border border-warning">
+                                        <p class="text-warning-emphasis small mb-1"><del class="opacity-75">Rp 49.000</del> • Biaya Khusus Upgrade:</p>
                                         <p class="display-5 fw-bolder text-dark mb-0">
                                             Rp 29.000 <span class="fs-6 text-muted fw-normal">/selamanya</span>
                                         </p>
-                                        <span class="badge bg-warning text-dark mt-2 shadow-sm fw-bold">
+                                        <span class="badge bg-warning text-dark mt-2 shadow-sm fw-bold text-wrap lh-base text-start d-inline-block">
                                             <i class="bi bi-lightning-charge-fill me-1"></i> Buka Tryout Coba Berkali-kali & Full Modul
                                         </span>
                                     </div>
@@ -149,7 +149,7 @@
                                         </p>
                                         @if (!empty($promo24h))
                                             <div class="mt-2 pt-2 border-top border-primary border-opacity-25">
-                                                <span class="badge bg-primary text-white px-2.5 py-1 small shadow-sm">
+                                                <span class="badge bg-primary text-white px-2.5 py-1.5 small shadow-sm text-wrap lh-base text-start d-inline-block">
                                                     <i class="bi bi-tag-fill me-1"></i> + Kupon {{ $promo24h['code'] }} ({{ $promo24h['deadline_label'] ?? 'Terbatas 2 Jam' }}) jadi: <strong
                                                         class="fs-6 text-warning">Rp {{ number_format(max(0, 49000 - (int) ($promo24h['discount_amount'] ?? 7000)), 0, ',', '.') }}</strong>
                                                 </span>

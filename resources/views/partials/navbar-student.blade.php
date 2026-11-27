@@ -46,7 +46,9 @@
 <div class="position-relative">
     <nav class="navbar navbar-expand-lg sidenav sidenav-navbar">
         <!-- Menu -->
-        <a class="d-xl-none d-lg-none d-block text-inherit fw-bold" href="#">Menu</a>
+        <a class="d-xl-none d-lg-none d-block text-inherit fw-bold"
+            href="#sidenavNavbar" data-bs-toggle="collapse" data-bs-target="#sidenavNavbar"
+            aria-controls="sidenavNavbar" aria-expanded="false">Menu</a>
         <!-- Button -->
 
         <button class="navbar-toggler d-lg-none icon-shape icon-sm rounded bg-primary text-light" type="button"
@@ -59,71 +61,81 @@
         <div class="collapse navbar-collapse" id="sidenavNavbar">
             <div class="navbar-nav flex-column mt-4 mt-lg-0 d-flex flex-column gap-3 pb-4">
 
-                <ul class="list-unstyled mb-0">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                            href="{{ route('dashboard') }}">
-                            <i class="fe fe-home nav-icon"></i> Dashboard
-                        </a>
-                    </li>
-                    @php
-                        $userNav = auth()->user();
-                        $hasFullMateriNav = false;
-                        $hasAnyPaidNav = false;
-                        if ($userNav) {
-                            $hasPaket1Nav = \App\Models\Transaction::where('user_id', $userNav->id)->where('tryout_id', 1)->whereRaw('LOWER(status) = ?', ['success'])->exists();
-                            $hasPaket2Nav = \App\Models\Transaction::where('user_id', $userNav->id)->where('tryout_id', 2)->whereRaw('LOWER(status) = ?', ['success'])->exists();
-                            $hasPaket3Nav = \App\Models\Transaction::where('user_id', $userNav->id)->where('tryout_id', 3)->whereRaw('LOWER(status) = ?', ['success'])->exists();
-                            $hasFullMateriNav = $userNav->is_premium || $hasPaket2Nav || ($hasPaket1Nav && $hasPaket3Nav);
-                            $hasAnyPaidNav = $hasFullMateriNav || $hasPaket1Nav;
-                        }
-                    @endphp
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('materi*') ? 'active' : '' }}"
-                            href="{{ url('/materi-belajar') }}">
-                            <div class="d-flex align-items-center justify-content-between w-100">
-                                <div class="d-flex align-items-center">
-                                    <i class="fe fe-book-open nav-icon me-2"></i>
-                                    <span class="nav-link-text">Materi Belajar</span>
-                                </div>
-                                @if (!$hasFullMateriNav)
-                                    <span class="badge bg-warning text-dark rounded-pill shadow-sm"
-                                        style="font-size: 0.65rem;">FREE TRIAL</span>
-                                @endif
-                            </div>
-                        </a>
-                    </li>
-                    @if ($hasAnyPaidNav)
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('ujian.*') ? 'active' : '' }}"
-                                href="{{ route('ujian.persiapan', 1) }}">
-                                <i class="fe fe-edit nav-icon"></i> Mulai Tryout
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('demo.*') ? 'active' : '' }}"
-                                href="{{ route('demo.index') }}">
-                                <i class="fe fe-unlock nav-icon"></i> Ujicoba Gratis
-                            </a>
-                        </li>
-                    @else
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('demo.*') ? 'active' : '' }}"
-                                href="{{ route('demo.index') }}">
-                                <i class="fe fe-unlock nav-icon"></i> Ujicoba Gratis
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('ujian.*') ? 'active' : '' }}"
-                                href="{{ route('ujian.persiapan', 1) }}">
-                                <i class="fe fe-edit nav-icon"></i> Mulai Tryout
-                            </a>
-                        </li>
-                    @endif
-                </ul>
+                @php
+                    $userNav = auth()->user();
+                    $hasFullMateriNav = false;
+                    $hasAnyPaidNav = false;
+                    if ($userNav) {
+                        $paidTryoutIds = \App\Models\Transaction::where('user_id', $userNav->id)
+                            ->whereRaw('LOWER(status) = ?', ['success'])
+                            ->pluck('tryout_id')
+                            ->map(fn ($id) => (int) $id)
+                            ->all();
 
-                <div class="d-flex flex-column gap-1 mt-2">
-                    <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Evaluasi</span>
+                        $hasPaket1Nav = in_array(1, $paidTryoutIds, true);
+                        $hasPaket2Nav = in_array(2, $paidTryoutIds, true);
+                        $hasPaket3Nav = in_array(3, $paidTryoutIds, true);
+                        $hasFullMateriNav = (bool) $userNav->is_premium || $hasPaket2Nav || ($hasPaket1Nav && $hasPaket3Nav);
+                        $hasAnyPaidNav = $hasFullMateriNav || $hasPaket1Nav;
+                    }
+                @endphp
+
+                <div class="d-flex flex-column gap-1">
+                    <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Belajar</span>
+                    <ul class="list-unstyled mb-0">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                                href="{{ route('dashboard') }}">
+                                <i class="fe fe-home nav-icon"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('materi*') ? 'active' : '' }}"
+                                href="{{ url('/materi-belajar') }}">
+                                <div class="d-flex align-items-center justify-content-between w-100">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fe fe-book-open nav-icon me-2"></i>
+                                        <span class="nav-link-text">Materi Belajar</span>
+                                    </div>
+                                    @if (!$hasFullMateriNav)
+                                        <span class="badge bg-warning text-dark rounded-pill shadow-sm"
+                                            style="font-size: 0.65rem;">FREE TRIAL</span>
+                                    @endif
+                                </div>
+                            </a>
+                        </li>
+                        @if ($hasAnyPaidNav)
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('ujian.*') ? 'active' : '' }}"
+                                    href="{{ route('ujian.persiapan', 1) }}">
+                                    <i class="fe fe-edit nav-icon"></i> Mulai Tryout
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('demo.*') ? 'active' : '' }}"
+                                    href="{{ route('demo.index') }}">
+                                    <i class="fe fe-unlock nav-icon"></i> Ujicoba Gratis
+                                </a>
+                            </li>
+                        @else
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('demo.*') ? 'active' : '' }}"
+                                    href="{{ route('demo.index') }}">
+                                    <i class="fe fe-unlock nav-icon"></i> Ujicoba Gratis
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('ujian.*') ? 'active' : '' }}"
+                                    href="{{ route('ujian.persiapan', 1) }}">
+                                    <i class="fe fe-edit nav-icon"></i> Mulai Tryout
+                                </a>
+                            </li>
+                        @endif
+                    </ul>
+                </div>
+
+                <div class="d-flex flex-column gap-1 mt-1">
+                    <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Aktivitas</span>
                     <ul class="list-unstyled mb-0">
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('ranking') ? 'active' : '' }}"
@@ -137,16 +149,31 @@
                                 <i class="fe fe-award nav-icon"></i> Riwayat Tryout
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('game.*') ? 'active' : '' }}"
+                                href="{{ route('game.index') }}">
+                                <div class="d-flex align-items-center justify-content-between w-100">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-icon d-inline-flex align-items-center justify-content-center me-2" style="width: 1rem;">🎮</span>
+                                        <span>Refreshing</span>
+                                    </div>
+                                    @if (!$hasAnyPaidNav)
+                                        <span class="badge bg-warning text-dark rounded-pill fw-bold" style="font-size: 0.62rem;">TRIAL</span>
+                                    @endif
+                                </div>
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
-                <div class="d-flex flex-column gap-1 mt-2">
+                <div class="d-flex flex-column gap-1 mt-1">
                     <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Transaksi</span>
                     <ul class="list-unstyled mb-0">
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('user.pilih-paket') ? 'active' : '' }}"
                                 href="{{ route('user.pilih-paket') }}">
-                                <i class="fe fe-shopping-cart nav-icon"></i> Beli Paket Premium
+                                <i class="fe fe-shopping-cart nav-icon"></i>
+                                {{ $hasFullMateriNav ? 'Daftar Paket' : 'Beli Paket Premium' }}
                             </a>
                         </li>
                         <li class="nav-item">
@@ -158,8 +185,8 @@
                     </ul>
                 </div>
 
-                <div class="d-flex flex-column gap-1 mt-2">
-                    <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Pengaturan</span>
+                <div class="d-flex flex-column gap-1 mt-1">
+                    <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Lainnya</span>
                     <ul class="list-unstyled mb-0">
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}"
@@ -167,29 +194,6 @@
                                 <i class="fe fe-user nav-icon"></i> Edit Profil
                             </a>
                         </li>
-                    </ul>
-                </div>
-
-                <div class="d-flex flex-column gap-1 mt-2">
-                    <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Refreshing</span>
-                    <ul class="list-unstyled mb-0">
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('game.*') ? 'active' : '' }}"
-                                href="{{ route('game.index') }}">
-                                <div class="d-flex align-items-center justify-content-between w-100">
-                                    <span>🎮 Zona Refreshing</span>
-                                    @if (!$hasAnyPaidNav)
-                                        <span class="badge bg-warning text-dark rounded-pill fw-bold" style="font-size: 0.62rem;">5s TRIAL</span>
-                                    @endif
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="d-flex flex-column gap-1 mt-2">
-                    <span class="navbar-header text-muted small fw-bold text-uppercase px-4">Bantuan</span>
-                    <ul class="list-unstyled mb-0">
                         <li class="nav-item">
                             @php
                                 $waSidebarMsg = urlencode('Halo Admin CalonASN, saya ' . (auth()->user()->name ?? 'Peserta') . ' ingin bertanya terkait akun/materi tryout.');

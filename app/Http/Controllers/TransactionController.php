@@ -230,21 +230,27 @@ class TransactionController extends Controller
     {
         $userId = Auth::id();
 
-        // 1. Ambil data transaksi (Riwayat Pembayaran)
         Transaction::deleteExpiredPendingPaymentsForUser($userId);
 
-        $transactions = Transaction::where('user_id', $userId)
+        $transactions = Transaction::with('tryout')
+                            ->where('user_id', $userId)
                             ->orderBy('created_at', 'desc')
                             ->get();
 
-        // 2. Ambil data sesi ujian (Riwayat Nilai & Sertifikat)
-        $riwayatUjian = \App\Models\ExamSession::with('tryout')
-                            ->where('user_id', $userId)
-                            ->whereNotNull('end_time') 
-                            ->orderBy('end_time', 'desc')
-                            ->get();
+        $totalCount = $transactions->count();
+        $successCount = $transactions->filter(function ($t) {
+            return in_array(strtolower(trim((string) $t->status)), ['success', 'paid'], true);
+        })->count();
+        $pendingCount = $transactions->filter(function ($t) {
+            return strtolower(trim((string) $t->status)) === 'pending';
+        })->count();
 
-        return view('user.riwayat_transaksi.riwayat', compact('transactions', 'riwayatUjian'));
+        return view('user.riwayat_transaksi.riwayat', compact(
+            'transactions',
+            'totalCount',
+            'successCount',
+            'pendingCount'
+        ));
     }
 
     public function invoice($invoice_number)
@@ -270,6 +276,13 @@ class TransactionController extends Controller
         $transaction = Transaction::where('id', $id)
                         ->where('user_id', Auth::id())
                         ->firstOrFail();
+
+        $statusClean = strtolower(trim((string) $transaction->status));
+        if ($statusClean !== 'pending' || !empty($transaction->payment_proof)) {
+            return redirect()
+                ->route('riwayat')
+                ->with('error', 'Transaksi yang sudah dibayar atau sedang diverifikasi tidak dapat dibatalkan.');
+        }
 
         $transaction->delete();
 
