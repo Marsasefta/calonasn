@@ -147,11 +147,17 @@ class MateriController extends Controller
             return redirect($upgradeRoute)->with('error', $msg);
         }
 
-        // 4. LOGIKA PINTAR: Cari materi berikutnya berdasarkan urutan bab & materi
+        // 4. LOGIKA PINTAR: Cari materi sebelumnya & berikutnya berdasarkan urutan bab & materi
         $currentIndex = $orderedMaterials->search(fn ($m) => $m->id === $currentMaterial->id);
+        $prevMaterial = ($currentIndex !== false && $currentIndex > 0)
+            ? $orderedMaterials[$currentIndex - 1]
+            : null;
         $nextMaterial = ($currentIndex !== false && isset($orderedMaterials[$currentIndex + 1]))
             ? $orderedMaterials[$currentIndex + 1]
             : null;
+
+        $wordCount = str_word_count(strip_tags((string) ($currentMaterial->content ?? '')));
+        $readingMinutes = max(1, (int) ceil($wordCount / 180));
 
         $tryout = Tryout::find(1) ?? Tryout::first();
 
@@ -171,7 +177,9 @@ class MateriController extends Controller
             'category',
             'chapters',
             'currentMaterial',
+            'prevMaterial',
             'nextMaterial',
+            'readingMinutes',
             'tryout',
             'completedMaterialIds',
             'isCurrentCompleted',

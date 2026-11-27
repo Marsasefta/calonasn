@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
 
 <head>
     @include('partials.head')
@@ -7,14 +7,32 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
-        /* Efek melayang saat kartu disentuh mouse */
         .hover-lift {
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
 
-        .hover-lift:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 1rem 3rem rgba(0, 0, 0, .15) !important;
+        @media (hover: hover) {
+            .hover-lift:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, .14) !important;
+            }
+        }
+
+        .materi-cat-desc {
+            font-size: 0.96rem;
+            line-height: 1.65;
+        }
+
+        .materi-cat-icon {
+            width: 54px;
+            height: 54px;
+        }
+
+        @media (min-width: 768px) {
+            .materi-cat-icon {
+                width: 60px;
+                height: 60px;
+            }
         }
     </style>
 </head>
@@ -24,20 +42,20 @@
     @include('partials.navbar-student')
 
     <div class="db-content">
-        <div class="container-fluid py-4">
+        <div class="container-fluid py-3 py-md-4">
 
             <div class="row mb-4">
-                <div class="col-12 d-flex align-items-center">
-                    <div class="bg-primary text-white rounded p-2 me-3 shadow-sm">
+                <div class="col-12 d-flex align-items-start align-items-sm-center gap-3">
+                    <div class="bg-primary text-white rounded-3 p-2.5 shadow-sm flex-shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                             viewBox="0 0 16 16">
                             <path
                                 d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492zM8 1.783C7.015.936 5.587.815 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.815 8.985.936 8 1.783" />
                         </svg>
                     </div>
-                    <div>
+                    <div class="min-w-0">
                         <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                            <h2 class="fw-bold text-dark mb-0">Ruang Belajar SKD</h2>
+                            <h2 class="fw-bold text-dark mb-0 h3">Ruang Belajar SKD</h2>
                             @if ($hasFullAccess)
                                 <span
                                     class="badge bg-success-soft text-success border border-success rounded-pill px-3 py-1 fw-bold small">
@@ -50,8 +68,9 @@
                                 </span>
                             @endif
                         </div>
-                        <p class="text-muted fs-6 mb-0">Pahami konsep dasar kisi-kisi resmi sebelum bertempur di
-                            simulasi Tryout CAT.</p>
+                        <p class="text-muted small fs-md-6 mb-0">
+                            Pahami konsep dasar kisi-kisi resmi sebelum bertempur di simulasi Tryout CAT.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -60,22 +79,19 @@
                 @include('partials.promo-24h-banner', ['showCta' => false, 'compact' => true, 'promo24h' => $promo24h ?? null])
             @endif
 
-            <div class="row g-4">
+            <div class="row g-3 g-md-4">
                 @foreach ($categories as $category)
                     <div class="col-lg-4 col-md-6 col-12">
                         <div class="card border-0 shadow-sm rounded-4 h-100 hover-lift">
-                            <div class="card-body p-4 p-xl-5 d-flex flex-column">
+                            <div class="card-body p-3 p-sm-4 d-flex flex-column">
 
-                                <div class="d-flex align-items-center mb-4">
-                                    <div class="bg-{{ $category->color_theme }} text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3 shadow-sm"
-                                        style="width: 60px; height: 60px;">
-
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="bg-{{ $category->color_theme }} text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm materi-cat-icon">
                                         <i class="{{ $category->icon }} fs-2"></i>
-
                                     </div>
 
-                                    <div>
-                                        <div class="d-flex align-items-center gap-1.5 mb-2 flex-wrap">
+                                    <div class="min-w-0">
+                                        <div class="d-flex align-items-center gap-1.5 mb-1.5 flex-wrap">
                                             <span
                                                 class="badge bg-{{ $category->color_theme }}-subtle text-{{ $category->color_theme }} fw-semibold border border-{{ $category->color_theme }}">
                                                 {{ $category->materials_count }} Materi
@@ -94,23 +110,23 @@
                                                 </span>
                                             @endif
                                         </div>
-                                        <h4 class="fw-bold mb-0 text-dark">{{ $category->name }}</h4>
+                                        <h4 class="fw-bold mb-0 h5 text-dark">{{ $category->name }}</h4>
                                     </div>
                                 </div>
 
-                                <p class="text-muted mb-3 flex-grow-1 fs-5">
+                                <p class="text-muted mb-3 flex-grow-1 materi-cat-desc">
                                     {{ $category->description }}
                                 </p>
 
-                                <div class="mb-4">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1 gap-2">
                                         <span class="small fw-semibold text-muted">Progres Membaca</span>
                                         <span
                                             class="small fw-bold text-{{ $category->color_theme }}">{{ $category->completed_count ?? 0 }}/{{ $category->materials_count }}
                                             Selesai ({{ $category->progress_percent ?? 0 }}%)</span>
                                     </div>
-                                    <div class="progress" style="height: 6px;">
-                                        <div class="progress-bar bg-{{ $category->color_theme }}" role="progressbar"
+                                    <div class="progress rounded-pill" style="height: 7px;">
+                                        <div class="progress-bar bg-{{ $category->color_theme }} rounded-pill" role="progressbar"
                                             style="width: {{ $category->progress_percent ?? 0 }}%;"
                                             aria-valuenow="{{ $category->progress_percent ?? 0 }}" aria-valuemin="0"
                                             aria-valuemax="100"></div>
@@ -134,8 +150,8 @@
             @if (!$hasFullAccess)
                 <div class="row mt-4">
                     <div class="col-12">
-                        <div class="card border-2 border-primary rounded-4 shadow-sm overflow-hidden bg-white">
-                            <div class="card-body p-4 d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+                        <div class="card border-2 border-primary rounded-4 shadow-sm overflow-hidden">
+                            <div class="card-body p-3 p-md-4 d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
                                 <div>
                                     <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
                                         <span class="badge bg-primary text-white rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.72rem;">
@@ -147,14 +163,14 @@
                                             </span>
                                         @endif
                                     </div>
-                                    <h4 class="fw-bold text-dark mb-1">
+                                    <h4 class="fw-bold text-dark mb-1 h5">
                                         Buka Semua {{ $totalLockedCount ?? 20 }} Materi Premium Kisi-Kisi SKD 2026
                                     </h4>
                                     <p class="text-muted small mb-0">
-                                        Termasuk materi terbaru: <strong>Empat Konsensus Kebangsaan</strong>, <strong>Penalaran Matriks Figural</strong>, dan <strong>Adaptasi TIK & Generative AI</strong> — plus <strong>Tryout CAT Unlimited</strong> sepuasnya.
+                                        Termasuk materi terbaru: <strong>Empat Konsensus Kebangsaan</strong>, <strong>Penalaran Matriks Figural</strong>, dan <strong>Adaptasi TIK &amp; Generative AI</strong> — plus <strong>Tryout CAT Unlimited</strong> sepuasnya.
                                     </p>
                                 </div>
-                                <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3 flex-shrink-0">
+                                <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-3 flex-shrink-0">
                                     <div class="text-sm-end">
                                         @if (($upgradePriceNum ?? 49000) < ($upgradeNormalPriceNum ?? 49000))
                                             <span class="text-muted text-decoration-line-through small d-block">
@@ -165,7 +181,7 @@
                                         <span class="small text-muted d-block">sekali bayar selamanya</span>
                                     </div>
                                     <a href="{{ $upgradeRoute ?? route('checkout', 2) }}"
-                                        class="btn btn-primary btn-lg rounded-pill px-4 fw-bold shadow-sm text-nowrap hover-lift">
+                                        class="btn btn-primary rounded-pill px-4 py-2.5 fw-bold shadow-sm text-nowrap hover-lift text-center">
                                         <i class="bi bi-unlock-fill me-1"></i>
                                         {{ !empty($sudahBeliPaket1) ? 'Upgrade Sekarang' : 'Buka Semua Materi' }}
                                     </a>
@@ -178,12 +194,12 @@
 
             <div class="row mt-4">
                 <div class="col-12">
-                    <div class="card border-0 bg-light rounded-4 shadow-sm border-start border-warning border-4">
+                    <div class="card border-0 rounded-4 shadow-sm border-start border-warning border-4">
                         <div
-                            class="card-body p-4 d-flex flex-column flex-md-row align-items-center justify-content-between">
-                            <div class="mb-3 mb-md-0 d-flex align-items-center">
-                                <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm"
-                                    style="width: 45px; height: 45px;">
+                            class="card-body p-3 p-md-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                            <div class="d-flex align-items-start align-items-sm-center gap-3">
+                                <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center shadow-sm flex-shrink-0"
+                                    style="width: 44px; height: 44px;">
                                     <i class="bi bi-lightbulb-fill fs-5"></i>
                                 </div>
                                 <div>
@@ -207,19 +223,6 @@
     @include('partials.btn-scroll-top')
     @include('partials.scripts')
     <script src="/build/assets/js/vendors/navbar-nav.js"></script>
-
-    <style>
-        .btn-hover-solid:hover {
-            background-color: currentColor !important;
-            color: #fff !important;
-            transition: all 0.3s ease;
-        }
-
-        /* Penyesuaian text warna saat di hover untuk tema warning/kuning */
-        .btn-warning.btn-hover-solid:hover {
-            color: #000 !important;
-        }
-    </style>
 </body>
 
 </html>

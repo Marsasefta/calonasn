@@ -86,6 +86,13 @@
           </a>
         </li>
 
+        <li class="nav-item">
+          <a class="nav-link rounded px-3 py-2.5 d-flex align-items-center {{ Request::routeIs('admin.game.*') ? 'active' : '' }}" href="{{ route('admin.game.index') }}">
+            <i class="fe fe-play-circle me-2.5"></i>
+            <span>Zona Refreshing</span>
+          </a>
+        </li>
+
         <!-- 3. KELOMPOK TRANSAKSI & LAPORAN -->
         <li class="nav-item section-heading-item px-3">
           <span class="section-heading-text">Transaksi & Laporan</span>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
 
 <head>
     @include('partials.head')
@@ -7,23 +7,147 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
+        /* Reading Scroll Progress Indicator */
+        #readingScrollBar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 0%;
+            background: linear-gradient(90deg, #2563eb, #10b981);
+            z-index: 1055;
+            transition: width 0.08s linear;
+            pointer-events: none;
+        }
+
+        /* Reader Typography & Sizing */
+        .reading-card {
+            --reader-fs: 1.06rem;
+        }
+
+        .reading-card[data-font-scale="sm"] {
+            --reader-fs: 0.96rem;
+        }
+
+        .reading-card[data-font-scale="md"] {
+            --reader-fs: 1.06rem;
+        }
+
+        .reading-card[data-font-scale="lg"] {
+            --reader-fs: 1.18rem;
+        }
+
         .reading-area {
-            font-size: 1.1rem;
+            font-size: var(--reader-fs);
             line-height: 1.85;
-            color: #2d3748;
+            color: #1e293b;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .reading-area > p,
+        .reading-area > ul,
+        .reading-area > ol,
+        .reading-area > blockquote {
+            max-width: 72ch;
         }
 
         .reading-area p {
+            margin-bottom: 1.15rem;
+        }
+
+        .reading-area ul,
+        .reading-area ol {
+            padding-left: 1.35rem;
             margin-bottom: 1.25rem;
         }
 
-        .reading-area h1, .reading-area h2, .reading-area h3, .reading-area h4 {
-            color: #1a202c;
+        .reading-area li {
+            margin-bottom: 0.45rem;
+        }
+
+        .reading-area h1,
+        .reading-area h2,
+        .reading-area h3,
+        .reading-area h4 {
+            color: #0f172a;
             font-weight: 700;
             margin-top: 1.75rem;
             margin-bottom: 0.75rem;
+            line-height: 1.35;
         }
 
+        .reading-area h2 {
+            font-size: calc(var(--reader-fs) * 1.35);
+        }
+
+        .reading-area h3 {
+            font-size: calc(var(--reader-fs) * 1.18);
+        }
+
+        .reading-area blockquote {
+            margin: 1.25rem 0;
+            padding: 0.9rem 1.15rem;
+            border-left: 4px solid #2563eb;
+            background: #eff6ff;
+            border-radius: 0 0.75rem 0.75rem 0;
+            color: #1e3a8a;
+        }
+
+        .reading-area pre,
+        .reading-area code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.9em;
+        }
+
+        .reading-area pre {
+            padding: 1rem;
+            border-radius: 0.75rem;
+            background: #0f172a;
+            color: #f8fafc;
+            overflow-x: auto;
+            margin: 1.25rem 0;
+        }
+
+        .reading-area img {
+            max-width: 100% !important;
+            height: auto !important;
+            border-radius: 12px;
+            margin: 1.25rem 0;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Responsive Table Container */
+        .reading-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 1.25rem 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+        }
+
+        .reading-area table {
+            width: 100% !important;
+            margin: 0 !important;
+            border-collapse: collapse;
+            font-size: 0.94em;
+        }
+
+        .reading-area table th,
+        .reading-area table td {
+            padding: 0.7rem 0.95rem;
+            border: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        .reading-area table th {
+            background-color: #f8fafc;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        /* Dark Mode Reader Styles */
         [data-bs-theme="dark"] .reading-area {
             color: #e2e8f0;
         }
@@ -35,130 +159,151 @@
             color: #f8fafc;
         }
 
-        [data-bs-theme="dark"] .reading-area table th {
-            background-color: #0f172a;
-            border-color: #334155;
+        [data-bs-theme="dark"] .reading-area blockquote {
+            background: rgba(30, 58, 138, 0.25);
+            color: #bfdbfe;
+            border-left-color: #60a5fa;
         }
 
+        [data-bs-theme="dark"] .reading-table-wrap,
         [data-bs-theme="dark"] .reading-area table,
         [data-bs-theme="dark"] .reading-area table td {
             border-color: #334155;
         }
 
-        .reading-area img {
-            max-width: 100% !important;
-            height: auto !important;
-            border-radius: 12px;
-            margin: 1.25rem 0;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+        [data-bs-theme="dark"] .reading-area table th {
+            background-color: #0f172a;
+            border-color: #334155;
+            color: #f8fafc;
         }
 
-        .reading-area table {
-            width: 100% !important;
-            display: block;
-            overflow-x: auto;
-            margin: 1.25rem 0;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            border-collapse: collapse;
+        @media (max-width: 575.98px) {
+            .reading-card {
+                --reader-fs: 0.98rem;
+            }
+
+            .reading-card[data-font-scale="sm"] {
+                --reader-fs: 0.9rem;
+            }
+
+            .reading-card[data-font-scale="lg"] {
+                --reader-fs: 1.1rem;
+            }
+
+            .reading-area table th,
+            .reading-area table td {
+                padding: 0.55rem 0.7rem;
+                font-size: 0.88em;
+            }
         }
 
-        .reading-area table th,
-        .reading-area table td {
-            padding: 0.75rem 1rem;
-            border: 1px solid #e2e8f0;
-        }
-
-        .reading-area table th {
-            background-color: #f8fafc;
-            font-weight: 600;
-        }
-
+        /* Sticky Chapter Sidebar */
         .sidebar-sticky {
             position: sticky;
-            top: 85px;
+            top: 84px;
+            max-height: calc(100vh - 104px);
+            overflow-y: auto;
+            padding-right: 2px;
         }
 
         .materi-link {
-            display: flex;
-            align-items: center;
-            padding: 10px 14px;
-            color: #4a5568;
-            text-decoration: none;
-            border-radius: 8px;
-            margin-bottom: 5px;
-            transition: all 0.2s ease;
+            transition: background-color 0.16s ease, color 0.16s ease;
         }
 
         .materi-link:hover {
-            background-color: #f8f9fa;
+            background-color: rgba(148, 163, 184, 0.12);
         }
 
         .materi-link.active {
-            background-color: rgba(13, 110, 253, 0.1);
-            color: #0d6efd;
-            font-weight: 600;
+            background-color: rgba(37, 99, 235, 0.12) !important;
+            color: #2563eb !important;
+        }
+
+        [data-bs-theme="dark"] .materi-link.active {
+            background-color: rgba(59, 130, 246, 0.22) !important;
+            color: #93c5fd !important;
         }
 
         .materi-link.locked {
             cursor: pointer;
-            background-color: rgba(220, 53, 69, 0.03);
-            border: 1px dashed rgba(220, 53, 69, 0.2);
+            background-color: rgba(220, 53, 69, 0.04);
+            border: 1px dashed rgba(220, 53, 69, 0.24);
         }
 
         .materi-link.locked:hover {
-            background-color: rgba(220, 53, 69, 0.08);
-            border-color: rgba(220, 53, 69, 0.4);
+            background-color: rgba(220, 53, 69, 0.1);
+            border-color: rgba(220, 53, 69, 0.45);
         }
 
         .hover-lift {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .hover-lift:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.12) !important;
+        @media (hover: hover) {
+            .hover-lift:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.12) !important;
+            }
         }
     </style>
 </head>
 
 <body>
+    <div id="readingScrollBar" aria-hidden="true"></div>
+
     @include('partials.navbar')
     @include('partials.navbar-student')
 
     <div class="db-content">
-        <div class="container-fluid py-4">
+        <div class="container-fluid py-3 py-md-4">
 
-            {{-- Breadcrumb & Category Badge --}}
+            {{-- TOP ACTION & READER BAR --}}
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex flex-wrap align-items-center gap-2">
                     <a href="{{ route('materi.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fw-semibold">
                         <i class="bi bi-arrow-left me-1"></i> Semua Kategori
                     </a>
                     <span class="badge bg-{{ $category->color_theme ?? 'primary' }}-soft text-{{ $category->color_theme ?? 'primary' }} border border-{{ $category->color_theme ?? 'primary' }} px-3 py-2 rounded-pill fw-bold">
-                        <i class="bi bi-journal-bookmark-fill me-1"></i> Materi {{ $category->name }}
+                        <i class="bi bi-journal-bookmark-fill me-1"></i> {{ $category->name }}
                     </span>
                 </div>
 
-                {{-- Mobile Quick Toggle Daftar Bab --}}
-                <div class="d-lg-none">
-                    <a href="#sidebarChapters" class="btn btn-sm btn-primary rounded-pill px-3 py-1.5 fw-bold shadow-sm">
-                        <i class="bi bi-list-nested me-1"></i> Daftar Bab ({{ $completedCategoryCount ?? 0 }}/{{ $totalCategoryMaterials ?? 0 }})
-                    </a>
+                <div class="d-flex align-items-center gap-2 ms-auto">
+                    {{-- Font Size Control --}}
+                    <div class="btn-group btn-group-sm shadow-xs" role="group" aria-label="Ukuran Teks Materi">
+                        <button type="button" class="btn btn-outline-secondary px-2.5 js-font-btn" data-scale="sm" title="Teks Kecil">A-</button>
+                        <button type="button" class="btn btn-outline-secondary px-2.5 js-font-btn active" data-scale="md" title="Teks Normal">A</button>
+                        <button type="button" class="btn btn-outline-secondary px-2.5 js-font-btn" data-scale="lg" title="Teks Besar">A+</button>
+                    </div>
+
+                    {{-- Mobile/Tablet Chapters Drawer Trigger --}}
+                    <button type="button"
+                        class="btn btn-sm btn-primary rounded-pill px-3 py-1.5 fw-bold shadow-sm d-lg-none"
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#mobileChaptersDrawer"
+                        aria-controls="mobileChaptersDrawer">
+                        <i class="bi bi-list-nested me-1"></i> Daftar Bab (<span class="js-progress-count-short">{{ $completedCategoryCount ?? 0 }}/{{ $totalCategoryMaterials ?? 0 }}</span>)
+                    </button>
                 </div>
             </div>
 
-            <div class="row g-4">
+            <div class="row g-4 align-items-start">
 
-                {{-- 1. AREA BACA MATERI (Ditampilkan paling atas di Mobile agar siswa langsung membaca) --}}
-                <div class="col-lg-6 order-1 order-lg-2">
-                    <div class="card border-0 shadow-sm rounded-4 mb-4">
-                        <div class="card-body p-4 p-md-5">
+                {{-- 1. AREA BACA MATERI (Lega di Desktop: col-lg-8 col-xl-9, Penuh di Mobile) --}}
+                <div class="col-lg-8 col-xl-9">
+                    <article class="card border-0 shadow-sm rounded-4 mb-4 reading-card" id="readingCard" data-font-scale="md">
+                        <div class="card-body p-3 p-sm-4 p-md-5">
 
                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-                                <span class="badge bg-light text-secondary border px-3 py-1.5 rounded-pill fw-semibold small">
-                                    <i class="bi bi-book me-1"></i> {{ $currentMaterial->chapter->title ?? 'Modul SKD' }}
-                                </span>
+                                <div class="d-flex flex-wrap align-items-center gap-2">
+                                    <span class="badge bg-light text-secondary border px-3 py-1.5 rounded-pill fw-semibold small">
+                                        <i class="bi bi-book me-1"></i> {{ $currentMaterial->chapter->title ?? 'Modul SKD' }}
+                                    </span>
+                                    <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1.5 fw-semibold small">
+                                        <i class="bi bi-clock me-1"></i> ~{{ $readingMinutes ?? 2 }} mnt baca
+                                    </span>
+                                </div>
+
                                 @if (isset($hasFullAccess) && $hasFullAccess)
                                     <span class="badge bg-success-soft text-success border border-success px-3 py-1 rounded-pill small fw-semibold">
                                         <i class="bi bi-patch-check-fill me-1"></i> Akses Modul Lengkap
@@ -166,216 +311,158 @@
                                 @endif
                             </div>
 
-                            <h1 class="fw-bold mb-4 text-dark fs-2">{{ $currentMaterial->title }}</h1>
+                            <h1 class="fw-bold mb-4 text-dark fs-3 fs-md-2">{{ $currentMaterial->title }}</h1>
 
-                            <div class="reading-area lh-lg">
+                            <div class="reading-area" id="readingContent">
                                 {!! preg_replace('/<img(?![^>]*loading=)/i', '<img loading="lazy" decoding="async"', $currentMaterial->content ?? '') !!}
                             </div>
 
-                            <hr class="my-5">
+                            <hr class="my-4 my-md-5">
 
-                            {{-- Footer Navigasi Materi --}}
-                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 bg-light p-3.5 rounded-4 border">
-                                <div class="d-flex align-items-center gap-2">
-                                    <button type="button" id="btnToggleProgress" data-material-id="{{ $currentMaterial->id }}"
+                            {{-- Footer Navigasi & Tandai Selesai --}}
+                            <div class="d-flex flex-column gap-3 bg-light p-3 p-sm-4 rounded-4 border">
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <button type="button" id="btnToggleProgress" data-material-id="{{ $currentMaterial->id }}"
                                             class="btn {{ $isCurrentCompleted ? 'btn-success' : 'btn-outline-success' }} rounded-pill px-3 py-2 fw-semibold shadow-sm d-inline-flex align-items-center gap-1.5">
-                                        <i class="bi {{ $isCurrentCompleted ? 'bi-check-circle-fill' : 'bi-check-circle' }}" id="btnCheckIcon"></i>
-                                        <span id="btnCheckLabel">{{ $isCurrentCompleted ? 'Selesai Dibaca' : 'Tandai Selesai' }}</span>
-                                    </button>
-                                    <span class="small text-muted d-none d-md-inline" id="statusSaveHint">
-                                        {{ $isCurrentCompleted ? 'Tersimpan di progres' : 'Klik jika sudah paham' }}
+                                            <i class="bi {{ $isCurrentCompleted ? 'bi-check-circle-fill' : 'bi-check-circle' }}" id="btnCheckIcon"></i>
+                                            <span id="btnCheckLabel">{{ $isCurrentCompleted ? 'Selesai Dibaca' : 'Tandai Selesai' }}</span>
+                                        </button>
+                                        <span class="small text-muted d-none d-sm-inline" id="statusSaveHint">
+                                            {{ $isCurrentCompleted ? 'Tersimpan di progres' : 'Klik jika sudah paham' }}
+                                        </span>
+                                    </div>
+
+                                    <span class="small fw-semibold text-muted d-lg-none js-progress-summary">
+                                        {{ $completedCategoryCount ?? 0 }}/{{ $totalCategoryMaterials ?? 0 }} ({{ $progressPercent ?? 0 }}%)
                                     </span>
                                 </div>
 
-                                @if ($nextMaterial)
-                                    @php
-                                        $canAccessNext = (isset($hasFullAccess) && $hasFullAccess) || !$nextMaterial->is_locked;
-                                    @endphp
+                                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2 pt-2 border-top">
+                                    {{-- Tombol Sebelumnya --}}
+                                    <div>
+                                        @if (!empty($prevMaterial))
+                                            @php
+                                                $canAccessPrev = (isset($hasFullAccess) && $hasFullAccess) || !$prevMaterial->is_locked;
+                                            @endphp
+                                            @if ($canAccessPrev)
+                                                <a href="{{ route('materi.show', [$category->slug, $prevMaterial->slug]) }}"
+                                                    class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-semibold w-100 w-sm-auto d-inline-flex align-items-center justify-content-center gap-1.5">
+                                                    <i class="bi bi-arrow-left"></i>
+                                                    <span>Sebelumnya</span>
+                                                </a>
+                                            @endif
+                                        @endif
+                                    </div>
 
-                                    @if ($canAccessNext)
-                                        <a href="{{ route('materi.show', [$category->slug, $nextMaterial->slug]) }}"
-                                            class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm d-inline-flex align-items-center gap-1.5">
-                                            <span>Lanjut Materi Berikutnya</span>
-                                            <i class="bi bi-arrow-right"></i>
-                                        </a>
-                                    @else
-                                        <button type="button"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modalLockedMaterial"
-                                            data-material-name="{{ $nextMaterial->title }}"
-                                            class="btn btn-danger rounded-pill px-4 py-2 fw-bold shadow-sm hover-lift d-inline-flex align-items-center gap-1.5">
-                                            <i class="bi bi-lock-fill"></i>
-                                            <span>Buka Bab Berikutnya ({{ $upgradePrice ?? 'Upgrade' }})</span>
-                                        </button>
-                                    @endif
-                                @else
-                                    <button class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm" disabled>
-                                        Materi Selesai <i class="bi bi-check-circle-fill ms-1"></i>
-                                    </button>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                    {{-- Tombol Berikutnya --}}
+                                    <div>
+                                        @if ($nextMaterial)
+                                            @php
+                                                $canAccessNext = (isset($hasFullAccess) && $hasFullAccess) || !$nextMaterial->is_locked;
+                                            @endphp
 
-                {{-- 2. SIDEBAR DAFTAR BAB (Kiri di Desktop, di bawah konten di Mobile) --}}
-                <div class="col-lg-3 order-2 order-lg-1" id="sidebarChapters">
-                    <div class="sidebar-sticky">
-                        <!-- Progress Belajar Kategori -->
-                        <div class="card border-0 shadow-sm rounded-4 mb-3 p-3 bg-white border border-light">
-                            <div class="d-flex justify-content-between align-items-center mb-1.5">
-                                <span class="small fw-bold text-dark">Progres Belajar</span>
-                                <span class="small fw-bold text-success" id="progressSummary">{{ $completedCategoryCount ?? 0 }}/{{ $totalCategoryMaterials ?? 0 }} ({{ $progressPercent ?? 0 }}%)</span>
-                            </div>
-                            <div class="progress rounded-pill" style="height: 7px; background-color: #f1f5f9;">
-                                <div class="progress-bar bg-success rounded-pill" id="progressBarCategory" role="progressbar" 
-                                     style="width: {{ $progressPercent ?? 0 }}%;" 
-                                     aria-valuenow="{{ $progressPercent ?? 0 }}" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-
-                        <div class="accordion" id="accordionChapters">
-                            @foreach ($chapters as $chapter)
-                                @php
-                                    $isActiveChapter = $chapter->id == $currentMaterial->learning_chapter_id;
-                                @endphp
-
-                                <div class="accordion-item border-0 mb-2 shadow-sm rounded-3 overflow-hidden">
-                                    <h2 class="accordion-header">
-                                        <button
-                                            class="accordion-button fw-bold {{ $isActiveChapter ? '' : 'collapsed' }}"
-                                            type="button" data-bs-toggle="collapse"
-                                            data-bs-target="#collapse{{ $chapter->id }}"
-                                            aria-expanded="{{ $isActiveChapter ? 'true' : 'false' }}">
-                                            {{ $chapter->title }}
-                                        </button>
-                                    </h2>
-
-                                    <div id="collapse{{ $chapter->id }}"
-                                        class="accordion-collapse collapse {{ $isActiveChapter ? 'show' : '' }}"
-                                        data-bs-parent="#accordionChapters">
-
-                                        <div class="accordion-body p-2">
-                                            @foreach ($chapter->materials as $materi)
-                                                @php
-                                                    $canAccess = (isset($hasFullAccess) && $hasFullAccess) || !$materi->is_locked;
-                                                    $isDone = in_array($materi->id, $completedMaterialIds ?? []);
-                                                @endphp
-
-                                                @if ($canAccess)
-                                                    <a href="{{ route('materi.show', [$category->slug, $materi->slug]) }}"
-                                                        class="materi-link d-flex align-items-center justify-content-between p-2 rounded text-decoration-none {{ $currentMaterial->id == $materi->id ? 'bg-primary-soft text-primary fw-bold' : 'text-dark' }}">
-                                                        <div class="d-flex align-items-center">
-                                                            @if ($isDone)
-                                                                <i class="bi bi-check-circle-fill text-success me-2 fs-6" id="icon-materi-{{ $materi->id }}"></i>
-                                                            @elseif ($currentMaterial->id == $materi->id)
-                                                                <i class="bi bi-play-circle-fill text-primary me-2 fs-6" id="icon-materi-{{ $materi->id }}"></i>
-                                                            @else
-                                                                <i class="bi bi-circle text-muted me-2 fs-6" id="icon-materi-{{ $materi->id }}"></i>
-                                                            @endif
-                                                            <span class="small">{{ $materi->title }}</span>
-                                                        </div>
-                                                    </a>
-                                                @else
-                                                    {{-- Bab Terkunci: Membuka Modal Penawaran Akses Interaktif --}}
-                                                    <a href="javascript:void(0);"
-                                                        role="button"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#modalLockedMaterial"
-                                                        data-material-name="{{ $materi->title }}"
-                                                        class="materi-link locked d-flex align-items-center justify-content-between p-2 rounded text-decoration-none">
-                                                        <div class="d-flex align-items-center">
-                                                            <i class="bi bi-lock-fill text-danger me-2 fs-6"></i>
-                                                            <span class="small text-secondary">{{ $materi->title }}</span>
-                                                        </div>
-                                                        <span class="badge bg-danger text-white rounded-pill px-2 py-0.5" style="font-size: 0.65rem;">PRO</span>
-                                                    </a>
-                                                @endif
-                                            @endforeach
-
-                                        </div>
+                                            @if ($canAccessNext)
+                                                <a href="{{ route('materi.show', [$category->slug, $nextMaterial->slug]) }}"
+                                                    class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm w-100 w-sm-auto d-inline-flex align-items-center justify-content-center gap-1.5">
+                                                    <span>Lanjut Materi Berikutnya</span>
+                                                    <i class="bi bi-arrow-right"></i>
+                                                </a>
+                                            @else
+                                                <button type="button"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#modalLockedMaterial"
+                                                    data-material-name="{{ $nextMaterial->title }}"
+                                                    class="btn btn-danger rounded-pill px-4 py-2 fw-bold shadow-sm hover-lift w-100 w-sm-auto d-inline-flex align-items-center justify-content-center gap-1.5">
+                                                    <i class="bi bi-lock-fill"></i>
+                                                    <span>Buka Bab Berikutnya ({{ $upgradePrice ?? 'Upgrade' }})</span>
+                                                </button>
+                                            @endif
+                                        @else
+                                            <a href="{{ route('ujian.persiapan', $tryout->id ?? 1) }}"
+                                                class="btn btn-warning text-dark rounded-pill px-4 py-2 fw-bold shadow-sm w-100 w-sm-auto d-inline-flex align-items-center justify-content-center gap-1.5">
+                                                <i class="bi bi-play-circle-fill"></i>
+                                                <span>Materi Selesai &bull; Coba Simulasi CAT</span>
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
-                            @endforeach
-                        </div>
-
-                        @if (!isset($hasFullAccess) || !$hasFullAccess)
-                            <div class="mt-3 p-3 bg-danger-soft border border-danger border-opacity-25 rounded-4 text-center">
-                                <p class="small text-danger fw-bold mb-2">
-                                    <i class="bi bi-lock-fill me-1"></i> Buka Semua Bab Materi Premium
-                                </p>
-                                <a href="{{ $upgradeRoute ?? route('checkout', 2) }}"
-                                    class="btn btn-sm btn-danger rounded-pill w-100 shadow-sm fw-bold hover-lift">
-                                    <i class="bi bi-key-fill me-1"></i>
-                                    {{ $upgradeLabel ?? 'Buka Semua Materi (Rp 49.000)' }}
-                                </a>
                             </div>
-                        @endif
-                    </div>
+                        </div>
+                    </article>
                 </div>
 
-                {{-- 3. SIDEBAR KANAN (Widget Rekomendasi / CTA Simulasi CAT) --}}
-                <div class="col-lg-3 order-3 order-lg-3">
+                {{-- 2. SIDEBAR KANAN DESKTOP (Daftar Bab + CTA Ringkas) --}}
+                <aside class="col-lg-4 col-xl-3 d-none d-lg-block" id="sidebarChapters">
                     <div class="sidebar-sticky">
+                        @include('user.materi.partials.chapter-list', ['accordionId' => 'accordionChaptersDesktop'])
+
                         @if (!isset($hasFullAccess) || !$hasFullAccess)
-                            <div class="card bg-white border border-primary border-2 rounded-4 shadow-sm text-center mb-4 overflow-hidden">
-                                <div class="bg-primary text-white py-1 small fw-bold tracking-wider">REKOMENDASI</div>
-                                <div class="card-body p-4">
-                                    <div class="bg-primary-soft text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm"
-                                        style="width: 60px; height: 60px;">
-                                        <i class="bi bi-patch-check-fill fs-2"></i>
-                                    </div>
-
-                                    <h5 class="fw-bold text-dark mb-2">Ingin Lulus SKD Sekali Tes?</h5>
-
-                                    <p class="text-muted small mb-3">
-                                        Buka <strong>100% Seluruh Bab Materi</strong> + <strong>Tryout CAT Unlimited</strong> untuk mempertajam insting dan hafalan materi ujianmu.
+                            <div class="card border border-primary border-2 rounded-4 shadow-sm text-center mt-3 overflow-hidden">
+                                <div class="bg-primary text-white py-1 small fw-bold">REKOMENDASI</div>
+                                <div class="card-body p-3">
+                                    <h6 class="fw-bold text-dark mb-1">Buka 100% Materi &amp; Tryout</h6>
+                                    <p class="text-muted small mb-2">
+                                        Akses penuh seluruh bab TWK, TIU, TKP + Tryout CAT Unlimited.
                                     </p>
-
                                     @if (($upgradePriceNum ?? 49000) < ($upgradeNormalPriceNum ?? 49000))
-                                        <div class="p-2.5 rounded-3 bg-warning-subtle border border-warning mb-3">
-                                            <div class="small text-muted text-decoration-line-through">Rp {{ number_format($upgradeNormalPriceNum, 0, ',', '.') }}</div>
-                                            <div class="fs-4 fw-bolder text-primary lh-1">{{ $upgradePrice }}</div>
-                                            @if (!empty($promo24h))
-                                                <span class="badge bg-dark text-warning mt-1" style="font-size: 0.68rem;">
-                                                    Kode {{ $promo24h['code'] }} • {{ $promo24h['deadline_label'] }}
-                                                </span>
-                                            @endif
+                                        <div class="p-2 rounded-3 bg-warning-subtle border border-warning mb-2">
+                                            <span class="small text-muted text-decoration-line-through me-1">Rp {{ number_format($upgradeNormalPriceNum, 0, ',', '.') }}</span>
+                                            <strong class="text-primary">{{ $upgradePrice }}</strong>
                                         </div>
                                     @endif
-
                                     <a href="{{ $upgradeRoute ?? route('checkout', 2) }}"
-                                        class="btn btn-primary text-white w-100 rounded-pill fw-bold shadow-sm py-2 hover-lift">
-                                        {{ $upgradeLabel ?? 'Buka Semua Materi (Rp 49.000)' }}
+                                        class="btn btn-primary btn-sm text-white w-100 rounded-pill fw-bold py-2 hover-lift">
+                                        <i class="bi bi-unlock-fill me-1"></i>
+                                        {{ $upgradeLabel ?? 'Buka Semua Materi' }}
                                     </a>
                                 </div>
                             </div>
                         @else
-                            <div class="card bg-white border border-warning border-2 rounded-4 shadow-sm text-center">
-                                <div class="card-body p-4">
-                                    <div class="bg-warning text-dark rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm"
-                                        style="width: 60px; height: 60px;">
-                                        <i class="bi bi-hourglass-split fs-2"></i>
-                                    </div>
-
-                                    <h5 class="fw-bold text-dark mb-2">Tantang Dirimu!</h5>
-                                    <p class="text-muted small mb-4">Materi sudah dipahami? Uji ketajaman instingmu dengan simulasi CAT CalonASN.id sekarang.</p>
-
+                            <div class="card border border-warning border-2 rounded-4 shadow-sm text-center mt-3">
+                                <div class="card-body p-3">
+                                    <h6 class="fw-bold text-dark mb-1">Uji Pemahamanmu!</h6>
+                                    <p class="text-muted small mb-3">Sudah paham konsepnya? Latihan langsung di Tryout CAT.</p>
                                     <a href="{{ route('ujian.persiapan', $tryout->id ?? 2) }}"
-                                        class="btn btn-warning text-dark w-100 rounded-pill fw-bold shadow-sm py-2 hover-lift">
+                                        class="btn btn-warning btn-sm text-dark w-100 rounded-pill fw-bold py-2 hover-lift">
                                         Mulai Simulasi CAT
                                     </a>
                                 </div>
                             </div>
                         @endif
                     </div>
-                </div>
+                </aside>
 
             </div>
         </div>
     </div>
 
-    {{-- MODAL INTERAKTIF: MATERI TERKUNCI (UX Conversion Optimization) --}}
+    {{-- OFFCANVAS DRAWER DAFTAR BAB (Khusus Mobile & Tablet < lg) --}}
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileChaptersDrawer" aria-labelledby="mobileChaptersDrawerLabel" style="max-width: 88vw; width: 340px;">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold" id="mobileChaptersDrawerLabel">
+                <i class="bi bi-list-nested text-primary me-1"></i> Daftar Bab {{ $category->name }}
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Tutup"></button>
+        </div>
+        <div class="offcanvas-body p-3">
+            @include('user.materi.partials.chapter-list', ['accordionId' => 'accordionChaptersMobile'])
+
+            @if (!isset($hasFullAccess) || !$hasFullAccess)
+                <div class="mt-3 p-3 bg-danger-soft border border-danger border-opacity-25 rounded-4 text-center">
+                    <p class="small text-danger fw-bold mb-2">
+                        <i class="bi bi-lock-fill me-1"></i> Buka Semua Bab Premium
+                    </p>
+                    <a href="{{ $upgradeRoute ?? route('checkout', 2) }}"
+                        class="btn btn-sm btn-danger rounded-pill w-100 shadow-sm fw-bold">
+                        {{ $upgradeLabel ?? 'Buka Semua Materi' }}
+                    </a>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    {{-- MODAL INTERAKTIF: MATERI TERKUNCI --}}
     <div class="modal fade" id="modalLockedMaterial" tabindex="-1" aria-labelledby="modalLockedMaterialLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
@@ -405,7 +492,7 @@
                         <ul class="list-unstyled mb-0 small text-secondary d-flex flex-column gap-2">
                             <li class="d-flex align-items-start gap-2">
                                 <i class="bi bi-check-circle-fill text-success mt-0.5"></i>
-                                <span>Akses <strong>100% Seluruh Bab & Modul</strong> TWK, TIU, dan TKP</span>
+                                <span>Akses <strong>100% Seluruh Bab &amp; Modul</strong> TWK, TIU, dan TKP</span>
                             </li>
                             <li class="d-flex align-items-start gap-2">
                                 <i class="bi bi-check-circle-fill text-success mt-0.5"></i>
@@ -417,7 +504,7 @@
                             </li>
                             <li class="d-flex align-items-start gap-2">
                                 <i class="bi bi-check-circle-fill text-success mt-0.5"></i>
-                                <span>Ranking Nasional Real-time & Pembahasan Kunci Jawaban Lengkap</span>
+                                <span>Ranking Nasional Real-time &amp; Pembahasan Kunci Jawaban Lengkap</span>
                             </li>
                         </ul>
                     </div>
@@ -446,10 +533,57 @@
         </div>
     </div>
 
+    @include('partials.btn-scroll-top')
     @include('partials.scripts')
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. AJAX Toggle Progress Belajar
+            // 1. Wrap any table inside reading content so mobile horizontal scroll works cleanly
+            const readingContent = document.getElementById('readingContent');
+            if (readingContent) {
+                readingContent.querySelectorAll('table').forEach(function(tbl) {
+                    if (tbl.parentElement && tbl.parentElement.classList.contains('reading-table-wrap')) return;
+                    const wrap = document.createElement('div');
+                    wrap.className = 'reading-table-wrap';
+                    tbl.parentNode.insertBefore(wrap, tbl);
+                    wrap.appendChild(tbl);
+                });
+            }
+
+            // 2. Reading Scroll Progress Bar
+            const scrollBar = document.getElementById('readingScrollBar');
+            const readingCard = document.getElementById('readingCard');
+            function updateScrollProgress() {
+                if (!scrollBar || !readingCard) return;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                if (docHeight <= 0) {
+                    scrollBar.style.width = '100%';
+                    return;
+                }
+                const pct = Math.min(100, Math.max(0, (window.scrollY / docHeight) * 100));
+                scrollBar.style.width = pct.toFixed(1) + '%';
+            }
+            window.addEventListener('scroll', updateScrollProgress, { passive: true });
+            updateScrollProgress();
+
+            // 3. Reader Font Scale Toggle (A- / A / A+)
+            const FONT_KEY = 'calonasn_reader_font_scale';
+            const fontBtns = document.querySelectorAll('.js-font-btn');
+            function applyFontScale(scale) {
+                const validScale = ['sm', 'md', 'lg'].includes(scale) ? scale : 'md';
+                if (readingCard) readingCard.setAttribute('data-font-scale', validScale);
+                fontBtns.forEach(function(btn) {
+                    btn.classList.toggle('active', btn.getAttribute('data-scale') === validScale);
+                });
+                localStorage.setItem(FONT_KEY, validScale);
+            }
+            applyFontScale(localStorage.getItem(FONT_KEY) || 'md');
+            fontBtns.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    applyFontScale(this.getAttribute('data-scale'));
+                });
+            });
+
+            // 4. AJAX Toggle Progress Belajar (syncs both desktop sidebar & mobile drawer)
             const btnToggle = document.getElementById('btnToggleProgress');
             if (btnToggle) {
                 btnToggle.addEventListener('click', function() {
@@ -457,9 +591,6 @@
                     const icon = document.getElementById('btnCheckIcon');
                     const label = document.getElementById('btnCheckLabel');
                     const hint = document.getElementById('statusSaveHint');
-                    const progressBar = document.getElementById('progressBarCategory');
-                    const progressSummary = document.getElementById('progressSummary');
-                    const sidebarIcon = document.getElementById('icon-materi-' + materialId);
 
                     btnToggle.disabled = true;
 
@@ -467,49 +598,58 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'Accept': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         }
                     })
-                    .then(res => res.json())
-                    .then(data => {
+                    .then(function(res) {
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        return res.json();
+                    })
+                    .then(function(data) {
                         btnToggle.disabled = false;
                         if (data.status === 'success') {
+                            const sidebarIcons = document.querySelectorAll('.js-materi-icon-' + materialId);
                             if (data.is_completed) {
                                 btnToggle.classList.remove('btn-outline-success');
                                 btnToggle.classList.add('btn-success');
                                 icon.className = 'bi bi-check-circle-fill';
                                 label.textContent = 'Selesai Dibaca';
                                 if (hint) hint.textContent = 'Tersimpan di progres';
-                                if (sidebarIcon) {
-                                    sidebarIcon.className = 'bi bi-check-circle-fill text-success me-2 fs-6';
-                                }
+                                sidebarIcons.forEach(function(el) {
+                                    el.className = `bi bi-check-circle-fill text-success fs-6 flex-shrink-0 js-materi-icon-${materialId}`;
+                                });
                             } else {
                                 btnToggle.classList.remove('btn-success');
                                 btnToggle.classList.add('btn-outline-success');
                                 icon.className = 'bi bi-check-circle';
                                 label.textContent = 'Tandai Selesai';
                                 if (hint) hint.textContent = 'Klik jika sudah paham';
-                                if (sidebarIcon) {
-                                    sidebarIcon.className = 'bi bi-play-circle-fill text-primary me-2 fs-6';
-                                }
+                                sidebarIcons.forEach(function(el) {
+                                    el.className = `bi bi-play-circle-fill text-primary fs-6 flex-shrink-0 js-materi-icon-${materialId}`;
+                                });
                             }
 
-                            if (progressBar) {
-                                progressBar.style.width = data.percentage + '%';
-                            }
-                            if (progressSummary) {
-                                progressSummary.textContent = `${data.completed_count}/${data.total_count} (${data.percentage}%)`;
-                            }
+                            document.querySelectorAll('.js-progress-bar').forEach(function(bar) {
+                                bar.style.width = data.percentage + '%';
+                                bar.setAttribute('aria-valuenow', String(data.percentage));
+                            });
+                            document.querySelectorAll('.js-progress-summary').forEach(function(el) {
+                                el.textContent = `${data.completed_count}/${data.total_count} (${data.percentage}%)`;
+                            });
+                            document.querySelectorAll('.js-progress-count-short').forEach(function(el) {
+                                el.textContent = `${data.completed_count}/${data.total_count}`;
+                            });
                         }
                     })
-                    .catch(err => {
+                    .catch(function() {
                         btnToggle.disabled = false;
-                        console.error('Error toggling progress:', err);
+                        if (hint) hint.textContent = 'Gagal menyimpan progres, coba lagi.';
                     });
                 });
             }
 
-            // 2. Modal Locked Material Title Dynamic Listener
+            // 5. Modal Locked Material Dynamic Title Listener
             const modalLocked = document.getElementById('modalLockedMaterial');
             if (modalLocked) {
                 modalLocked.addEventListener('show.bs.modal', function(event) {

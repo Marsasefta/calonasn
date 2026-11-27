@@ -266,7 +266,8 @@
     }
 
     [data-bs-theme="dark"] .accordion-body,
-    [data-bs-theme="dark"] .accordion-body * {
+    [data-bs-theme="dark"] .accordion-body p,
+    [data-bs-theme="dark"] .accordion-body li {
         color: #cbd5e1 !important;
     }
 

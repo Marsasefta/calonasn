@@ -255,6 +255,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/feedback', [App\Http\Controllers\FeedbackController::class, 'adminIndex'])->name('feedback.index');
         Route::post('/feedback/{id}/toggle-publish', [App\Http\Controllers\FeedbackController::class, 'togglePublish'])->name('feedback.toggle-publish');
         Route::delete('/feedback/{id}', [App\Http\Controllers\FeedbackController::class, 'destroy'])->name('feedback.destroy');
+
+        Route::get('/zona-refreshing', [App\Http\Controllers\AdminGameController::class, 'index'])->name('game.index');
+        Route::delete('/zona-refreshing/reset-all', [App\Http\Controllers\AdminGameController::class, 'resetAll'])->name('game.reset-all');
+        Route::delete('/zona-refreshing/{id}', [App\Http\Controllers\AdminGameController::class, 'destroy'])->whereNumber('id')->name('game.destroy');
        
     });
 });
