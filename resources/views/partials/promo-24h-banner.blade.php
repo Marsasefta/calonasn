@@ -20,7 +20,7 @@
                         </span>
                     </div>
                     <h5 class="fw-bold mb-1" style="color: #0f172a !important;">
-                        Diskon Rp {{ number_format($promo24h['discount_amount'], 0, ',', '.') }} Berakhir {{ $promo24h['deadline_label'] ?? 'Pukul 23:59 WIB' }}!
+                        Diskon Rp {{ number_format($promo24h['discount_amount'], 0, ',', '.') }} Berakhir {{ $promo24h['deadline_label'] ?? 'dalam 2 Jam' }}!
                     </h5>
                     <p class="small mb-0" style="color: #334155 !important;">
                         Tryout Mandiri jadi <strong style="color: #0f172a !important;">Rp 13.000</strong> <span class="text-decoration-line-through" style="color: #64748b !important;">Rp 20.000</span>

@@ -170,17 +170,92 @@
           </div>
 
           {{-- ══════════════════════════════════════════════ --}}
-          {{-- BARIS 2: 2 Charts (Side-by-side di Desktop)    --}}
+          {{-- BARIS 2: Ringkasan, Grafik & Rekap Pendapatan  --}}
           {{-- ══════════════════════════════════════════════ --}}
+          <div class="mb-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+              <h6 class="fw-bold text-muted mb-0" style="font-size:13px;letter-spacing:.5px;text-transform:uppercase">
+                <i class="fe fe-dollar-sign me-1"></i> Ringkasan Pendapatan (Transaksi Lunas)
+              </h6>
+            </div>
+            <div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Pilih Periode Pendapatan">
+              <button type="button" class="btn btn-primary fw-semibold px-3" id="btnRevDaily">Per Hari (30 Hari)</button>
+              <button type="button" class="btn btn-outline-primary bg-white fw-semibold px-3" id="btnRevMonthly">Per Bulan (12 Bulan)</button>
+            </div>
+          </div>
+
+          {{-- 3 KPI Pendapatan Ringkas --}}
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <div class="card dash-card shadow-sm h-100 border-start border-4 border-success">
+                <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                  <div style="min-width:0">
+                    <div class="text-uppercase text-muted" style="font-size:.7rem;font-weight:700">Pendapatan Hari Ini</div>
+                    <h4 class="mb-1 fw-bold text-dark">Rp {{ number_format($revenueToday, 0, ',', '.') }}</h4>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                      <span class="badge badge-status badge-success-soft">{{ $paidToday }} transaksi lunas</span>
+                      <span class="{{ $dailyRevenueChange >= 0 ? 'trend-up' : 'trend-down' }}">
+                        <i class="fe fe-trending-{{ $dailyRevenueChange >= 0 ? 'up' : 'down' }}"></i>
+                        {{ $dailyRevenueChange >= 0 ? '+' : '' }}{{ $dailyRevenueChange }}% vs kemarin
+                      </span>
+                    </div>
+                  </div>
+                  <div class="dash-icon-sm ic-green ms-2">
+                    <span class="fe fe-sun" style="font-size:16px"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="card dash-card shadow-sm h-100 border-start border-4 border-primary">
+                <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                  <div style="min-width:0">
+                    <div class="text-uppercase text-muted" style="font-size:.7rem;font-weight:700">Pendapatan Bulan Ini</div>
+                    <h4 class="mb-1 fw-bold text-dark">Rp {{ number_format($revenueThisMonth, 0, ',', '.') }}</h4>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                      <span class="badge badge-status badge-info-soft">{{ $paidRegistrationsThisMonth }} transaksi lunas</span>
+                      <span class="{{ $revenueChange >= 0 ? 'trend-up' : 'trend-down' }}">
+                        <i class="fe fe-trending-{{ $revenueChange >= 0 ? 'up' : 'down' }}"></i>
+                        {{ $revenueChange >= 0 ? '+' : '' }}{{ $revenueChange }}% vs bln lalu
+                      </span>
+                    </div>
+                  </div>
+                  <div class="dash-icon-sm ic-blue ms-2">
+                    <span class="fe fe-calendar" style="font-size:16px"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="card dash-card shadow-sm h-100 border-start border-4 border-info">
+                <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                  <div style="min-width:0">
+                    <div class="text-uppercase text-muted" style="font-size:.7rem;font-weight:700">Total Semua Waktu</div>
+                    <h4 class="mb-1 fw-bold text-dark">Rp {{ number_format($totalRevenueAllTime, 0, ',', '.') }}</h4>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                      <span class="badge badge-status badge-info-soft">{{ number_format($totalPaidTransactions) }} transaksi lunas</span>
+                      <small class="text-muted">Kemarin: Rp {{ number_format($revenueYesterday, 0, ',', '.') }}</small>
+                    </div>
+                  </div>
+                  <div class="dash-icon-sm ic-teal ms-2">
+                    <span class="fe fe-bar-chart-2" style="font-size:16px"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {{-- Grafik Pendapatan + Tabel Rekap (Sinkron Harian / Bulanan) --}}
           <div class="row g-3 mb-4">
-            {{-- Grafik Pendapatan --}}
-            <div class="col-12 col-xl-6">
+            <div class="col-12 col-xl-7">
               <div class="card dash-chart shadow-sm h-100">
                 <div class="card-header bg-white border-0 pt-4 pb-0 px-4">
                   <div class="d-flex justify-content-between align-items-center">
                     <div>
-                      <h5 class="fw-bold mb-0">Pendapatan Bulanan</h5>
-                      <small class="text-muted">6 bulan terakhir (transaksi lunas)</small>
+                      <h5 class="fw-bold mb-0" id="revChartTitle">Grafik Pendapatan Harian</h5>
+                      <small class="text-muted" id="revChartSubtitle">30 hari terakhir (transaksi lunas)</small>
                     </div>
                     <div class="dash-icon-sm ic-green">
                       <span class="fe fe-trending-up" style="font-size:16px"></span>
@@ -188,15 +263,105 @@
                   </div>
                 </div>
                 <div class="card-body px-4 pb-4">
-                  <div style="position: relative; height: 240px; width: 100%;">
+                  <div style="position: relative; height: 260px; width: 100%;">
                     <canvas id="revenueChart"></canvas>
                   </div>
                 </div>
               </div>
             </div>
 
-            {{-- Grafik User --}}
-            <div class="col-12 col-xl-6">
+            <div class="col-12 col-xl-5">
+              <div class="card dash-table shadow-sm h-100">
+                <div class="card-header bg-white border-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5 class="fw-bold mb-0" id="revTableTitle">Rekap Pendapatan Per Hari</h5>
+                    <small class="text-muted" id="revTableSubtitle">Hari dengan transaksi lunas (30 hari terakhir)</small>
+                  </div>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                  {{-- Tabel Rekap Harian --}}
+                  <div class="table-responsive" id="revTableDaily" style="max-height: 270px; overflow-y: auto;">
+                    <table class="table table-hover text-nowrap mb-0">
+                      <thead class="sticky-top">
+                        <tr>
+                          <th>Tanggal</th>
+                          <th class="text-center">Transaksi</th>
+                          <th class="text-end">Pendapatan</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @forelse($dailyRevenueTable as $row)
+                        <tr>
+                          <td>
+                            <span class="fw-semibold">{{ $row['full_date'] }}</span>
+                            @if($row['is_today'])
+                              <span class="badge badge-status badge-success-soft ms-1">Hari Ini</span>
+                            @endif
+                          </td>
+                          <td class="text-center">
+                            <span class="badge bg-light text-dark border">{{ $row['count'] }}x</span>
+                          </td>
+                          <td class="text-end fw-bold text-success">Rp {{ number_format($row['value'], 0, ',', '.') }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                          <td colspan="3" class="text-center text-muted py-4">Belum ada transaksi lunas dalam 30 hari terakhir</td>
+                        </tr>
+                        @endforelse
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {{-- Tabel Rekap Bulanan --}}
+                  <div class="table-responsive d-none" id="revTableMonthly" style="max-height: 270px; overflow-y: auto;">
+                    <table class="table table-hover text-nowrap mb-0">
+                      <thead class="sticky-top">
+                        <tr>
+                          <th>Bulan</th>
+                          <th class="text-center">Transaksi</th>
+                          <th class="text-end">Pendapatan</th>
+                          <th class="text-end">Tren</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @foreach($monthlyRevenueTable as $row)
+                        <tr>
+                          <td>
+                            <span class="fw-semibold">{{ $row['full_label'] }}</span>
+                            @if($row['is_current'])
+                              <span class="badge badge-status badge-info-soft ms-1">Bulan Ini</span>
+                            @endif
+                          </td>
+                          <td class="text-center">
+                            <span class="badge bg-light text-dark border">{{ $row['count'] }}x</span>
+                          </td>
+                          <td class="text-end fw-bold {{ $row['value'] > 0 ? 'text-success' : 'text-muted' }}">
+                            Rp {{ number_format($row['value'], 0, ',', '.') }}
+                          </td>
+                          <td class="text-end">
+                            @if($row['growth'] === null)
+                              <span class="text-muted small">-</span>
+                            @else
+                              <span class="{{ $row['growth'] >= 0 ? 'trend-up' : 'trend-down' }}">
+                                {{ $row['growth'] >= 0 ? '+' : '' }}{{ $row['growth'] }}%
+                              </span>
+                            @endif
+                          </td>
+                        </tr>
+                        @endforeach
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {{-- ══════════════════════════════════════════════ --}}
+          {{-- BARIS 3: Grafik User Baru                      --}}
+          {{-- ══════════════════════════════════════════════ --}}
+          <div class="row g-3 mb-4">
+            <div class="col-12">
               <div class="card dash-chart shadow-sm h-100">
                 <div class="card-header bg-white border-0 pt-4 pb-0 px-4">
                   <div class="d-flex justify-content-between align-items-center">
@@ -210,7 +375,7 @@
                   </div>
                 </div>
                 <div class="card-body px-4 pb-4">
-                  <div style="position: relative; height: 240px; width: 100%;">
+                  <div style="position: relative; height: 220px; width: 100%;">
                     <canvas id="userChart"></canvas>
                   </div>
                 </div>
@@ -417,27 +582,23 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-      // ─── Grafik Pendapatan Bulanan ───
-      const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+      // ─── Grafik & Rekap Pendapatan (Toggle Harian / Bulanan) ───
+      const dailyRevenueData = @json($dailyRevenueChart);
+      const monthlyRevenueData = @json($monthlyRevenueChart);
+      let currentRevenueData = dailyRevenueData;
 
-      new Chart(revenueCtx, {
+      const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+      const revenueChartInstance = new Chart(revenueCtx, {
         type: 'bar',
         data: {
-          labels: {!! json_encode($revenueChart->pluck('label')) !!},
+          labels: currentRevenueData.map(item => item.label),
           datasets: [{
             label: 'Pendapatan (Rp)',
-            data: {!! json_encode($revenueChart->pluck('value')) !!},
-            backgroundColor: [
-              'rgba(79, 70, 229, 0.15)',
-              'rgba(79, 70, 229, 0.2)',
-              'rgba(79, 70, 229, 0.25)',
-              'rgba(79, 70, 229, 0.35)',
-              'rgba(79, 70, 229, 0.5)',
-              'rgba(79, 70, 229, 0.85)',
-            ],
-            borderColor: '#4f46e5',
+            data: currentRevenueData.map(item => item.value),
+            backgroundColor: 'rgba(16, 185, 129, 0.25)',
+            borderColor: '#10b981',
             borderWidth: 2,
-            borderRadius: 8,
+            borderRadius: 6,
             borderSkipped: false,
           }]
         },
@@ -453,8 +614,18 @@
               padding: 12,
               cornerRadius: 8,
               callbacks: {
+                title: function(items) {
+                  const idx = items[0]?.dataIndex ?? 0;
+                  const item = currentRevenueData[idx];
+                  return item?.full_date || item?.full_label || items[0]?.label || '';
+                },
                 label: function(ctx) {
-                  return 'Rp ' + ctx.parsed.y.toLocaleString('id-ID');
+                  const item = currentRevenueData[ctx.dataIndex];
+                  const trxCount = item ? item.count : 0;
+                  return [
+                    'Pendapatan: Rp ' + ctx.parsed.y.toLocaleString('id-ID'),
+                    'Transaksi Lunas: ' + trxCount + 'x'
+                  ];
                 }
               }
             }
@@ -474,11 +645,58 @@
             },
             x: {
               grid: { display: false },
-              ticks: { font: { size: 11 } }
+              ticks: {
+                font: { size: 10 },
+                maxRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: 12,
+              }
             }
           }
         }
       });
+
+      const btnRevDaily = document.getElementById('btnRevDaily');
+      const btnRevMonthly = document.getElementById('btnRevMonthly');
+      const revChartTitle = document.getElementById('revChartTitle');
+      const revChartSubtitle = document.getElementById('revChartSubtitle');
+      const revTableTitle = document.getElementById('revTableTitle');
+      const revTableSubtitle = document.getElementById('revTableSubtitle');
+      const revTableDaily = document.getElementById('revTableDaily');
+      const revTableMonthly = document.getElementById('revTableMonthly');
+
+      function switchRevenueMode(mode) {
+        const isDaily = mode === 'daily';
+        currentRevenueData = isDaily ? dailyRevenueData : monthlyRevenueData;
+
+        revenueChartInstance.data.labels = currentRevenueData.map(item => item.label);
+        revenueChartInstance.data.datasets[0].data = currentRevenueData.map(item => item.value);
+        revenueChartInstance.data.datasets[0].backgroundColor = isDaily
+          ? 'rgba(16, 185, 129, 0.25)'
+          : 'rgba(79, 70, 229, 0.35)';
+        revenueChartInstance.data.datasets[0].borderColor = isDaily ? '#10b981' : '#4f46e5';
+        revenueChartInstance.update();
+
+        btnRevDaily.className = isDaily
+          ? 'btn btn-primary fw-semibold px-3'
+          : 'btn btn-outline-primary bg-white fw-semibold px-3';
+        btnRevMonthly.className = !isDaily
+          ? 'btn btn-primary fw-semibold px-3'
+          : 'btn btn-outline-primary bg-white fw-semibold px-3';
+
+        revChartTitle.textContent = isDaily ? 'Grafik Pendapatan Harian' : 'Grafik Pendapatan Bulanan';
+        revChartSubtitle.textContent = isDaily ? '30 hari terakhir (transaksi lunas)' : '12 bulan terakhir (transaksi lunas)';
+        revTableTitle.textContent = isDaily ? 'Rekap Pendapatan Per Hari' : 'Rekap Pendapatan Per Bulan';
+        revTableSubtitle.textContent = isDaily
+          ? 'Hari dengan transaksi lunas (30 hari terakhir)'
+          : 'Ringkasan 12 bulan terakhir & pertumbuhan';
+
+        revTableDaily.classList.toggle('d-none', !isDaily);
+        revTableMonthly.classList.toggle('d-none', isDaily);
+      }
+
+      btnRevDaily.addEventListener('click', () => switchRevenueMode('daily'));
+      btnRevMonthly.addEventListener('click', () => switchRevenueMode('monthly'));
 
       // ─── Grafik User Baru Harian ───
       const userCtx = document.getElementById('userChart').getContext('2d');

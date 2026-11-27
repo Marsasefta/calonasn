@@ -112,7 +112,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Ambil data promo pendaftar baru (berakhir 23:59 WIB hari daftar, atau besok 23:59 WIB jika daftar >= 21:00).
+     * Ambil data promo pendaftar baru (berakhir 2 jam setelah waktu daftar).
      */
     public function newMemberPromo(): ?array
     {
@@ -133,9 +133,7 @@ class User extends Authenticatable
 
         $tz = config('app.timezone', 'Asia/Jakarta');
         $registeredAt = $this->created_at->copy()->timezone($tz);
-        $expiresAt = $registeredAt->hour >= 21
-            ? $registeredAt->copy()->addDay()->endOfDay()
-            : $registeredAt->copy()->endOfDay();
+        $expiresAt = $registeredAt->copy()->addHours(2);
 
         $now = now($tz);
         $remainingSeconds = (int) $now->diffInSeconds($expiresAt, false);
@@ -152,9 +150,8 @@ class User extends Authenticatable
             return null;
         }
 
-        $deadlineLabel = $expiresAt->isSameDay($now)
-            ? 'Hari Ini Pukul 23:59 WIB'
-            : 'Besok Pukul 23:59 WIB';
+        $dayPrefix = $expiresAt->isSameDay($now) ? 'Hari Ini' : 'Besok';
+        $deadlineLabel = $dayPrefix . ' Pukul ' . $expiresAt->format('H:i') . ' WIB';
 
         return [
             'promo_id'          => $promo->id,

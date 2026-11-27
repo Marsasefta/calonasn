@@ -37,6 +37,8 @@ class DashboardController extends Controller
         // Show admin dashboard for admins
         if ($user->isAdmin()) {
             $now = Carbon::now();
+            $today = Carbon::today();
+            $yesterday = Carbon::yesterday();
             $lastMonth = Carbon::now()->subMonth();
 
             // ── Statistik Kartu Utama ──
@@ -50,13 +52,34 @@ class DashboardController extends Controller
                 ->whereMonth('created_at', $now->month)
                 ->where('status', 'success')
                 ->count();
-            $revenueThisMonth = Transaction::whereYear('created_at', $now->year)
+            $revenueThisMonth = (int) Transaction::whereYear('created_at', $now->year)
                 ->whereMonth('created_at', $now->month)
                 ->where('status', 'success')
                 ->sum('total_amount');
 
+            // ── Pendapatan Harian (Hari Ini vs Kemarin) & Total Keseluruhan ──
+            $todayStats = Transaction::where('status', 'success')
+                ->whereDate('created_at', $today)
+                ->selectRaw('COUNT(*) as tx_count, COALESCE(SUM(total_amount), 0) as total')
+                ->first();
+            $revenueToday = (int) ($todayStats->total ?? 0);
+            $paidToday = (int) ($todayStats->tx_count ?? 0);
+
+            $revenueYesterday = (int) Transaction::where('status', 'success')
+                ->whereDate('created_at', $yesterday)
+                ->sum('total_amount');
+            $dailyRevenueChange = $revenueYesterday > 0
+                ? round((($revenueToday - $revenueYesterday) / $revenueYesterday) * 100, 1)
+                : ($revenueToday > 0 ? 100 : 0);
+
+            $allTimeStats = Transaction::where('status', 'success')
+                ->selectRaw('COUNT(*) as tx_count, COALESCE(SUM(total_amount), 0) as total')
+                ->first();
+            $totalRevenueAllTime = (int) ($allTimeStats->total ?? 0);
+            $totalPaidTransactions = (int) ($allTimeStats->tx_count ?? 0);
+
             // ── Perbandingan Bulan Lalu (untuk indikator ↑↓) ──
-            $revenueLastMonth = Transaction::whereYear('created_at', $lastMonth->year)
+            $revenueLastMonth = (int) Transaction::whereYear('created_at', $lastMonth->year)
                 ->whereMonth('created_at', $lastMonth->month)
                 ->where('status', 'success')
                 ->sum('total_amount');
@@ -74,18 +97,68 @@ class DashboardController extends Controller
                 ? round((($newUsersThisMonth - $newUsersLastMonth) / $newUsersLastMonth) * 100, 1)
                 : ($newUsersThisMonth > 0 ? 100 : 0);
 
-            // ── Grafik Pendapatan Bulanan (6 bulan terakhir) ──
-            $revenueChart = collect(range(5, 0))->map(function ($i) {
-                $date = Carbon::now()->subMonths($i);
-                $revenue = Transaction::whereYear('created_at', $date->year)
-                    ->whereMonth('created_at', $date->month)
-                    ->where('status', 'success')
-                    ->sum('total_amount');
+            // ── Grafik & Rekap Pendapatan Harian (30 hari terakhir) ──
+            $dailyStart = $today->copy()->subDays(29)->startOfDay();
+            $dailyRows = Transaction::where('status', 'success')
+                ->where('created_at', '>=', $dailyStart)
+                ->selectRaw('DATE(created_at) as trx_date, COUNT(*) as tx_count, COALESCE(SUM(total_amount), 0) as total')
+                ->groupBy('trx_date')
+                ->get()
+                ->keyBy('trx_date');
+
+            $dailyRevenueChart = collect(range(29, 0))->map(function ($i) use ($today, $dailyRows) {
+                $date = $today->copy()->subDays($i);
+                $key = $date->format('Y-m-d');
+                $row = $dailyRows->get($key);
                 return [
-                    'label' => $date->translatedFormat('M Y'),
-                    'value' => (int) $revenue,
+                    'date' => $key,
+                    'label' => $date->format('d M'),
+                    'full_date' => $date->translatedFormat('d M Y'),
+                    'is_today' => $i === 0,
+                    'value' => (int) ($row->total ?? 0),
+                    'count' => (int) ($row->tx_count ?? 0),
                 ];
             })->values();
+
+            $dailyRevenueTable = $dailyRevenueChart
+                ->filter(fn ($item) => $item['is_today'] || $item['count'] > 0)
+                ->reverse()
+                ->values();
+
+            // ── Grafik & Rekap Pendapatan Bulanan (12 bulan terakhir) ──
+            $monthlyStart = $now->copy()->startOfMonth()->subMonths(11);
+            $monthlyRows = Transaction::where('status', 'success')
+                ->where('created_at', '>=', $monthlyStart)
+                ->selectRaw('YEAR(created_at) as yr, MONTH(created_at) as mo, COUNT(*) as tx_count, COALESCE(SUM(total_amount), 0) as total')
+                ->groupBy('yr', 'mo')
+                ->get()
+                ->keyBy(fn ($r) => sprintf('%04d-%02d', $r->yr, $r->mo));
+
+            $monthlyRevenueChart = collect(range(11, 0))->map(function ($i) use ($now, $monthlyRows) {
+                $date = $now->copy()->startOfMonth()->subMonths($i);
+                $key = $date->format('Y-m');
+                $row = $monthlyRows->get($key);
+                return [
+                    'key' => $key,
+                    'label' => $date->translatedFormat('M Y'),
+                    'full_label' => $date->translatedFormat('F Y'),
+                    'is_current' => $i === 0,
+                    'value' => (int) ($row->total ?? 0),
+                    'count' => (int) ($row->tx_count ?? 0),
+                ];
+            })->values();
+
+            $monthlyRevenueTable = $monthlyRevenueChart->map(function ($item, $idx) use ($monthlyRevenueChart) {
+                $prev = $idx > 0 ? $monthlyRevenueChart[$idx - 1]['value'] : 0;
+                $growth = $prev > 0
+                    ? round((($item['value'] - $prev) / $prev) * 100, 1)
+                    : ($item['value'] > 0 && $idx > 0 ? 100 : null);
+                $item['growth'] = $growth;
+                return $item;
+            })->reverse()->values();
+
+            // Pertahankan 6 bulan terakhir pada $revenueChart untuk kompatibilitas
+            $revenueChart = $monthlyRevenueChart->slice(6)->values();
 
             // ── Grafik User Baru Harian (30 hari terakhir) ──
             $userChart = collect(range(29, 0))->map(function ($i) {
@@ -123,9 +196,19 @@ class DashboardController extends Controller
                 'paidRegistrationsThisMonth',
                 'revenueThisMonth',
                 'revenueChange',
+                'revenueToday',
+                'paidToday',
+                'revenueYesterday',
+                'dailyRevenueChange',
+                'totalRevenueAllTime',
+                'totalPaidTransactions',
                 'newUsersThisMonth',
                 'userChange',
                 'revenueChart',
+                'dailyRevenueChart',
+                'dailyRevenueTable',
+                'monthlyRevenueChart',
+                'monthlyRevenueTable',
                 'userChart',
                 'latestTransactions',
                 'latestUsers',
