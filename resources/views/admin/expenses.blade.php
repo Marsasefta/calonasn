@@ -104,8 +104,8 @@
                                 </div>
                                 <div class="col-md-2 col-6">
                                     <label for="expense_amount" class="form-label small fw-semibold">Nominal (Rp)</label>
-                                    <input type="text" inputmode="numeric" name="amount" id="expense_amount" class="form-control"
-                                           placeholder="100000" value="{{ old('amount') }}" required>
+                                    <input type="text" inputmode="numeric" name="amount" id="expense_amount" class="form-control rupiah-input"
+                                           placeholder="100.000" value="{{ old('amount') }}" required>
                                 </div>
                                 <div class="col-md-2 col-12">
                                     <label for="expense_notes" class="form-label small fw-semibold">Catatan (Opsional)</label>
@@ -259,7 +259,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="edit_expense_amount" class="form-label fw-semibold small">Nominal (Rp)</label>
-                            <input type="text" inputmode="numeric" name="amount" id="edit_expense_amount" class="form-control" required>
+                            <input type="text" inputmode="numeric" name="amount" id="edit_expense_amount" class="form-control rupiah-input" placeholder="100.000" required>
                         </div>
                         <div class="mb-0">
                             <label for="edit_expense_notes" class="form-label fw-semibold small">Catatan (Opsional)</label>
@@ -313,6 +313,21 @@
                 }).draw(false);
             }
 
+            function formatRupiahDigits(raw) {
+                const digits = String(raw || '').replace(/\D+/g, '').replace(/^0+(?=\d)/, '');
+                if (!digits) return '';
+                return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            }
+
+            document.querySelectorAll('.rupiah-input').forEach(function (input) {
+                if (input.value) {
+                    input.value = formatRupiahDigits(input.value);
+                }
+                input.addEventListener('input', function () {
+                    input.value = formatRupiahDigits(input.value);
+                });
+            });
+
             const editModalEl = document.getElementById('editExpenseModal');
             const editModal = editModalEl && window.bootstrap ? new bootstrap.Modal(editModalEl) : null;
             const editForm = document.getElementById('editExpenseForm');
@@ -324,7 +339,7 @@
                 document.getElementById('edit_expense_date').value = btn.dataset.date || '';
                 document.getElementById('edit_expense_name').value = btn.dataset.name || '';
                 document.getElementById('edit_expense_category').value = btn.dataset.category || 'iklan';
-                document.getElementById('edit_expense_amount').value = btn.dataset.amount || '';
+                document.getElementById('edit_expense_amount').value = formatRupiahDigits(btn.dataset.amount || '');
                 document.getElementById('edit_expense_notes').value = btn.dataset.notes || '';
                 if (editModal) editModal.show();
             });
