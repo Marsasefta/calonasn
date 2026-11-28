@@ -120,10 +120,16 @@
                                                     <td class="fw-semibold">Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}</td>
                                                     <td>
                                                         @if (!empty($transaction->payment_proof))
-                                                            <a href="{{ asset('storage/' . $transaction->payment_proof) }}"
-                                                                target="_blank" class="btn btn-sm btn-outline-info text-nowrap">
-                                                                Lihat Bukti
-                                                            </a>
+                                                            <button type="button"
+                                                                class="btn btn-sm btn-outline-info text-nowrap js-preview-proof"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#proofPreviewModal"
+                                                                data-proof-url="{{ asset('storage/' . $transaction->payment_proof) }}"
+                                                                data-invoice="{{ $invoiceLabel }}"
+                                                                data-user="{{ $transaction->user->name ?? '-' }}"
+                                                                data-amount="Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}">
+                                                                <i class="fe fe-image me-1"></i> Lihat Bukti
+                                                            </button>
                                                         @else
                                                             <span class="text-muted">-</span>
                                                         @endif
@@ -249,6 +255,40 @@
         </main>
     </div>
 
+    <!-- Modal Pratinjau Bukti Transfer -->
+    <div class="modal fade" id="proofPreviewModal" tabindex="-1" aria-labelledby="proofPreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header border-bottom">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0" id="proofPreviewModalLabel">Bukti Transfer Peserta</h5>
+                        <div class="small text-muted" id="proofModalMeta">-</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body p-3 p-md-4 text-center">
+                    <div id="proofModalLoading" class="py-4 text-muted small">
+                        <div class="spinner-border spinner-border-sm text-primary me-1" role="status"></div>
+                        Memuat gambar bukti transfer...
+                    </div>
+                    <img id="proofModalImg" src="" alt="Bukti Transfer" class="img-fluid rounded-3 border shadow-sm d-none" style="max-height: 70vh; object-fit: contain;">
+                    <div id="proofModalError" class="alert alert-warning border-0 rounded-3 small mb-0 d-none">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        Gambar bukti transfer gagal dimuat atau file rusak/tidak lengkap. Silakan hubungi peserta melalui WhatsApp untuk kirim ulang.
+                    </div>
+                </div>
+                <div class="modal-footer border-top justify-content-between">
+                    <a id="proofModalOpenTab" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                        <i class="fe fe-external-link me-1"></i> Buka di Tab Baru
+                    </a>
+                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @include('partials.scripts')
     <script src="/build/assets/plugins/datatables.net/js/dataTables.min.js"></script>
     <script src="/build/assets/plugins/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
@@ -305,6 +345,40 @@
                     if (verifiedTable) verifiedTable.columns.adjust();
                     if (unpaidTable) unpaidTable.columns.adjust();
                 });
+            });
+
+            document.addEventListener('click', function(event) {
+                const previewBtn = event.target.closest('.js-preview-proof');
+                if (!previewBtn) return;
+
+                const url = previewBtn.getAttribute('data-proof-url') || '';
+                const invoice = previewBtn.getAttribute('data-invoice') || '-';
+                const user = previewBtn.getAttribute('data-user') || '-';
+                const amount = previewBtn.getAttribute('data-amount') || '-';
+
+                const metaEl = document.getElementById('proofModalMeta');
+                const imgEl = document.getElementById('proofModalImg');
+                const loadingEl = document.getElementById('proofModalLoading');
+                const errorEl = document.getElementById('proofModalError');
+                const openTabEl = document.getElementById('proofModalOpenTab');
+
+                if (metaEl) metaEl.textContent = `${user} • ${invoice} • ${amount}`;
+                if (openTabEl) openTabEl.setAttribute('href', url);
+
+                if (loadingEl) loadingEl.classList.remove('d-none');
+                if (errorEl) errorEl.classList.add('d-none');
+                if (imgEl) {
+                    imgEl.classList.add('d-none');
+                    imgEl.onload = function() {
+                        if (loadingEl) loadingEl.classList.add('d-none');
+                        imgEl.classList.remove('d-none');
+                    };
+                    imgEl.onerror = function() {
+                        if (loadingEl) loadingEl.classList.add('d-none');
+                        if (errorEl) errorEl.classList.remove('d-none');
+                    };
+                    imgEl.src = url;
+                }
             });
 
             document.addEventListener('submit', function(event) {
