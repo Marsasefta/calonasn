@@ -94,6 +94,73 @@
           </div>
           @endif
 
+          {{-- ── Peserta Sedang Ujian (Jika Ada) ── --}}
+          @if($activeExamSessions->isNotEmpty())
+          <div class="card dash-table shadow-sm mb-4 border-start border-4 border-warning">
+            <div class="card-header bg-white border-0 pt-3 pb-2 px-4 d-flex flex-wrap justify-content-between align-items-center gap-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="dash-icon-sm ic-yellow">
+                  <span class="fe fe-clock" style="font-size:16px"></span>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-0">
+                    Peserta Sedang Ujian
+                    <span class="badge bg-warning text-dark ms-1">{{ $activeExamSessions->count() }} Orang</span>
+                  </h5>
+                  <small class="text-muted">Daftar peserta yang saat ini sedang mengerjakan ujian (durasi maksimal 100 menit)</small>
+                </div>
+              </div>
+              <a href="{{ route('admin.reports.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                Lihat Laporan <i class="fe fe-arrow-right ms-1"></i>
+              </a>
+            </div>
+            <div class="card-body px-0 pt-0 pb-2">
+              <div class="table-responsive">
+                <table class="table table-hover text-nowrap mb-0">
+                  <thead>
+                    <tr>
+                      <th>Peserta</th>
+                      <th>Tryout</th>
+                      <th>Mulai</th>
+                      <th>Sisa Waktu</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach($activeExamSessions as $session)
+                    @php
+                      $elapsedMinutes = $session->start_time ? (int) $session->start_time->diffInMinutes(now()) : 0;
+                      $remainingMinutes = max(0, 100 - $elapsedMinutes);
+                    @endphp
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <img src="https://ui-avatars.com/api/?name={{ urlencode($session->user->name ?? '-') }}&background=random&color=fff&size=32&bold=true&rounded=true" alt="" width="32" height="32" class="rounded-circle">
+                          <div>
+                            <div class="fw-semibold" style="font-size:13px">{{ $session->user->name ?? '-' }}</div>
+                            <small class="text-muted">{{ $session->user->email ?? '-' }}</small>
+                          </div>
+                        </div>
+                      </td>
+                      <td>{{ $session->tryout->title ?? '-' }}</td>
+                      <td>
+                        <small class="text-muted">{{ $session->start_time ? $session->start_time->locale('id')->isoFormat('DD MMM YYYY HH:mm:ss') : '-' }}</small>
+                      </td>
+                      <td>
+                        <span class="fw-semibold text-dark">~{{ $remainingMinutes }} menit</span>
+                      </td>
+                      <td>
+                        <span class="badge badge-status badge-warning-soft">Sedang Ujian</span>
+                      </td>
+                    </tr>
+                    @endforeach
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          @endif
+
           {{-- ══════════════════════════════════════════════ --}}
           {{-- BARIS 1: 4 Stat Cards                          --}}
           {{-- ══════════════════════════════════════════════ --}}

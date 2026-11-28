@@ -189,6 +189,13 @@ class DashboardController extends Controller
             $premiumUsers = User::where('is_premium', true)->count();
             $totalExamSessions = ExamSession::count();
 
+            // ── Peserta Sedang Ujian (auto-close sesi kadaluarsa > 100 menit) ──
+            app(UjianController::class)->closeExpiredUnfinishedSessions();
+            $activeExamSessions = ExamSession::with(['user:id,name,email', 'tryout:id,title'])
+                ->whereNull('end_time')
+                ->orderBy('start_time', 'desc')
+                ->get();
+
             return view('admin.dashboard', compact(
                 'totalUsers',
                 'totalQuestions',
@@ -216,7 +223,8 @@ class DashboardController extends Controller
                 'activeTryouts',
                 'totalPosts',
                 'premiumUsers',
-                'totalExamSessions'
+                'totalExamSessions',
+                'activeExamSessions'
             ));
         }
 
