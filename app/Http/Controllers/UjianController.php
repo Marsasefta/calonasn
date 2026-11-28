@@ -203,16 +203,22 @@ class UjianController extends Controller
                 'start_time' => now(),
             ]);
 
-            // Simpan urutan di Redis agar tidak teracak jika user refresh browser
+            // Simpan urutan di Redis agar tidak teracak jika user refresh browser (TTL 24 jam agar tetap aman jika waktu habis saat tab ditutup)
             Redis::set($redisSequenceKey, json_encode($questionSequence));
-            Redis::expire($redisSequenceKey, ($tryout->duration_minutes + 10) * 60);
+            Redis::expire($redisSequenceKey, 86400);
 
-            // Set Timer awal di Redis (dalam detik)
-            Redis::set($redisTimerKey, $tryout->duration_minutes * 60);
-            Redis::expire($redisTimerKey, ($tryout->duration_minutes + 10) * 60);
+            $durationInSeconds = $this->calculateRemainingSeconds($session, $tryout);
 
         } else {
-            // --- LANJUTKAN SESI LAMA ---
+            // --- LANJUTKAN SESI LAMA (WAKTU TETAP BERJALAN BERDASARKAN start_time SERVER) ---
+            $durationInSeconds = $this->calculateRemainingSeconds($session, $tryout);
+            if ($durationInSeconds <= 0) {
+                $this->finalizeExamSession($session, $tryout);
+
+                return redirect()->route('ujian.hasil', $session->id)
+                    ->with('info', 'Waktu ujian telah habis. Jawaban tersimpan Anda telah dinilai otomatis.');
+            }
+
             $sequenceJson = Redis::get($redisSequenceKey);
             $questionSequence = json_decode($sequenceJson, true);
 
@@ -231,69 +237,64 @@ class UjianController extends Controller
                 })->values();
         }
 
-        // Ambil sisa waktu & state dari Redis
-        $durationInSeconds = Redis::get($redisTimerKey) ?? ($tryout->duration_minutes * 60);
+        // Ambil state jawaban & ragu-ragu dari Redis; sisa waktu murni dari start_time server
         $tempAnswers = Redis::hgetAll($redisAnswersKey) ?? [];
         $tempRagu = Redis::hgetAll($redisRaguKey) ?? [];
 
         return view('user.ujian.ujian', compact('questions', 'durationInSeconds', 'tryout', 'tempAnswers', 'tempRagu'));
     }
 
-    public function selesai(Request $request, $id)
+    /**
+     * Hitung sisa waktu ujian (detik) murni berdasarkan start_time di server (standar CAT BKN).
+     */
+    private function calculateRemainingSeconds(ExamSession $session, Tryout $tryout): int
     {
-        $userId = auth()->id();
+        $totalSeconds = max(60, ((int) ($tryout->duration_minutes ?? 100)) * 60);
+        $startTime = $session->start_time ?? $session->created_at ?? now();
+        $elapsed = max(0, (int) $startTime->diffInSeconds(now(), false));
 
-        // 1. Pastikan Sesi Ujian Masih Aktif di Database
-        $session = \App\Models\ExamSession::where('user_id', $userId)
-            ->where('tryout_id', $id)
-            ->whereNull('end_time')
-            ->latest()
-            ->first();
+        return max(0, $totalSeconds - $elapsed);
+    }
 
-        if (!$session) {
-            return redirect()->route('ujian.hasil', $id);
-        }
+    /**
+     * Nilai jawaban & tutup sesi ujian secara permanen (dipakai oleh selesai() maupun auto-finalize saat waktu habis).
+     */
+    private function finalizeExamSession(ExamSession $session, Tryout $tryout, array $submittedAnswers = []): ExamSession
+    {
+        $userId = $session->user_id;
+        $tryoutId = $session->tryout_id;
 
-        // 2. Ambil Jawaban User
-        $jawabanUser = $request->input('jawaban', []);
+        $jawabanUser = $submittedAnswers;
         if (empty($jawabanUser)) {
-            $redisAnswersKey = "temp_answers:user_{$userId}:tryout_{$id}";
-            $jawabanUser = \Illuminate\Support\Facades\Redis::hgetAll($redisAnswersKey) ?? [];
+            $redisAnswersKey = "temp_answers:user_{$userId}:tryout_{$tryoutId}";
+            $jawabanUser = Redis::hgetAll($redisAnswersKey) ?? [];
         }
 
-        // 3. Ambil Urutan Soal Asli dari Redis SEBELUM Dihapus
-        $redisSequenceKey = "sequence:user_{$userId}:tryout_{$id}";
-        $sequenceJson = \Illuminate\Support\Facades\Redis::get($redisSequenceKey);
+        $redisSequenceKey = "sequence:user_{$userId}:tryout_{$tryoutId}";
+        $sequenceJson = Redis::get($redisSequenceKey);
         $questionSequence = json_decode($sequenceJson, true);
 
         if (empty($questionSequence)) {
             $questionSequence = array_keys($jawabanUser);
         }
 
-        // ==========================================
-        // 4. PERSIAPAN SKOR DINAMIS BERDASARKAN KATEGORI
-        // ==========================================
-        $categories = \App\Models\Category::all()->keyBy('id');
-        $skorPerKategori = []; // Array penampung dinamis
+        $categories = Category::all()->keyBy('id');
+        $skorPerKategori = [];
         $totalSkorKeseluruhan = 0;
 
-        // Inisialisasi awal nilai 0 untuk setiap kategori yang ada di DB
         foreach ($categories as $catId => $catData) {
             $skorPerKategori[$catId] = [
                 'name' => $catData->name,
                 'skor' => 0,
-                'passing_grade' => $catData->passing_grade_score ?? 0 // Sesuaikan nama kolom PG kamu
+                'passing_grade' => $catData->passing_grade_score ?? 0,
             ];
         }
 
         $examAnswersData = [];
-        $questions = \App\Models\Question::whereIn('id', $questionSequence)->get()->keyBy('id');
+        $questions = Question::whereIn('id', $questionSequence)->get()->keyBy('id');
         $optionIds = array_values($jawabanUser);
         $options = \App\Models\QuestionOption::whereIn('id', $optionIds)->get()->keyBy('id');
 
-        // ==========================================
-        // 5. PROSES PERHITUNGAN DINAMIS (TANPA HARDCODE TWK/TIU/TKP)
-        // ==========================================
         foreach ($questionSequence as $qId) {
             $question = $questions->get($qId);
             $optId = $jawabanUser[$qId] ?? null;
@@ -304,7 +305,6 @@ class UjianController extends Controller
             if ($question) {
                 if ($option) {
                     $pointEarned = $option->point;
-                    // Tambahkan poin ke array dinamis berdasarkan category_id soal
                     if (isset($skorPerKategori[$question->category_id])) {
                         $skorPerKategori[$question->category_id]['skor'] += $pointEarned;
                     }
@@ -323,41 +323,32 @@ class UjianController extends Controller
             }
         }
 
-        // ==========================================
-        // 6. PENENTUAN KELULUSAN (LULUS SEMUA KATEGORI)
-        // ==========================================
         $lulus = true;
         foreach ($skorPerKategori as $hasilKategori) {
             if ($hasilKategori['skor'] < $hasilKategori['passing_grade']) {
                 $lulus = false;
-                break; // Jika ada 1 yang di bawah passing grade, langsung tidak lulus
+                break;
             }
         }
 
-        // Lempar data matang ke Session untuk diambil di fungsi hasil()
         session([
             'hasilUjian' => [
                 'skorPerKategori' => $skorPerKategori,
                 'total_score' => $totalSkorKeseluruhan,
-                'lulus' => $lulus
-            ]
+                'lulus' => $lulus,
+            ],
         ]);
 
-        // ==========================================
-        // 7. SIMPAN PERMANEN KE DB
-        // ==========================================
-        // CATATAN: Kolom score_twk, score_tiu, score_tkp di tabel exam_sessions
-        // bisa kamu pertahankan dulu untuk kompatibilitas data lama. 
-        // Tapi nilai dinamis kita simpan sebagai JSON di kolom 'total_score' (jika memungkinkan)
-        // atau simpan totalnya saja.
-        
-        // Cari ID TWK, TIU, TKP untuk mengisi legacy column secara aman
         $twkId = $categories->where('name', 'TWK')->first()->id ?? null;
         $tiuId = $categories->where('name', 'TIU')->first()->id ?? null;
         $tkpId = $categories->where('name', 'TKP')->first()->id ?? null;
 
+        $startTime = $session->start_time ?? $session->created_at ?? now();
+        $maxEndTime = $startTime->copy()->addMinutes((int) ($tryout->duration_minutes ?? 100));
+        $effectiveEndTime = now()->greaterThan($maxEndTime) ? $maxEndTime : now();
+
         $session->update([
-            'end_time'    => now(),
+            'end_time'    => $effectiveEndTime,
             'score_twk'   => $twkId ? $skorPerKategori[$twkId]['skor'] : 0,
             'score_tiu'   => $tiuId ? $skorPerKategori[$tiuId]['skor'] : 0,
             'score_tkp'   => $tkpId ? $skorPerKategori[$tkpId]['skor'] : 0,
@@ -368,13 +359,30 @@ class UjianController extends Controller
             \App\Models\ExamAnswer::insert($examAnswersData);
         }
 
-        // ==========================================
-        // 8. PEMBERSIHAN REDIS 
-        // ==========================================
-        \Illuminate\Support\Facades\Redis::del("temp_answers:user_{$userId}:tryout_{$id}");
-        \Illuminate\Support\Facades\Redis::del("temp_ragu:user_{$userId}:tryout_{$id}");
-        \Illuminate\Support\Facades\Redis::del("timer:user_{$userId}:tryout_{$id}");
-        \Illuminate\Support\Facades\Redis::del("sequence:user_{$userId}:tryout_{$id}");
+        Redis::del("temp_answers:user_{$userId}:tryout_{$tryoutId}");
+        Redis::del("temp_ragu:user_{$userId}:tryout_{$tryoutId}");
+        Redis::del("timer:user_{$userId}:tryout_{$tryoutId}");
+        Redis::del("sequence:user_{$userId}:tryout_{$tryoutId}");
+
+        return $session;
+    }
+
+    public function selesai(Request $request, $id)
+    {
+        $userId = auth()->id();
+
+        $session = ExamSession::where('user_id', $userId)
+            ->where('tryout_id', $id)
+            ->whereNull('end_time')
+            ->latest()
+            ->first();
+
+        if (!$session) {
+            return redirect()->route('ujian.hasil', $id);
+        }
+
+        $tryout = Tryout::findOrFail($id);
+        $this->finalizeExamSession($session, $tryout, $request->input('jawaban', []));
 
         return redirect()->route('ujian.hasil', $session->id);
     }
@@ -547,13 +555,25 @@ class UjianController extends Controller
     public function updateTimer(Request $request)
     {
         $userId = auth()->id();
-        $tryoutId = $request->tryout_id;
-        $sisaWaktu = $request->sisa_waktu; // dari frontend
+        $tryoutId = (int) $request->tryout_id;
 
-        $redisTimerKey = "timer:user_{$userId}:tryout_{$tryoutId}";
-        Redis::set($redisTimerKey, $sisaWaktu);
+        $session = ExamSession::where('user_id', $userId)
+            ->where('tryout_id', $tryoutId)
+            ->whereNull('end_time')
+            ->latest()
+            ->first();
 
-        return response()->json(['status' => 'success']);
+        $tryout = Tryout::find($tryoutId);
+        if (!$session || !$tryout) {
+            return response()->json(['status' => 'not_found'], 404);
+        }
+
+        $remainingSeconds = $this->calculateRemainingSeconds($session, $tryout);
+
+        return response()->json([
+            'status' => 'success',
+            'remaining_seconds' => $remainingSeconds,
+        ]);
     }
 
     public function simpanRaguTemp(Request $request)

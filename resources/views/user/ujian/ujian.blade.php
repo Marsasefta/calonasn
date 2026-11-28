@@ -231,7 +231,10 @@
         // 1. Variabel Global Server
         let currentSoalId = 1;
         const totalSoal = {{ $questions->count() }};
-        let timeInSeconds = {{ $durationInSeconds }};
+        let timeInSeconds = {{ (int) $durationInSeconds }};
+        let examDeadlineMs = Date.now() + (timeInSeconds * 1000);
+        let isAutoSubmitting = false;
+        let lastServerSyncAt = Date.now();
         const tryoutId = {{ $tryout->id }};
 
         function updateNextButtonState() {
@@ -362,44 +365,74 @@
             }
         }
 
-        // 6. Timer & Sinkronisasi Redis
+        // 6. Timer Real-Time Berbasis Deadline Server (Tetap Berjalan Saat Pindah Tab / Tutup Browser)
         let timerDisplay = document.getElementById('timerDisplay');
-        let timerInterval = setInterval(() => {
+
+        function syncTimerFromServer() {
+            fetch('{{ route('ujian.update_timer') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    tryout_id: tryoutId
+                })
+            })
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (data && typeof data.remaining_seconds === 'number') {
+                    examDeadlineMs = Date.now() + (data.remaining_seconds * 1000);
+                    renderTimerTick();
+                }
+            })
+            .catch(() => {});
+        }
+
+        function renderTimerTick() {
+            if (isAutoSubmitting) return;
+
+            timeInSeconds = Math.max(0, Math.ceil((examDeadlineMs - Date.now()) / 1000));
+
             if (timeInSeconds <= 0) {
+                isAutoSubmitting = true;
                 clearInterval(timerInterval);
                 timerDisplay.innerHTML = "00:00";
-                alert('Waktu Habis! Jawaban Anda akan otomatis dikirim.');
-                document.getElementById('formUjian').submit();
+                const formUjian = document.getElementById('formUjian');
+                if (formUjian) {
+                    formUjian.submit();
+                }
                 return;
             }
 
             let minutes = Math.floor(timeInSeconds / 60);
             let seconds = timeInSeconds % 60;
-
             timerDisplay.innerHTML = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
-            // Auto-save sisa waktu ke Redis setiap 10 detik
-            if (timeInSeconds % 10 === 0) {
-                fetch('{{ route('ujian.update_timer') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        tryout_id: tryoutId,
-                        sisa_waktu: timeInSeconds
-                    })
-                });
-            }
-
             if (timeInSeconds <= 300) {
-                timerDisplay.classList.add('animate__animated', 'animate__flash', 'animate__infinite',
-                    'text-danger');
+                timerDisplay.classList.add('animate__animated', 'animate__flash', 'animate__infinite', 'text-danger');
             }
 
-            timeInSeconds--;
-        }, 1000);
+            if (Date.now() - lastServerSyncAt >= 15000) {
+                lastServerSyncAt = Date.now();
+                syncTimerFromServer();
+            }
+        }
+
+        let timerInterval = setInterval(renderTimerTick, 500);
+        renderTimerTick();
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                syncTimerFromServer();
+                renderTimerTick();
+            }
+        });
+
+        window.addEventListener('focus', function() {
+            renderTimerTick();
+        });
 
         // 7. Simpan Jawaban ke Redis (AJAX)
         document.querySelectorAll('.opsi-radio').forEach(radio => {
