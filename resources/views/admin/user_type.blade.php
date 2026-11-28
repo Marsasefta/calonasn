@@ -621,6 +621,7 @@
                                                 <div class="form-check form-switch mb-0 ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $user->is_premium ? 'Akses Manual PRO Aktif (Klik untuk nonaktifkan)' : 'Beri Akses Manual PRO instan' }}">
                                                     <input class="form-check-input premium-toggle-switch" type="checkbox" role="switch"
                                                            data-user-id="{{ $user->id }}"
+                                                           data-user-name="{{ $user->name }}"
                                                            {{ $user->is_premium ? 'checked' : '' }} />
                                                 </div>
                                             </div>
@@ -904,47 +905,66 @@
                 }
             });
 
-            // AJAX Toggle Premium Langsung dari Tabel
+            // AJAX Toggle Premium Langsung dari Tabel (dengan Konfirmasi SweetAlert2)
             $(document).on('change', '.premium-toggle-switch', function() {
                 const checkbox = $(this);
                 const userId = checkbox.data('user-id');
+                const userName = checkbox.data('user-name') || 'peserta ini';
                 const isPremium = checkbox.is(':checked') ? 1 : 0;
 
-                checkbox.prop('disabled', true);
-
-                $.ajax({
-                    url: `/admin/users/${userId}/toggle-premium`,
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        is_premium: isPremium
-                    },
-                    success: function(response) {
-                        checkbox.prop('disabled', false);
-                        const Toast = Swal.mixin({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 2500,
-                            timerProgressBar: true
-                        });
-                        Toast.fire({
-                            icon: 'success',
-                            title: response.message || 'Status Premium berhasil diubah!'
-                        });
-
-                        // Reload data table agar badge terupdate
-                        setTimeout(() => location.reload(), 900);
-                    },
-                    error: function(xhr) {
-                        checkbox.prop('disabled', false);
+                Swal.fire({
+                    title: isPremium ? 'Aktifkan Akses Manual PRO?' : 'Nonaktifkan Akses Manual PRO?',
+                    html: isPremium
+                        ? `Anda akan memberikan akses Manual PRO untuk <strong>${userName}</strong>.`
+                        : `Anda akan menonaktifkan akses Manual PRO untuk <strong>${userName}</strong>.`,
+                    icon: isPremium ? 'question' : 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: isPremium ? '#10b981' : '#dc2626',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: isPremium ? 'Ya, Aktifkan' : 'Ya, Nonaktifkan',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (!result.isConfirmed) {
                         checkbox.prop('checked', !isPremium);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Gagal Memperbarui',
-                            text: xhr.responseJSON?.message || 'Terjadi kesalahan sistem.'
-                        });
+                        return;
                     }
+
+                    checkbox.prop('disabled', true);
+
+                    $.ajax({
+                        url: `/admin/users/${userId}/toggle-premium`,
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            is_premium: isPremium
+                        },
+                        success: function(response) {
+                            checkbox.prop('disabled', false);
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 2500,
+                                timerProgressBar: true
+                            });
+                            Toast.fire({
+                                icon: 'success',
+                                title: response.message || 'Status Premium berhasil diubah!'
+                            });
+
+                            // Reload data table agar badge terupdate
+                            setTimeout(() => location.reload(), 900);
+                        },
+                        error: function(xhr) {
+                            checkbox.prop('disabled', false);
+                            checkbox.prop('checked', !isPremium);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal Memperbarui',
+                                text: xhr.responseJSON?.message || 'Terjadi kesalahan sistem.'
+                            });
+                        }
+                    });
                 });
             });
 
