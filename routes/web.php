@@ -192,6 +192,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/reports', [App\Http\Controllers\AdminReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/export', [App\Http\Controllers\AdminReportController::class, 'export'])->name('reports.export');
+        Route::delete('/reports/{id}', [App\Http\Controllers\AdminReportController::class, 'destroy'])->whereNumber('id')->name('reports.destroy');
 
         Route::get('/user_type', [UserTypeController::class, 'userType'])->name('user_type');
         Route::post('/users/{id}/update-role', [UserTypeController::class, 'updateRole'])->name('users.update-role');

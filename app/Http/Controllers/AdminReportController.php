@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ExamAnswer;
 use App\Models\ExamSession;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -10,11 +12,26 @@ class AdminReportController extends Controller
 {
     public function index()
     {
+        app(UjianController::class)->closeExpiredUnfinishedSessions();
+
         $reports = ExamSession::with(['user', 'tryout'])
             ->orderBy('total_score', 'desc')
-            ->paginate(20);
+            ->get();
 
         return view('admin.reports', compact('reports'));
+    }
+
+    public function destroy(int $id): RedirectResponse
+    {
+        $session = ExamSession::with('user')->findOrFail($id);
+        $userName = $session->user?->name ?? 'Peserta';
+
+        ExamAnswer::where('exam_session_id', $session->id)->delete();
+        $session->delete();
+
+        return redirect()
+            ->route('admin.reports.index')
+            ->with('success', "Data laporan ujian milik {$userName} berhasil dihapus.");
     }
 
     public function export()

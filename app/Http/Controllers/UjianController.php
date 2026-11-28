@@ -259,7 +259,7 @@ class UjianController extends Controller
     /**
      * Nilai jawaban & tutup sesi ujian secara permanen (dipakai oleh selesai() maupun auto-finalize saat waktu habis).
      */
-    private function finalizeExamSession(ExamSession $session, Tryout $tryout, array $submittedAnswers = []): ExamSession
+    public function finalizeExamSession(ExamSession $session, Tryout $tryout, array $submittedAnswers = [], bool $writeFlashSession = true): ExamSession
     {
         $userId = $session->user_id;
         $tryoutId = $session->tryout_id;
@@ -331,13 +331,15 @@ class UjianController extends Controller
             }
         }
 
-        session([
-            'hasilUjian' => [
-                'skorPerKategori' => $skorPerKategori,
-                'total_score' => $totalSkorKeseluruhan,
-                'lulus' => $lulus,
-            ],
-        ]);
+        if ($writeFlashSession) {
+            session([
+                'hasilUjian' => [
+                    'skorPerKategori' => $skorPerKategori,
+                    'total_score' => $totalSkorKeseluruhan,
+                    'lulus' => $lulus,
+                ],
+            ]);
+        }
 
         $twkId = $categories->where('name', 'TWK')->first()->id ?? null;
         $tiuId = $categories->where('name', 'TIU')->first()->id ?? null;
@@ -365,6 +367,30 @@ class UjianController extends Controller
         Redis::del("sequence:user_{$userId}:tryout_{$tryoutId}");
 
         return $session;
+    }
+
+    /**
+     * Tutup otomatis seluruh sesi ujian yang sudah melewati batas durasi (mis. > 100 menit) namun end_time masih NULL.
+     */
+    public function closeExpiredUnfinishedSessions(): int
+    {
+        $closedCount = 0;
+        $unfinished = ExamSession::with('tryout')
+            ->whereNull('end_time')
+            ->get();
+
+        foreach ($unfinished as $session) {
+            $tryout = $session->tryout ?? Tryout::find($session->tryout_id);
+            if (!$tryout) {
+                continue;
+            }
+            if ($this->calculateRemainingSeconds($session, $tryout) <= 0) {
+                $this->finalizeExamSession($session, $tryout, [], false);
+                $closedCount++;
+            }
+        }
+
+        return $closedCount;
     }
 
     public function selesai(Request $request, $id)
